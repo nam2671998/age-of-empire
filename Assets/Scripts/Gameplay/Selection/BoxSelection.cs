@@ -304,11 +304,13 @@ public class BoxSelection : MonoBehaviour
     }
     
     /// <summary>
-    /// Gets the currently selected objects
+    /// Fills the currently selected objects to <paramref name="selectedObjectsHolder"/>
     /// </summary>
-    public List<IGameSelectable> GetSelectedObjects()
+    /// <param name="selectedObjectsHolder"> An empty List to fill selected objects in.</param>
+    public void GetSelectedObjects(List<IGameSelectable> selectedObjectsHolder)
     {
-        return new List<IGameSelectable>(selectedObjects);
+        selectedObjectsHolder.Clear();
+        selectedObjectsHolder.AddRange(selectedObjects);
     }
     
     /// <summary>

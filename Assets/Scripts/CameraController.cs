@@ -9,8 +9,15 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float minSpeed = 2f; // Starting speed when keys are first pressed
     [SerializeField] private float maxSpeed = 20f; // Maximum speed when holding keys
     [SerializeField] private float acceleration = 10f; // How fast speed increases per second
+
+    [Header("Zoom Settings")]
+    [SerializeField] private float zoomStep = 5f;
+    [SerializeField] private float minZoomOffset = -20f;
+    [SerializeField] private float maxZoomOffset = 20f;
     
     private float currentSpeed = 0f;
+    private Vector3 panPosition;
+    private float zoomOffset = 0f;
     
     void Start()
     {
@@ -27,6 +34,10 @@ public class CameraController : MonoBehaviour
         }
 
         currentSpeed = minSpeed;
+        if (targetCamera != null)
+        {
+            panPosition = targetCamera.transform.position;
+        }
     }
 
     void Update()
@@ -40,6 +51,9 @@ public class CameraController : MonoBehaviour
         UpdateSpeed(anyKeyHeld);
         
         ApplyMovement(moveDirection);
+        ApplyZoom(Input.mouseScrollDelta.y);
+
+        targetCamera.transform.position = panPosition + GetZoomDirection() * zoomOffset;
     }
     
     private void GetMovementInput(out Vector3 moveDirection, out bool anyKeyHeld)
@@ -107,6 +121,25 @@ public class CameraController : MonoBehaviour
         );
         
         // Apply the movement directly to the camera position
-        targetCamera.transform.position += movement;
+        panPosition += movement;
+    }
+
+    private void ApplyZoom(float scrollDelta)
+    {
+        if (Mathf.Approximately(scrollDelta, 0f))
+            return;
+
+        float desiredOffset = zoomOffset + scrollDelta * zoomStep;
+        zoomOffset = Mathf.Clamp(desiredOffset, minZoomOffset, maxZoomOffset);
+    }
+
+    private Vector3 GetZoomDirection()
+    {
+        Vector3 direction = targetCamera.transform.forward;
+        float magnitude = direction.magnitude;
+        if (magnitude <= 0.0001f)
+            return Vector3.forward;
+
+        return direction / magnitude;
     }
 }
