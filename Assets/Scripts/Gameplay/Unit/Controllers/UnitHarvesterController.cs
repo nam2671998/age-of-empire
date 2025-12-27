@@ -9,28 +9,16 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 
     [SerializeField] private UnitAnimatorController animator;
     
-    private IHarvestable harvestTarget;
     private float lastHarvestTime = 0f;
     private bool isHarvesting = false;
-    
-    public IHarvestable HarvestTarget => harvestTarget;
     public bool IsHarvesting => isHarvesting;
-    public int HarvestAmount => harvestAmount;
-    public float HarvestRange => harvestRange;
-    
-    public void SetTarget(IHarvestable target)
-    {
-        harvestTarget = target;
-    }
     
     public void SetHarvestTarget(IHarvestable target)
     {
-        if (target != null && TryGetComponent(out SettlerUnit settler))
+        if (target != null && TryGetComponent(out IStopAction s))
         {
-            settler.StopOtherActions();
+            s.StopOtherActions();
         }
-        
-        SetTarget(target);
         
         if (target != null && target.GetGameObject() != null && TryGetComponent(out IMovementCapability movement))
         {
@@ -52,7 +40,6 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     {
         if (target == null || target.IsDepleted())
         {
-            harvestTarget = null;
             isHarvesting = false;
             return 0;
         }
@@ -64,10 +51,7 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         
         FaceTarget(target);
         int harvested = 0;
-        if (TryGetComponent(out Unit unit))
-        {
-            harvested = target.Harvest(harvestAmount, unit);
-        }
+        harvested = target.Harvest(harvestAmount);
         lastHarvestTime = Time.time;
         isHarvesting = true;
 
@@ -89,7 +73,6 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     public void StopHarvesting()
     {
         isHarvesting = false;
-        harvestTarget = null;
     }
     
     public bool IsInRange(IHarvestable target)

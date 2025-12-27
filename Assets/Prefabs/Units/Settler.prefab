@@ -240,7 +240,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 190780fdd2e5d95408c45aac603fa692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitBuilderController
-  buildRange: 3
+  buildingPercentage: 0.1
+  buildCooldown: 1
+  animator: {fileID: 1394233975726215313}
 --- !u!114 &5392314553581897824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,6 +311,7 @@ MonoBehaviour:
   isBuildingParameter: IsBuilding
   attackTriggerParameter: Attack
   harvestTriggerParameter: Harvest
+  buildTriggerParameter: Build
   deathTriggerParameter: Death
   idleTriggerParameter: Idle
   moveTriggerParameter: Move

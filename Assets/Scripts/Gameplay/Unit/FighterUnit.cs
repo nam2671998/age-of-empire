@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(UnitMovementController))]
 [RequireComponent(typeof(UnitActionStateController))]
 [RequireComponent(typeof(UnitCombatController))]
-public class FighterUnit : Unit
+public class FighterUnit : Unit, IStopAction
 {
     private UnitCombatController combat;
     
@@ -26,5 +26,13 @@ public class FighterUnit : Unit
     
     protected override void UpdateUnit()
     {
+    }
+
+    public void StopOtherActions()
+    {
+        if (combat != null)
+        {
+            combat.StopAttacking();
+        }
     }
 }

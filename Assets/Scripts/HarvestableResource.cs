@@ -21,7 +21,7 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
         UpdateCapacityState();
     }
     
-    public int Harvest(int amount, Unit harvester)
+    public int Harvest(int amount)
     {
         if (IsDepleted())
             return 0;
@@ -30,7 +30,7 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
         currentResources -= harvested;
         UpdateCapacityState();
         
-        Debug.Log($"{harvester.gameObject.name} harvested {harvested} {resourceType} from {gameObject.name}. Remaining: {currentResources}/{maxResources}");
+        Debug.Log($"{gameObject.name} is harvested and gain {harvested} {resourceType}. Remaining: {currentResources}/{maxResources}");
         
         // Handle depletion
         if (currentResources <= 0)

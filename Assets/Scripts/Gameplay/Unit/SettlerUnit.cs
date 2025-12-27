@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(UnitCombatController))]
 [RequireComponent(typeof(UnitHarvesterController))]
 [RequireComponent(typeof(UnitBuilderController))]
-public class SettlerUnit : Unit
+public class SettlerUnit : Unit, IStopAction
 {
     private UnitCombatController combat;
     private UnitHarvesterController harvester;
@@ -34,8 +34,6 @@ public class SettlerUnit : Unit
     {
     }
     
-    #region Private Helpers
-    
     public void StopOtherActions()
     {
         if (combat != null)
@@ -53,6 +51,4 @@ public class SettlerUnit : Unit
             builder.StopBuilding();
         }
     }
-    
-    #endregion
 }

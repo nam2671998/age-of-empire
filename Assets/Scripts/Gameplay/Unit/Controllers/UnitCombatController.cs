@@ -61,9 +61,9 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability
             return;
         }
         
-        if (target != null && TryGetComponent(out SettlerUnit settler))
+        if (target != null && TryGetComponent(out IStopAction s))
         {
-            settler.StopOtherActions();
+            s.StopOtherActions();
         }
         
         SetTarget(target);

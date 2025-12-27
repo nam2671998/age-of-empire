@@ -11,6 +11,7 @@ public class UnitAnimatorController : MonoBehaviour
     [SerializeField] private string isBuildingParameter = "IsBuilding";
     [SerializeField] private string attackTriggerParameter = "Attack";
     [SerializeField] private string harvestTriggerParameter = "Harvest";
+    [SerializeField] private string buildTriggerParameter = "Build";
     [SerializeField] private string deathTriggerParameter = "Death";
     [SerializeField] private string idleTriggerParameter = "Idle";
     [SerializeField] private string moveTriggerParameter = "Move";
@@ -51,6 +52,11 @@ public class UnitAnimatorController : MonoBehaviour
     public void TriggerHarvest()
     {
         TriggerAnimation(harvestTriggerParameter);
+    }
+
+    public void TriggerBuild()
+    {
+        TriggerAnimation(buildTriggerParameter);
     }
     
     public void TriggerDeath()

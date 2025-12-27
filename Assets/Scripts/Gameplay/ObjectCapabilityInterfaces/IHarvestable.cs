@@ -9,9 +9,8 @@ public interface IHarvestable
     /// Harvests resources from this object
     /// </summary>
     /// <param name="amount">The amount to harvest</param>
-    /// <param name="harvester">The unit harvesting</param>
     /// <returns>The amount actually harvested</returns>
-    int Harvest(int amount, Unit harvester);
+    int Harvest(int amount);
     
     /// <summary>
     /// Gets the remaining resources in this object

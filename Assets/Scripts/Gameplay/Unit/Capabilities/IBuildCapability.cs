@@ -2,11 +2,11 @@ using UnityEngine;
 
 public interface IBuildCapability
 {
-    void SetBuildTarget(Vector3 position, GameObject buildingPrefab);
-    void StartBuilding();
+    void SetBuildTarget(IBuildable target);
+    void Build(IBuildable target);
+    bool CanBuild();
     void StopBuilding();
-    bool IsBuilding();
-    float BuildRange { get; }
-    bool IsInRange();
+    bool IsInRange(IBuildable target);
+    GameObject GetGameObject();
 }
 

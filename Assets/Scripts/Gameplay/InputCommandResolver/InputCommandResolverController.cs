@@ -37,6 +37,7 @@ public class InputCommandResolverController : MonoBehaviour
         {
             new AttackCommandResolver(unitLayer),
             new HarvestCommandResolver(resourceLayer),
+            new BuildCommandResolver(buildingLayer),
             new MoveCommandResolver(groundLayer),
         };
     }

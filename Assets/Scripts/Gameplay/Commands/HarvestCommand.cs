@@ -3,14 +3,12 @@ using UnityEngine;
 public class HarvestCommand : BaseCommand
 {
     private IHarvestable target;
-    private float harvestRange = 2f;
     private float harvestCooldown = 1f;
     private float lastHarvestTime = float.NegativeInfinity;
     
-    public HarvestCommand(IHarvestable target, float harvestRange = 2f, float harvestCooldown = 1f)
+    public HarvestCommand(IHarvestable target, float harvestCooldown = 1f)
     {
         this.target = target;
-        this.harvestRange = harvestRange;
         this.harvestCooldown = harvestCooldown;
     }
     
@@ -99,11 +97,6 @@ public class HarvestCommand : BaseCommand
         {
             harvestUnit.StopHarvest();
         }
-    }
-
-    public IHarvestable GetTarget()
-    {
-        return target;
     }
 }
 
