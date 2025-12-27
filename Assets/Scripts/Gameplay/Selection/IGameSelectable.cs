@@ -24,10 +24,5 @@ public interface IGameSelectable
     /// Gets the world position of the selectable (used for selection bounds checking)
     /// </summary>
     Vector3 GetPosition();
-    
-    /// <summary>
-    /// Gets the bounds of the selectable in world space (for accurate selection)
-    /// </summary>
-    Bounds GetBounds();
 }
 

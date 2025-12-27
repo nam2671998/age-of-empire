@@ -10,5 +10,6 @@ public interface IHarvestCapability
     float HarvestRange { get; }
     bool IsInRange(IHarvestable target);
     bool CanHarvest();
+    void StopHarvest();
 }
 

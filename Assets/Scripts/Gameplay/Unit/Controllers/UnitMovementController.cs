@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class UnitMovementController : MonoBehaviour, IMovementCapability
@@ -8,6 +9,7 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 360f;
     [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private UnitAnimatorController animatorController;
     
     private Vector3 moveTarget;
     private bool isMoving = false;
@@ -19,6 +21,8 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
     {
         if (agent == null)
             agent = GetComponent<NavMeshAgent>();
+        if (animatorController == null)
+            animatorController = GetComponent<UnitAnimatorController>();
 
         if (agent == null)
         {
@@ -54,6 +58,12 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
         }
 
         if (!TrySetDestination(moveTarget))
+        {
+            isMoving = false;
+            return;
+        }
+
+        if (agent.remainingDistance < stoppingDistance)
         {
             isMoving = false;
             return;

@@ -12,16 +12,6 @@ public class FighterUnit : Unit
     {
         base.InitializeComponents();
         TryGetComponent(out combat);
-        
-        if (TryGetComponent(out UnitHarvesterController harvester))
-        {
-            Destroy(harvester);
-        }
-        
-        if (TryGetComponent(out UnitBuilderController builder))
-        {
-            Destroy(builder);
-        }
     }
     
     protected override void InitializeUnit()

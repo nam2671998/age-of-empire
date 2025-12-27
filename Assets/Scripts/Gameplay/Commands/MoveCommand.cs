@@ -3,7 +3,7 @@ using UnityEngine;
 public class MoveCommand : BaseCommand
 {
     private Vector3 targetPosition;
-    private float stoppingDistance = 0.5f;
+    private float stoppingDistance = 0;
     
     public MoveCommand(Vector3 position, float stoppingDistance = 0.5f)
     {
@@ -29,6 +29,11 @@ public class MoveCommand : BaseCommand
             Complete();
             return;
         }
+
+        if (!movement.IsMoving)
+        {
+            Complete();
+        }
         
         float distanceToTarget = Vector3.Distance(movement.transform.position, targetPosition);
         if (distanceToTarget <= stoppingDistance)
@@ -41,10 +46,14 @@ public class MoveCommand : BaseCommand
     {
         return $"Move to {targetPosition}";
     }
-    
-    public Vector3 GetTargetPosition()
+
+    public override void Cancel(CommandExecutor executor)
     {
-        return targetPosition;
+        base.Cancel(executor);
+        if (executor != null && executor.TryGetCapability(out IMovementCapability movement))
+        {
+            movement.StopMovement();
+        }
     }
 }
 

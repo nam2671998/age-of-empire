@@ -55,36 +55,6 @@ public abstract class Unit : MonoBehaviour, IFactionOwner
     
     protected virtual void UpdateUnit() { }
     
-    #region Movement
-    
-    public void MoveTo(Vector3 targetPosition, float stoppingDistance = 0.5f)
-    {
-        if (movement == null)
-            return;
-        
-        movement.MoveTo(targetPosition, stoppingDistance);
-    }
-    
-    public void StopMovement()
-    {
-        if (movement != null)
-        {
-            movement.Stop();
-        }
-    }
-    
-    public bool IsMoving()
-    {
-        return movement != null && movement.IsMoving;
-    }
-    
-    public float GetMoveSpeed()
-    {
-        return movement != null ? movement.MoveSpeed : 0f;
-    }
-    
-    #endregion
-    
     #region Command Queue (Delegates to CommandExecutor)
     
     public void AddCommand(ICommand command)
@@ -110,8 +80,6 @@ public abstract class Unit : MonoBehaviour, IFactionOwner
             commandExecutor.ClearCommands();
         }
         
-        StopMovement();
-        
         if (stateManager != null)
         {
             stateManager.ResetToIdle();
@@ -129,24 +97,6 @@ public abstract class Unit : MonoBehaviour, IFactionOwner
     }
     
     #endregion
-    
-    #region Animation
-    
-    public void PlayDeathAnimation()
-    {
-        if (animator != null)
-        {
-            animator.TriggerDeath();
-        }
-    }
-    
-    public UnitActionState GetCurrentActionState()
-    {
-        return stateManager != null ? stateManager.CurrentState : UnitActionState.Idle;
-    }
-    
-    #endregion
-    
 }
 
 public enum UnitActionState

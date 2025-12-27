@@ -5,18 +5,14 @@ using UnityEngine;
 /// </summary>
 public class SelectableObject : MonoBehaviour, IGameSelectable
 {
-    private bool isSelected = false;
-    
-    public void OnSelected()
+    public virtual void OnSelected()
     {
-        isSelected = true;
-        // Override this method in derived classes or use events for custom behavior
+        
     }
     
-    public void OnDeselected()
+    public virtual void OnDeselected()
     {
-        isSelected = false;
-        // Override this method in derived classes or use events for custom behavior
+        
     }
     
     public GameObject GetGameObject()
@@ -27,18 +23,6 @@ public class SelectableObject : MonoBehaviour, IGameSelectable
     public Vector3 GetPosition()
     {
         return transform.position;
-    }
-    
-    public Bounds GetBounds()
-    {
-        // Return a minimal bounds centered on the transform position
-        // The selection system will use transform position directly
-        return new Bounds(transform.position, Vector3.zero);
-    }
-    
-    public bool IsSelected()
-    {
-        return isSelected;
     }
 }
 

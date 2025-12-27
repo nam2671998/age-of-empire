@@ -72,7 +72,7 @@ MonoBehaviour:
   resourceType: 3
   maxResources: 10
   harvestPositionTransform: {fileID: 1406181451342082161}
-  harvestPositionRadius: 0.4
+  harvestPositionRadius: 1
   capacityStates:
   - {fileID: 3293002580836780414}
   - {fileID: 7905104041088692669}

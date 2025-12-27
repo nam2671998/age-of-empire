@@ -6,13 +6,12 @@ public class HarvestCommand : BaseCommand
     private float harvestRange = 2f;
     private float harvestCooldown = 1f;
     private float lastHarvestTime = float.NegativeInfinity;
-    private float moveToRange = 3f;
     
     public HarvestCommand(IHarvestable target, float harvestRange = 2f, float harvestCooldown = 1f)
     {
         this.target = target;
         this.harvestRange = harvestRange;
-        this.harvestCooldown = 1f;
+        this.harvestCooldown = harvestCooldown;
     }
     
     public override void Execute(CommandExecutor executor)
@@ -72,6 +71,7 @@ public class HarvestCommand : BaseCommand
         
         if (harvestUnit.IsInRange(target))
         {
+            movement.StopMovement();
             if (Time.time >= lastHarvestTime + harvestCooldown && harvestUnit.CanHarvest())
             {
                 harvestUnit.Harvest(target);
@@ -91,7 +91,16 @@ public class HarvestCommand : BaseCommand
             
         return $"Harvest {target.GetGameObject().name}";
     }
-    
+
+    protected override void OnCancel(CommandExecutor executor)
+    {
+        base.OnCancel(executor);
+        if (executor != null && executor.TryGetCapability(out IHarvestCapability harvestUnit))
+        {
+            harvestUnit.StopHarvest();
+        }
+    }
+
     public IHarvestable GetTarget()
     {
         return target;

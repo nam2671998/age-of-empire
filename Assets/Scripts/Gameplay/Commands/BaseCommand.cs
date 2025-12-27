@@ -42,7 +42,7 @@ public abstract class BaseCommand : ICommand
     protected virtual void OnUpdate(CommandExecutor executor) { }
     protected virtual void OnCancel(CommandExecutor executor) { }
     
-    protected void Complete()
+    protected virtual void Complete()
     {
         isCompleted = true;
     }

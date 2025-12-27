@@ -42,7 +42,12 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     {
         return Time.time >= lastHarvestTime + harvestCooldown;
     }
-    
+
+    public void StopHarvest()
+    {
+        isHarvesting = false;
+    }
+
     public int Harvest(IHarvestable target)
     {
         if (target == null || target.IsDepleted())
