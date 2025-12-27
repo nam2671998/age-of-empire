@@ -84,7 +84,7 @@ public class BoxSelection : MonoBehaviour
         Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, selectionBoxHeight, 0));
         Ray startRay = selectionCamera.ScreenPointToRay(selectionStartPosition);
         worldStartCorner = GetRayPlaneIntersection(startRay, horizontalPlane);
-        worldStartCorner.y = 0.5f; // Set the Y position
+        worldStartCorner.y = 0.01f; // Set the Y position
         
         // Deselect all previous selections
         DeselectAll();
@@ -116,24 +116,17 @@ public class BoxSelection : MonoBehaviour
             return;
         }
         
-        // Calculate selection rectangle in screen space
-        Rect selectionRect = GetSelectionRect();
-        
-        if (selectionRect.width < 5f || selectionRect.height < 5f)
-        {
-            // Too small, hide the box
-            selectionBoxRenderer.gameObject.SetActive(false);
-            return;
-        }
-        
         // Show and update selection box
         selectionBoxRenderer.gameObject.SetActive(true);
+        float boxSelectionHeight = 2;
         
         // Convert current mouse position to world space on the horizontal plane
-        Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, selectionBoxHeight, 0));
+        Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, boxSelectionHeight, 0));
+        Ray startRay = selectionCamera.ScreenPointToRay(selectionStartPosition);
+        Vector3 worldStartCorner = GetRayPlaneIntersection(startRay, horizontalPlane);
         Ray endRay = selectionCamera.ScreenPointToRay(selectionEndPosition);
         Vector3 worldEndCorner = GetRayPlaneIntersection(endRay, horizontalPlane);
-        worldEndCorner.y = 0.5f; // Set the Y position
+        worldEndCorner.y = 0.01f; // Set the Y position
         
         // Calculate width and height in world space (on the horizontal plane)
         // Width is the distance along X axis, height is the distance along Z axis
@@ -147,7 +140,7 @@ public class BoxSelection : MonoBehaviour
             0f,
             (worldEndCorner.z - worldStartCorner.z) * 0.5f
         );
-        center.y = 2;
+        center.y = boxSelectionHeight;
         
         // Position the rectangle and resize
         selectionBoxRenderer.transform.position = center;
@@ -167,16 +160,6 @@ public class BoxSelection : MonoBehaviour
         return ray.GetPoint(selectionBoxHeight);
     }
     
-    private Rect GetSelectionRect()
-    {
-        float xMin = Mathf.Min(selectionStartPosition.x, selectionEndPosition.x);
-        float xMax = Mathf.Max(selectionStartPosition.x, selectionEndPosition.x);
-        float yMin = Mathf.Min(selectionStartPosition.y, selectionEndPosition.y);
-        float yMax = Mathf.Max(selectionStartPosition.y, selectionEndPosition.y);
-        
-        return new Rect(xMin, yMin, xMax - xMin, yMax - yMin);
-    }
-    
     private void SelectObjectsInBox()
     {
         // Get the current end corner in world space
@@ -189,12 +172,6 @@ public class BoxSelection : MonoBehaviour
         float maxX = Mathf.Max(worldStartCorner.x, worldEndCorner.x);
         float minZ = Mathf.Min(worldStartCorner.z, worldEndCorner.z);
         float maxZ = Mathf.Max(worldStartCorner.z, worldEndCorner.z);
-        
-        // Check if selection is too small
-        if (Mathf.Abs(maxX - minX) < 0.1f || Mathf.Abs(maxZ - minZ) < 0.1f)
-        {
-            return; // Too small to be a valid selection
-        }
         
         // Find all objects with IGameSelectable
         IGameSelectable[] allSelectables = FindObjectsOfType<MonoBehaviour>()
