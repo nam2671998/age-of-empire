@@ -5,6 +5,11 @@ using UnityEngine;
 /// </summary>
 public class SelectableObject : MonoBehaviour, IGameSelectable
 {
+    [SerializeField] private SelectableSelectionMode selectionMode = SelectableSelectionMode.Both;
+
+    public bool CanSelectFromClick => selectionMode != SelectableSelectionMode.DragOnly;
+    public bool CanSelectFromDrag => selectionMode != SelectableSelectionMode.ClickOnly;
+
     public virtual void OnSelected()
     {
         
@@ -24,5 +29,12 @@ public class SelectableObject : MonoBehaviour, IGameSelectable
     {
         return transform.position;
     }
+}
+
+public enum SelectableSelectionMode
+{
+    Both,
+    ClickOnly,
+    DragOnly
 }
 

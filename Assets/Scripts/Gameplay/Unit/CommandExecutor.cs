@@ -28,6 +28,15 @@ public class CommandExecutor : MonoBehaviour
         }
     }
     
+    private void OnDisable()
+    {
+        // Free grid reservations when unit is destroyed
+        if (GridManager.Instance != null)
+        {
+            GridManager.Instance.FreeUnitReservation(this);
+        }
+    }
+    
     public void EnqueueCommand(ICommand command)
     {
         if (command == null)
@@ -41,6 +50,11 @@ public class CommandExecutor : MonoBehaviour
     
     public void SetCommand(ICommand command)
     {
+        // Free any grid cell reservations when changing commands
+        if (GridManager.Instance != null)
+        {
+            GridManager.Instance.FreeUnitReservation(this);
+        }
         ClearCommands();
         EnqueueCommand(command);
     }

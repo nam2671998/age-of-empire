@@ -205,6 +205,9 @@ public class BoxSelection : MonoBehaviour
             if (selectable == null)
                 continue;
 
+            if (!selectable.CanSelectFromDrag)
+                continue;
+
             if (!found.Add(selectable))
                 continue;
 
@@ -243,6 +246,9 @@ public class BoxSelection : MonoBehaviour
 
             SelectableObject selectable = col.GetComponentInParent<SelectableObject>();
             if (selectable == null)
+                continue;
+
+            if (!selectable.CanSelectFromClick)
                 continue;
 
             Vector3 pos = selectable.GetPosition();

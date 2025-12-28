@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 6116625358889534189}
   - component: {fileID: 7033557343214003631}
   - component: {fileID: 7859323099909847953}
+  - component: {fileID: 6470561381709063609}
   m_Layer: 9
   m_Name: Barrage
   m_TagString: Untagged
@@ -130,6 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33b1ca3c926b0ab41b69f6c8b5dab676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConstructionSelectable
+  selectionMode: 1
   constructionConfig: {fileID: 11400000, guid: 3f88e976f0f274641a5c2a27bee5194f, type: 2}
   onSelectedUnitProduceConstruction: {fileID: 11400000, guid: 381ef932aa4bb1d4985374f9b698d021, type: 2}
   selectionIndicator: {fileID: 2982640879381324423}
@@ -149,6 +151,22 @@ MonoBehaviour:
   onProduceUnit: {fileID: 11400000, guid: 47619ac666262b14cafd8e5c3490a383, type: 2}
   constructionConfig: {fileID: 11400000, guid: 3f88e976f0f274641a5c2a27bee5194f, type: 2}
   ownCollider: {fileID: 6116625358889534189}
+--- !u!208 &6470561381709063609
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2492220945594999143}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 3.1, y: 2.25, z: 3.1}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 2.25, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &2982640879381324423
 GameObject:
   m_ObjectHideFlags: 0

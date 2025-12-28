@@ -75,12 +75,12 @@ public class InputCommandResolverController : MonoBehaviour
 
         foreach (var selectable in selected)
         {
-            if (!selectable.GetGameObject().TryGetComponent(out Unit unit))
+            if (!selectable.GetGameObject().TryGetComponent(out CommandExecutor commandExecutor))
                 continue;
 
             ICommand command = resolver.CreateCommand(hit);
             if (command != null)
-                unit.SetCommand(command);
+                commandExecutor.SetCommand(command);
         }
 
         ListPool<IGameSelectable>.Release(selected);
