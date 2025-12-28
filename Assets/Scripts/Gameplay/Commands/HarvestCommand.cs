@@ -27,6 +27,12 @@ public class HarvestCommand : BaseCommand
             return;
         }
         
+        if (target == null || target.GetGameObject() == null || target.IsDepleted())
+        {
+            Complete();
+            return;
+        }
+        
         if (executor.TryGetCapability(out IHarvestCapability harvestUnit))
         {
             harvestUnit.SetHarvestTarget(target);
@@ -47,14 +53,15 @@ public class HarvestCommand : BaseCommand
             return;
         }
         
-        if (target == null || target.GetGameObject() == null || target.IsDepleted())
+        if (!executor.TryGetCapability(out IHarvestCapability harvestUnit))
         {
             Complete();
             return;
         }
         
-        if (!executor.TryGetCapability(out IHarvestCapability harvestUnit))
+        if (target == null || target.GetGameObject() == null || target.IsDepleted())
         {
+            harvestUnit.StopHarvest();
             Complete();
             return;
         }

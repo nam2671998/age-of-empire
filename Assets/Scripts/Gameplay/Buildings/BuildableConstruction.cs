@@ -4,13 +4,21 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 {
     [SerializeField] private Transform[] buildPositionTransforms;
     [SerializeField] private int maxHealth = 100;
+    [SerializeField] private bool maxHealthOnStart;
     [SerializeField] private GameObject[] progressStates;
 
     private int currentHealth;
 
     void Start()
     {
-        currentHealth = 0;
+        if (!maxHealthOnStart)
+        {
+            currentHealth = 0;
+        }
+        else
+        {
+            currentHealth = 100;
+        }
         UpdateHealthState();
     }
 

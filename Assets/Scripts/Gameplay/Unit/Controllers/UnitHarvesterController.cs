@@ -34,6 +34,7 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     public void StopHarvest()
     {
         isHarvesting = false;
+        animator.TriggerIdle();
     }
 
     public int Harvest(IHarvestable target)
@@ -68,11 +69,6 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         }
         
         return harvested;
-    }
-    
-    public void StopHarvesting()
-    {
-        isHarvesting = false;
     }
     
     public bool IsInRange(IHarvestable target)

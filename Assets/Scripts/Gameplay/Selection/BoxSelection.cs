@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Pool;
 
 /// <summary>
 /// Handles bound selection (horizontal rectangle) by dragging the mouse to select multiple GameObjects
@@ -11,23 +12,19 @@ public class BoxSelection : MonoBehaviour
     [SerializeField] private Camera selectionCamera;
     [SerializeField] private LayerMask selectableLayerMask = -1; // All layers by default
     [SerializeField] private KeyCode selectionKey = KeyCode.Mouse0; // Left mouse button
+    [SerializeField] private float clickSelectRadius = 1f;
+    [SerializeField] private float clickDragThresholdPixels = 10f;
     
     [Header("Selection Box Visual")]
     [SerializeField] private SpriteRenderer selectionBoxRenderer;
     [SerializeField] private float selectionBoxHeight = 0f; // Y position of the horizontal selection plane
     
-    [Header("Highlight Settings")]
-    [SerializeField] private Color highlightColor = new Color(1f, 0.8f, 0f, 0.5f);
-    
     private Vector3 selectionStartPosition;
     private Vector3 selectionEndPosition;
     private Vector3 worldStartCorner; // World position of the first corner (where mouse was pressed)
     private bool isSelecting = false;
+    private bool isDragging = false;
     private List<IGameSelectable> selectedObjects = new List<IGameSelectable>();
-    private Dictionary<GameObject, Material> originalMaterials = new Dictionary<GameObject, Material>();
-    private Dictionary<GameObject, Renderer> objectRenderers = new Dictionary<GameObject, Renderer>();
-    
-    private Material highlightMaterial;
     
     void Start()
     {
@@ -42,9 +39,6 @@ public class BoxSelection : MonoBehaviour
         {
             SetupSelectionBox();
         }
-        
-        // Create highlight material
-        CreateHighlightMaterial();
     }
     
     void Update()
@@ -55,6 +49,11 @@ public class BoxSelection : MonoBehaviour
     
     private void HandleSelectionInput()
     {
+        if (!isSelecting && IsPointerOverUI())
+        {
+            return;
+        }
+
         // Start selection
         if (Input.GetKeyDown(selectionKey))
         {
@@ -77,6 +76,7 @@ public class BoxSelection : MonoBehaviour
     private void StartSelection()
     {
         isSelecting = true;
+        isDragging = false;
         selectionStartPosition = Input.mousePosition;
         selectionEndPosition = selectionStartPosition;
         
@@ -93,14 +93,26 @@ public class BoxSelection : MonoBehaviour
     private void UpdateSelection()
     {
         selectionEndPosition = Input.mousePosition;
+
+        if (!isDragging && Vector3.Distance(selectionStartPosition, selectionEndPosition) > clickDragThresholdPixels)
+        {
+            isDragging = true;
+        }
     }
     
     private void EndSelection()
     {
         isSelecting = false;
         
-        // Perform selection
-        SelectObjectsInBox();
+        if (isDragging)
+        {
+            SelectObjectsInBox();
+        }
+        else
+        {
+            SelectNearestObjectAtClick();
+        }
+        isDragging = false;
         
         // Hide selection box
         if (selectionBoxRenderer != null)
@@ -111,7 +123,7 @@ public class BoxSelection : MonoBehaviour
     
     private void UpdateSelectionBox()
     {
-        if (!isSelecting || selectionBoxRenderer == null)
+        if (!isSelecting || !isDragging || selectionBoxRenderer == null)
         {
             return;
         }
@@ -151,15 +163,15 @@ public class BoxSelection : MonoBehaviour
     
     private Vector3 GetRayPlaneIntersection(Ray ray, Plane plane)
     {
-        float distance;
-        if (plane.Raycast(ray, out distance))
+        if (plane.Raycast(ray, out var distance))
         {
             return ray.GetPoint(distance);
         }
         // Fallback: return point at default distance if ray doesn't hit plane
         return ray.GetPoint(selectionBoxHeight);
     }
-    
+
+    private readonly Collider[] results = new Collider[20];
     private void SelectObjectsInBox()
     {
         // Get the current end corner in world space
@@ -172,34 +184,86 @@ public class BoxSelection : MonoBehaviour
         float maxX = Mathf.Max(worldStartCorner.x, worldEndCorner.x);
         float minZ = Mathf.Min(worldStartCorner.z, worldEndCorner.z);
         float maxZ = Mathf.Max(worldStartCorner.z, worldEndCorner.z);
-        
-        // Find all objects with IGameSelectable
-        IGameSelectable[] allSelectables = FindObjectsOfType<MonoBehaviour>()
-            .Where(mb => mb is IGameSelectable)
-            .Cast<IGameSelectable>()
-            .ToArray();
-        
+
+        Vector3 center = new Vector3((minX + maxX) * 0.5f, selectionBoxHeight + 1f, (minZ + maxZ) * 0.5f);
+        float halfWidth = Mathf.Max((maxX - minX) * 0.5f, 0.01f);
+        float halfDepth = Mathf.Max((maxZ - minZ) * 0.5f, 0.01f);
+        Vector3 halfExtents = new Vector3(halfWidth, 100f, halfDepth);
+
+        int hitCount = Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, selectableLayerMask);
+        HashSet<SelectableObject> found = HashSetPool<SelectableObject>.Get();
+
         selectedObjects.Clear();
-        
-        foreach (IGameSelectable selectable in allSelectables)
+
+        for (int i = 0; i < hitCount; i++)
         {
-            GameObject obj = selectable.GetGameObject();
-            
-            // Check layer mask
-            if ((selectableLayerMask.value & (1 << obj.layer)) == 0)
-            {
+            Collider col = results[i];
+            if (col == null)
                 continue;
-            }
-            
-            // Check if object transform position (x, z) is within selection bounds
-            if (IsObjectInSelectionBox(selectable, minX, maxX, minZ, maxZ))
+
+            SelectableObject selectable = col.GetComponentInParent<SelectableObject>();
+            if (selectable == null)
+                continue;
+
+            if (!found.Add(selectable))
+                continue;
+
+            if (!IsObjectInSelectionBox(selectable, minX, maxX, minZ, maxZ))
+                continue;
+
+            GameObject obj = selectable.GetGameObject();
+            selectedObjects.Add(selectable);
+            selectable.OnSelected();
+            Debug.Log($"Selected: {obj.name}", obj);
+        }
+        HashSetPool<SelectableObject>.Release(found);
+    }
+
+    private void SelectNearestObjectAtClick()
+    {
+        if (selectionCamera == null)
+            return;
+
+        Plane horizontalPlane = new Plane(Vector3.up, new Vector3(0, selectionBoxHeight, 0));
+        Ray clickRay = selectionCamera.ScreenPointToRay(selectionEndPosition);
+        Vector3 clickWorldPosition = GetRayPlaneIntersection(clickRay, horizontalPlane);
+
+        int hitCount = Physics.OverlapSphereNonAlloc(clickWorldPosition, clickSelectRadius, results, selectableLayerMask);
+        if (hitCount == 0)
+            return;
+
+        SelectableObject bestSelectable = null;
+        float bestDistanceSqr = float.PositiveInfinity;
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            Collider col = results[i];
+            if (col == null)
+                continue;
+
+            SelectableObject selectable = col.GetComponentInParent<SelectableObject>();
+            if (selectable == null)
+                continue;
+
+            Vector3 pos = selectable.GetPosition();
+            float dx = pos.x - clickWorldPosition.x;
+            float dz = pos.z - clickWorldPosition.z;
+            float distSqr = (dx * dx) + (dz * dz);
+
+            if (distSqr < bestDistanceSqr)
             {
-                selectedObjects.Add(selectable);
-                selectable.OnSelected();
-                HighlightObject(obj);
-                Debug.Log($"Selected: {obj.name}", obj);
+                bestDistanceSqr = distSqr;
+                bestSelectable = selectable;
             }
         }
+
+        if (bestSelectable == null)
+            return;
+
+        selectedObjects.Clear();
+        selectedObjects.Add(bestSelectable);
+        bestSelectable.OnSelected();
+        Debug.Log($"Selected: {bestSelectable.GetGameObject().name}", bestSelectable.GetGameObject());
     }
     
     private bool IsObjectInSelectionBox(IGameSelectable selectable, float minX, float maxX, float minZ, float maxZ)
@@ -212,52 +276,14 @@ public class BoxSelection : MonoBehaviour
                position.z >= minZ && position.z <= maxZ;
     }
     
-    private void HighlightObject(GameObject obj)
-    {
-        Renderer renderer = obj.GetComponent<Renderer>();
-        if (renderer == null)
-        {
-            return;
-        }
-        
-        // Store original material if not already stored
-        if (!originalMaterials.ContainsKey(obj))
-        {
-            originalMaterials[obj] = renderer.material;
-            objectRenderers[obj] = renderer;
-        }
-        
-        // Apply highlight material
-        if (highlightMaterial != null)
-        {
-            renderer.material = highlightMaterial;
-        }
-    }
-    
     private void DeselectAll()
     {
         foreach (IGameSelectable selectable in selectedObjects)
         {
             selectable.OnDeselected();
-            RestoreObjectMaterial(selectable.GetGameObject());
         }
         
         selectedObjects.Clear();
-    }
-    
-    private void RestoreObjectMaterial(GameObject obj)
-    {
-        if (originalMaterials.ContainsKey(obj))
-        {
-            Renderer renderer = objectRenderers[obj];
-            if (renderer != null)
-            {
-                renderer.material = originalMaterials[obj];
-            }
-            
-            originalMaterials.Remove(obj);
-            objectRenderers.Remove(obj);
-        }
     }
     
     private void SetupSelectionBox()
@@ -265,19 +291,10 @@ public class BoxSelection : MonoBehaviour
         selectionBoxRenderer.sortingOrder = 1000; // Make sure it renders on top
         selectionBoxRenderer.gameObject.SetActive(false);
     }
-    
-    private void CreateHighlightMaterial()
+
+    private static bool IsPointerOverUI()
     {
-        highlightMaterial = new Material(Shader.Find("Standard"));
-        highlightMaterial.SetFloat("_Mode", 3); // Transparent mode
-        highlightMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-        highlightMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-        highlightMaterial.SetInt("_ZWrite", 0);
-        highlightMaterial.DisableKeyword("_ALPHATEST_ON");
-        highlightMaterial.EnableKeyword("_ALPHABLEND_ON");
-        highlightMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-        highlightMaterial.renderQueue = 3000;
-        highlightMaterial.color = highlightColor;
+        return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
     
     /// <summary>
@@ -296,15 +313,6 @@ public class BoxSelection : MonoBehaviour
     public void ClearSelection()
     {
         DeselectAll();
-    }
-    
-    void OnDestroy()
-    {
-        // Clean up materials
-        if (highlightMaterial != null)
-        {
-            Destroy(highlightMaterial);
-        }
     }
 }
 

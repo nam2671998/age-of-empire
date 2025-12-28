@@ -43,7 +43,7 @@ public class SettlerUnit : Unit, IStopAction
         
         if (harvester != null)
         {
-            harvester.StopHarvesting();
+            harvester.StopHarvest();
         }
         
         if (builder != null)
