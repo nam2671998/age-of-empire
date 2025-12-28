@@ -14,6 +14,7 @@ public class BoxSelection : MonoBehaviour
     [SerializeField] private KeyCode selectionKey = KeyCode.Mouse0; // Left mouse button
     [SerializeField] private float clickSelectRadius = 1f;
     [SerializeField] private float clickDragThresholdPixels = 10f;
+    [SerializeField] private int maxDragSelection = 20;
     
     [Header("Selection Box Visual")]
     [SerializeField] private SpriteRenderer selectionBoxRenderer;
@@ -171,7 +172,7 @@ public class BoxSelection : MonoBehaviour
         return ray.GetPoint(selectionBoxHeight);
     }
 
-    private readonly Collider[] results = new Collider[20];
+    private readonly Collider[] results = new Collider[256];
     private void SelectObjectsInBox()
     {
         // Get the current end corner in world space
@@ -197,6 +198,9 @@ public class BoxSelection : MonoBehaviour
 
         for (int i = 0; i < hitCount; i++)
         {
+            if (selectedObjects.Count >= maxDragSelection)
+                break;
+
             Collider col = results[i];
             if (col == null)
                 continue;
