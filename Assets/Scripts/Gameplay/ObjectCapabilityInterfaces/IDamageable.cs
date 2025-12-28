@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Interface for objects that can be attacked
 /// </summary>
-public interface IAttackable
+public interface IDamageable : IFactionOwner
 {
     /// <summary>
     /// Called when the object is attacked
@@ -36,10 +36,5 @@ public interface IAttackable
     /// Gets the world position of the attackable
     /// </summary>
     Vector3 GetPosition();
-    
-    /// <summary>
-    /// Gets the faction of the attackable
-    /// </summary>
-    Faction GetFaction();
 }
 

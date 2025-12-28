@@ -166,6 +166,7 @@ GameObject:
   - component: {fileID: 7238478564129609189}
   - component: {fileID: 4297366838134524781}
   - component: {fileID: 7697185898420744471}
+  - component: {fileID: 1038384530028192491}
   m_Layer: 9
   m_Name: Castle
   m_TagString: Untagged
@@ -213,8 +214,6 @@ MonoBehaviour:
   - {fileID: 5820576549756524353}
   - {fileID: 8788484207855450482}
   - {fileID: 5952180954838976258}
-  maxHealth: 100
-  maxHealthOnStart: 1
   progressStates:
   - {fileID: 5078634103339347870}
   - {fileID: 1136758994365192246}
@@ -288,6 +287,22 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 3, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &1038384530028192491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557218969983699086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b688ae28a181c1140aba9d33059f6a07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHealth: 100
+  startHealth: 100
+  startDepleted: 0
+  allowRevive: 0
 --- !u!1 &6048468352410343724
 GameObject:
   m_ObjectHideFlags: 0

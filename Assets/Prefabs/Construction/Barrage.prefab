@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 7033557343214003631}
   - component: {fileID: 7859323099909847953}
   - component: {fileID: 6470561381709063609}
+  - component: {fileID: 4200843415937479032}
   m_Layer: 9
   m_Name: Barrage
   m_TagString: Untagged
@@ -92,8 +93,6 @@ MonoBehaviour:
   - {fileID: 8422000828700978188}
   - {fileID: 4756030202034479109}
   - {fileID: 3134645940124477922}
-  maxHealth: 100
-  maxHealthOnStart: 0
   progressStates:
   - {fileID: 703200696725309588}
   - {fileID: 9136094656181628749}
@@ -167,6 +166,22 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 2.25, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &4200843415937479032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2492220945594999143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b688ae28a181c1140aba9d33059f6a07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHealth: 100
+  startHealth: 0
+  startDepleted: 1
+  allowRevive: 1
 --- !u!1 &2982640879381324423
 GameObject:
   m_ObjectHideFlags: 0

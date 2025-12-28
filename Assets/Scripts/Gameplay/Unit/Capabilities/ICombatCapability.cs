@@ -1,10 +1,10 @@
 public interface ICombatCapability
 {
-    void SetAttackTarget(IAttackable target);
-    void Attack(IAttackable target);
+    void SetAttackTarget(IDamageable target);
+    void Attack(IDamageable target);
     float GetAttackDamage();
     float GetAttackRange();
-    bool IsInRange(IAttackable target);
+    bool IsInRange(IDamageable target);
     bool CanAttack();
 }
 

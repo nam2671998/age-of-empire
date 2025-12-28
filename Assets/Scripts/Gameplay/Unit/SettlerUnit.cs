@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(UnitCombatController))]
 [RequireComponent(typeof(UnitHarvesterController))]
 [RequireComponent(typeof(UnitBuilderController))]
+[RequireComponent(typeof(Damageable))]
 public class SettlerUnit : Unit, IStopAction
 {
     private UnitCombatController combat;

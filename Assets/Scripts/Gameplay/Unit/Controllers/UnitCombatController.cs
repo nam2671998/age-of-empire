@@ -1,24 +1,34 @@
 using UnityEngine;
 
-public class UnitCombatController : MonoBehaviour, ICombatCapability
+public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOwner
 {
+    [Header("Faction")]
+    [SerializeField] private Faction faction = Faction.Player1;
+
     [Header("Combat Settings")]
     [SerializeField] private float attackDamage = 10f;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 1f;
     
-    private IAttackable attackTarget;
+    private IDamageable attackTarget;
     private float lastAttackTime = 0f;
     private bool isAttacking = false;
     private bool attackExecutedThisFrame = false;
     
     private IAttackStrategy attackStrategy;
     private IDistanceStrategy distanceStrategy;
+    private UnitAnimatorController animator;
     
-    public IAttackable AttackTarget => attackTarget;
+    public Faction Faction => faction;
+    public IDamageable AttackTarget => attackTarget;
     public bool IsAttacking => isAttacking;
     
     public bool AttackExecutedThisFrame => attackExecutedThisFrame;
+    
+    private void Awake()
+    {
+        TryGetComponent(out animator);
+    }
     
     void LateUpdate()
     {
@@ -45,19 +55,16 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability
         distanceStrategy = strategy;
     }
     
-    public void SetTarget(IAttackable target)
+    public void SetTarget(IDamageable target)
     {
         attackTarget = target;
     }
     
-    public void SetAttackTarget(IAttackable target)
+    public void SetAttackTarget(IDamageable target)
     {
         if (target != null && !CanAttackTarget(target))
         {
-            if (TryGetComponent(out IFactionOwner factionOwner))
-            {
-                Debug.LogWarning($"{gameObject.name} cannot attack {target.GetGameObject().name} - same faction ({factionOwner.Faction})");
-            }
+            Debug.LogWarning($"{gameObject.name} cannot attack {target.GetGameObject().name} - same faction ({faction})");
             return;
         }
         
@@ -86,7 +93,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability
         return Time.time >= lastAttackTime + attackCooldown;
     }
     
-    public void Attack(IAttackable target)
+    public void Attack(IDamageable target)
     {
         if (target == null || target.IsDestroyed())
         {
@@ -121,20 +128,24 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability
         lastAttackTime = Time.time;
         isAttacking = true;
         attackExecutedThisFrame = true;
+
+        if (animator != null)
+        {
+            animator.TriggerAttack();
+        }
     }
     
-    public bool CanAttackTarget(IAttackable target)
+    public bool CanAttackTarget(IDamageable target)
     {
         if (target == null)
             return false;
         
-        if (!TryGetComponent(out IFactionOwner attacker))
-            return false;
-        
-        Faction attackerFaction = attacker.Faction;
-        Faction targetFaction = target.GetFaction();
-        
-        return attackerFaction != targetFaction;
+        return faction != target.Faction;
+    }
+
+    public void SetFaction(Faction faction)
+    {
+        this.faction = faction;
     }
     
     public void StopAttacking()
@@ -143,7 +154,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability
         attackTarget = null;
     }
     
-    public bool IsInRange(IAttackable target)
+    public bool IsInRange(IDamageable target)
     {
         if (target == null)
             return false;
@@ -159,7 +170,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability
         return distance <= attackRange;
     }
     
-    private void FaceTarget(IAttackable target)
+    private void FaceTarget(IDamageable target)
     {
         Vector3 direction = (target.GetPosition() - transform.position);
         direction.y = 0f;

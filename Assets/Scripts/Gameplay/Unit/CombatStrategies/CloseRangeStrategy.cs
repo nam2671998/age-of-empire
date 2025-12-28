@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy
 {
-    public void ExecuteAttack(IAttackable target, float damage, Transform attackerTransform)
+    public void ExecuteAttack(IDamageable target, float damage, Transform attackerTransform)
     {
         if (target == null || target.IsDestroyed())
             return;
@@ -44,7 +44,7 @@ public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy
         return distance > optimalDistance * 1.2f;
     }
     
-    private void FaceTarget(IAttackable target, Transform attackerTransform)
+    private void FaceTarget(IDamageable target, Transform attackerTransform)
     {
         Vector3 direction = (target.GetPosition() - attackerTransform.position);
         direction.y = 0f;

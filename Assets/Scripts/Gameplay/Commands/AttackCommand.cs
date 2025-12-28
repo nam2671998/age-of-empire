@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class AttackCommand : BaseCommand
 {
-    private IAttackable target;
+    private IDamageable target;
     private float attackRange = 2f;
     private float attackCooldown = 1f;
     private float lastAttackTime = 0f;
     private float chaseRange = 20f;
     
-    public AttackCommand(IAttackable target, float attackRange = 2f, float attackCooldown = 1f)
+    public AttackCommand(IDamageable target, float attackRange = 2f, float attackCooldown = 1f)
     {
         this.target = target;
         this.attackRange = attackRange;
@@ -97,7 +97,7 @@ public class AttackCommand : BaseCommand
         return $"Attack {target.GetGameObject().name}";
     }
     
-    public IAttackable GetTarget()
+    public IDamageable GetTarget()
     {
         return target;
     }

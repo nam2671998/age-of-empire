@@ -1,25 +1,38 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Health))]
 public class BuildableConstruction : MonoBehaviour, IBuildable
 {
     [SerializeField] private Transform[] buildPositionTransforms;
-    [SerializeField] private int maxHealth = 100;
-    [SerializeField] private bool maxHealthOnStart;
     [SerializeField] private GameObject[] progressStates;
 
-    private int currentHealth;
+    private Health health;
 
-    void Start()
+    private void Awake()
     {
-        if (!maxHealthOnStart)
+        health = GetComponent<Health>();
+    }
+
+    private void Start()
+    {
+        if (health != null)
         {
-            currentHealth = 0;
+            health.HealthChanged += OnHealthChanged;
+            OnHealthChanged(health.CurrentHealth, health.MaxHealth);
         }
-        else
+    }
+
+    private void OnDestroy()
+    {
+        if (health != null)
         {
-            currentHealth = 100;
+            health.HealthChanged -= OnHealthChanged;
         }
-        UpdateHealthState();
+    }
+
+    private void OnHealthChanged(float currentHealth, float maxHealth)
+    {
+        UpdateHealthState((int)currentHealth, (int)maxHealth);
     }
 
     public bool Build(float percentage)
@@ -27,14 +40,14 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         if (IsComplete())
             return false;
             
-        int built = Mathf.RoundToInt(maxHealth * percentage);
-        currentHealth = Mathf.Clamp(currentHealth + built, 0, maxHealth);
-        UpdateHealthState();
+        if (health == null) return false;
         
-        Debug.Log($"{gameObject.name} is built and gain {built}. Remaining: {currentHealth}/{maxHealth}");
+        int amount = Mathf.RoundToInt(health.MaxHealth * percentage);
+        health.Heal(amount, null);
         
-        // Handle depletion
-        if (currentHealth >= maxHealth)
+        Debug.Log($"{gameObject.name} is built/repaired by {amount}.");
+
+        if (IsComplete())
         {
             OnComplete();
         }
@@ -66,7 +79,8 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
     public bool IsComplete()
     {
-        return currentHealth >= maxHealth;
+        if (health == null) return false;
+        return health.CurrentHealth >= health.MaxHealth;
     }
 
     private void OnComplete()
@@ -74,7 +88,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         Debug.Log($"{gameObject.name} has been built fully");
     }
 
-    private void UpdateHealthState()
+    private void UpdateHealthState(int currentHealth, int maxHealth)
     {
         if (currentHealth >= maxHealth)
         {

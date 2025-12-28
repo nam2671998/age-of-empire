@@ -146,7 +146,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 326464e984969784ea74f2e45bc7767a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitSelectable
+  selectionMode: 0
   selectionIndicator: {fileID: 1486922837437486655}
+  onSelectedUnit: {fileID: 11400000, guid: 148469852dfc5ed45b6e5d98c28130f0, type: 2}
+  onDeselectedUnit: {fileID: 11400000, guid: a0a26bb3ead4ee84cbb0f2b532d69479, type: 2}
 --- !u!195 &2801304049574457075
 NavMeshAgent:
   m_ObjectHideFlags: 0

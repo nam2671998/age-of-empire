@@ -14,12 +14,12 @@ public class AttackCommandResolver : ICommandResolver
         if (!IsInLayer(hit.collider.gameObject.layer, unitLayer))
             return false;
 
-        return hit.collider.TryGetComponent<IAttackable>(out _);
+        return hit.collider.TryGetComponent<IDamageable>(out _);
     }
 
     public ICommand CreateCommand(RaycastHit hit)
     {
-        if (hit.collider != null && hit.collider.TryGetComponent<IAttackable>(out var attackable))
+        if (hit.collider != null && hit.collider.TryGetComponent<IDamageable>(out var attackable))
             return new AttackCommand(attackable);
 
         return null;

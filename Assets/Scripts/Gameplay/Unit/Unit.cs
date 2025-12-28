@@ -3,16 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(SelectableObject))]
 [RequireComponent(typeof(UnitMovementController))]
 [RequireComponent(typeof(UnitActionStateController))]
-public abstract class Unit : MonoBehaviour, IFactionOwner
+public abstract class Unit : MonoBehaviour
 {
-    [Header("Faction")]
-    [SerializeField] protected Faction faction = Faction.Player1;
-    
     protected UnitMovementController movement;
     protected UnitActionStateController stateManager;
     protected UnitAnimatorController animator;
-    
-    public Faction Faction => faction;
     
     void Awake()
     {
