@@ -1,14 +1,14 @@
 using UnityEngine;
 
-/// <summary>
-/// Component that implements IGameSelectable for easy attachment to GameObjects
-/// </summary>
 public class SelectableObject : MonoBehaviour, IGameSelectable
 {
     [SerializeField] private SelectableSelectionMode selectionMode = SelectableSelectionMode.Both;
+    [SerializeField] private Faction faction;
 
     public bool CanSelectFromClick => selectionMode != SelectableSelectionMode.DragOnly;
     public bool CanSelectFromDrag => selectionMode != SelectableSelectionMode.ClickOnly;
+
+    public Faction Faction => faction;
 
     public virtual void OnSelected()
     {

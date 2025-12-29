@@ -8,6 +8,8 @@ using UnityEngine.Pool;
 /// </summary>
 public class BoxSelection : MonoBehaviour
 {
+    [SerializeField] private Faction selectableFaction = Faction.Player1;
+    
     [Header("Selection Settings")]
     [SerializeField] private Camera selectionCamera;
     [SerializeField] private LayerMask selectableLayerMask = -1; // All layers by default
@@ -192,7 +194,7 @@ public class BoxSelection : MonoBehaviour
         Vector3 halfExtents = new Vector3(halfWidth, 100f, halfDepth);
 
         int hitCount = Physics.OverlapBoxNonAlloc(center, halfExtents, results, Quaternion.identity, selectableLayerMask);
-        HashSet<SelectableObject> found = HashSetPool<SelectableObject>.Get();
+        HashSet<IGameSelectable> found = HashSetPool<IGameSelectable>.Get();
 
         selectedObjects.Clear();
 
@@ -204,8 +206,12 @@ public class BoxSelection : MonoBehaviour
             Collider col = results[i];
             if (col == null)
                 continue;
+            
+            IFactionOwner faction = col.GetComponentInParent<IFactionOwner>();
+            if (faction == null || faction.Faction != selectableFaction)
+                continue;
 
-            SelectableObject selectable = col.GetComponentInParent<SelectableObject>();
+            IGameSelectable selectable = col.GetComponentInParent<IGameSelectable>();
             if (selectable == null)
                 continue;
 
@@ -223,7 +229,7 @@ public class BoxSelection : MonoBehaviour
             selectable.OnSelected();
             Debug.Log($"Selected: {obj.name}", obj);
         }
-        HashSetPool<SelectableObject>.Release(found);
+        HashSetPool<IGameSelectable>.Release(found);
     }
 
     private void SelectNearestObjectAtClick()
@@ -239,7 +245,7 @@ public class BoxSelection : MonoBehaviour
         if (hitCount == 0)
             return;
 
-        SelectableObject bestSelectable = null;
+        IGameSelectable bestSelectable = null;
         float bestDistanceSqr = float.PositiveInfinity;
 
         for (int i = 0; i < hitCount; i++)
@@ -247,8 +253,12 @@ public class BoxSelection : MonoBehaviour
             Collider col = results[i];
             if (col == null)
                 continue;
+            
+            IFactionOwner faction = col.GetComponentInParent<IFactionOwner>();
+            if (faction == null || faction.Faction != selectableFaction)
+                continue;
 
-            SelectableObject selectable = col.GetComponentInParent<SelectableObject>();
+            IGameSelectable selectable = col.GetComponentInParent<IGameSelectable>();
             if (selectable == null)
                 continue;
 

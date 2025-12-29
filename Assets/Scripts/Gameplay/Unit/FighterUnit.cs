@@ -1,6 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(SelectableObject))]
 [RequireComponent(typeof(UnitMovementController))]
 [RequireComponent(typeof(UnitActionStateController))]
 [RequireComponent(typeof(UnitCombatController))]
