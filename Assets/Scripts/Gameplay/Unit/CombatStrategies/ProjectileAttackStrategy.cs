@@ -6,25 +6,36 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy
     private Transform projectileSpawnPoint;
     private float rangeMultiplier = 1.5f;
     private float minDistance = 3f;
+    private float projectileSpawnDelay;
 
-    public ProjectileAttackStrategy(Projectile projectilePrefab, Transform projectileSpawnPoint, float rangeMultiplier = 1.5f, float minDistance = 3f)
+    public ProjectileAttackStrategy(Projectile projectilePrefab, Transform projectileSpawnPoint, float projectileSpawnDelay, float rangeMultiplier = 1.5f, float minDistance = 3f)
     {
         this.projectilePrefab = projectilePrefab;
         this.projectileSpawnPoint = projectileSpawnPoint;
         this.rangeMultiplier = rangeMultiplier;
         this.minDistance = minDistance;
+        this.projectileSpawnDelay = projectileSpawnDelay;
     }
 
-    public void ExecuteAttack(IDamageable target, float damage, Transform attackerTransform)
+    public async void ExecuteAttack(IDamageable target, float damage, Transform attackerTransform)
     {
         if (target == null || target.IsDestroyed())
             return;
 
-        FaceTarget(target, attackerTransform);
+        if (attackerTransform == null)
+            return;
 
-        Vector3 spawnPos = projectileSpawnPoint != null ? projectileSpawnPoint.position : attackerTransform.position;
-        Projectile projectile = Object.Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+        await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt(projectileSpawnDelay * 1000));
         
+        if (target.IsDestroyed())
+            return;
+
+        if (attackerTransform == null)
+            return;
+        
+        Vector3 spawnPos = projectileSpawnPoint != null ? projectileSpawnPoint.position : attackerTransform.position;
+        FaceTarget(target, attackerTransform);
+        Projectile projectile = ObjectPool.Spawn(projectilePrefab, spawnPos, Quaternion.identity);
         Unit attackerUnit = attackerTransform.GetComponent<Unit>();
         projectile.Initialize(target, damage, attackerUnit);
     }

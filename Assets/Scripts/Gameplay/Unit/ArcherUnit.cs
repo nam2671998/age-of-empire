@@ -6,6 +6,7 @@ public class ArcherUnit : Unit, IStopAction
 {
     [SerializeField] private Projectile projectilePrefab;
     [SerializeField] private Transform projectileSpawnPoint;
+    [SerializeField] private float projectileSpawnDelay = 0.33f;
     
     private UnitCombatController combat;
 
@@ -21,7 +22,7 @@ public class ArcherUnit : Unit, IStopAction
         {
             if (projectileSpawnPoint == null) projectileSpawnPoint = transform;
             
-            ProjectileAttackStrategy strategy = new ProjectileAttackStrategy(projectilePrefab, projectileSpawnPoint);
+            ProjectileAttackStrategy strategy = new ProjectileAttackStrategy(projectilePrefab, projectileSpawnPoint, projectileSpawnDelay, 1.5f, 3f);
             combat.SetAttackStrategy(strategy);
             combat.SetDistanceStrategy(strategy);
         }

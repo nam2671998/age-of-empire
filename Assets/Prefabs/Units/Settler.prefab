@@ -110,7 +110,9 @@ GameObject:
   - component: {fileID: 2246458803905955302}
   - component: {fileID: 2424182555354814828}
   - component: {fileID: 1394233975726215313}
-  m_Layer: 0
+  - component: {fileID: 6135093520625226225}
+  - component: {fileID: 5342860060585570997}
+  m_Layer: 7
   m_Name: Settler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -147,6 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitSelectable
   selectionMode: 0
+  faction: 0
   selectionIndicator: {fileID: 1486922837437486655}
   onSelectedUnit: {fileID: 11400000, guid: 148469852dfc5ed45b6e5d98c28130f0, type: 2}
   onDeselectedUnit: {fileID: 11400000, guid: a0a26bb3ead4ee84cbb0f2b532d69479, type: 2}
@@ -187,7 +190,7 @@ MonoBehaviour:
   moveSpeed: 5
   rotationSpeed: 360
   agent: {fileID: 2801304049574457075}
-  animatorController: {fileID: 0}
+  animatorController: {fileID: 1394233975726215313}
 --- !u!114 &8969833996768813364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,6 +215,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 034f04be313d8ab4db59e69092d4da11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitCombatController
+  faction: 0
   attackDamage: 10
   attackRange: 2
   attackCooldown: 1
@@ -270,7 +274,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44949f711e2272843bd535fe29683b9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettlerUnit
-  faction: 0
 --- !u!136 &2424182555354814828
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -319,6 +322,35 @@ MonoBehaviour:
   idleTriggerParameter: Idle
   moveTriggerParameter: Move
   animator: {fileID: 2878571004964691705}
+--- !u!114 &6135093520625226225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3766930393146225059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b688ae28a181c1140aba9d33059f6a07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Health
+  maxHealth: 100
+  startHealth: 100
+  allowRevive: 0
+--- !u!114 &5342860060585570997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3766930393146225059}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d70432c4a105b9488b71e85d548f63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Damageable
+  faction: 0
+  destroyOnDeath: 1
 --- !u!1001 &2878571004957461951
 PrefabInstance:
   m_ObjectHideFlags: 0

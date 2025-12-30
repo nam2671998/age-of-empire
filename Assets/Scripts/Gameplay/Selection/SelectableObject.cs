@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SelectableObject : MonoBehaviour, IGameSelectable
+public class SelectableObject : MonoBehaviour, IGameSelectable, IFactionOwner
 {
     [SerializeField] private SelectableSelectionMode selectionMode = SelectableSelectionMode.Both;
     [SerializeField] private Faction faction;

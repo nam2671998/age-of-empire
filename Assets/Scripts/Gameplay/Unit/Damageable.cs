@@ -66,7 +66,17 @@ public class Damageable : MonoBehaviour, IDamageable
 
     public bool IsDestroyed() => health != null && health.IsDepleted;
 
-    public GameObject GetGameObject() => gameObject;
+    public GameObject GetGameObject()
+    {
+        try
+        {
+            return gameObject;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     public Vector3 GetPosition() => transform.position;
 

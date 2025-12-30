@@ -11,29 +11,44 @@ public class Projectile : MonoBehaviour
     private Vector3 lastKnownPosition;
     private bool initialized = false;
 
+    private void OnEnable()
+    {
+        ResetState();
+    }
+
     public void Initialize(IDamageable target, float damage, Unit attacker)
     {
         this.target = target;
         this.damage = damage;
         this.attacker = attacker;
+        initialized = true;
         
         if (target != null)
         {
             lastKnownPosition = target.GetPosition();
         }
-        initialized = true;
+        else
+        {
+            lastKnownPosition = transform.position;
+        }
     }
 
     void Update()
     {
         if (!initialized) return;
 
-        if (target != null && !target.IsDestroyed())
+        if (target == null || target.GetGameObject() == null)
+        {
+            this.Recycle();
+            return;
+        }
+
+        if (!target.IsDestroyed())
         {
             lastKnownPosition = target.GetPosition();
         }
-
         Vector3 direction = (lastKnownPosition - transform.position);
+        direction.y = 0f;
         float distance = direction.magnitude;
 
         if (distance <= hitDistance || distance <= speed * Time.deltaTime)
@@ -42,7 +57,7 @@ public class Projectile : MonoBehaviour
             return;
         }
 
-        transform.position += direction.normalized * (speed * Time.deltaTime);
+        transform.position = transform.position + direction.normalized * (speed * Time.deltaTime);
         
         if (direction != Vector3.zero)
         {
@@ -56,6 +71,15 @@ public class Projectile : MonoBehaviour
         {
             target.TakeDamage(damage, attacker);
         }
-        Destroy(gameObject);
+        this.Recycle();
+    }
+
+    private void ResetState()
+    {
+        initialized = false;
+        target = null;
+        damage = 0f;
+        attacker = null;
+        lastKnownPosition = transform.position;
     }
 }
