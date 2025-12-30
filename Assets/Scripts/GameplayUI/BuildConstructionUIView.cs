@@ -10,7 +10,6 @@ public sealed class BuildConstructionUIView : MonoBehaviour
     [SerializeField] private BuildConstructionUIController controller;
 
     private readonly List<Button> spawnedButtons = new List<Button>();
-    private CanvasGroup panelCanvasGroup;
 
     private void Awake()
     {
@@ -22,11 +21,6 @@ public sealed class BuildConstructionUIView : MonoBehaviour
         if (controller != null)
         {
             controller.Initialize(this);
-        }
-
-        if (uiPanel == gameObject)
-        {
-            uiPanel.TryGetComponent(out panelCanvasGroup);
         }
 
         SetPanelVisible(false);
@@ -54,14 +48,6 @@ public sealed class BuildConstructionUIView : MonoBehaviour
         if (uiPanel != gameObject)
         {
             uiPanel.SetActive(visible);
-            return;
-        }
-
-        if (panelCanvasGroup != null)
-        {
-            panelCanvasGroup.alpha = visible ? 1f : 0f;
-            panelCanvasGroup.interactable = visible;
-            panelCanvasGroup.blocksRaycasts = visible;
         }
     }
 
@@ -80,14 +66,13 @@ public sealed class BuildConstructionUIView : MonoBehaviour
             Button button = Instantiate(buildOptionButtonPrefab, buildOptionsContainer);
             button.gameObject.SetActive(true);
             spawnedButtons.Add(button);
-
-            Text text = button.GetComponentInChildren<Text>();
-            if (text != null)
+            
+            BuildConstructionButton buildButton = button.GetComponent<BuildConstructionButton>();
+            if (buildButton == null)
             {
-                text.text = localOption.displayName;
+                buildButton = button.gameObject.AddComponent<BuildConstructionButton>();
             }
-
-            button.onClick.AddListener(() => OnBuildOptionClicked(localOption.id));
+            buildButton.Initialize(controller, localOption.id, localOption.displayName);
         }
     }
 
@@ -104,20 +89,12 @@ public sealed class BuildConstructionUIView : MonoBehaviour
         spawnedButtons.Clear();
     }
 
-    private void OnBuildOptionClicked(int buildingId)
-    {
-        if (controller != null)
-        {
-            controller.SelectBuildOption(buildingId);
-        }
-    }
-
     private static List<BuildOption> GetFakeBuildOptions()
     {
         return new List<BuildOption>
         {
-            new BuildOption(1, "House"),
-            new BuildOption(2, "Barracks"),
+            new BuildOption(1001001, "Barrack"),
+            new BuildOption(1001002, "Archery"),
         };
     }
 
@@ -133,4 +110,3 @@ public sealed class BuildConstructionUIView : MonoBehaviour
         }
     }
 }
-

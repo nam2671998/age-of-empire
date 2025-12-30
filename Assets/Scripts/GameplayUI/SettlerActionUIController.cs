@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class SettlerActionUIController : MonoBehaviour
@@ -9,10 +10,12 @@ public sealed class SettlerActionUIController : MonoBehaviour
 
     private SettlerActionUIView view;
     private SettlerActionUIModel model;
+    private HashSet<CommandExecutor> selectionSet;
 
     private void Awake()
     {
         model = new SettlerActionUIModel();
+        selectionSet = new HashSet<CommandExecutor>();
     }
 
     public void Initialize(SettlerActionUIView view)
@@ -58,7 +61,7 @@ public sealed class SettlerActionUIController : MonoBehaviour
 
     public void RequestOpenBuildConstructionUI()
     {
-        if (model.SelectedExecutor == null)
+        if (model.SelectedExecutors.Count == 0)
         {
             return;
         }
@@ -71,21 +74,28 @@ public sealed class SettlerActionUIController : MonoBehaviour
 
     public void AbortCurrentCommand()
     {
-        if (model.SelectedExecutor == null)
+        if (model.SelectedExecutors.Count == 0)
         {
             return;
         }
 
-        model.SelectedExecutor.ClearCommands();
-
-        if (model.SelectedExecutor.TryGetComponent(out IStopAction stopAction))
+        for (int i = 0; i < model.SelectedExecutors.Count; i++)
         {
-            stopAction.StopOtherActions();
-        }
+            CommandExecutor executor = model.SelectedExecutors[i];
+            if (executor == null)
+                continue;
 
-        if (model.SelectedExecutor.TryGetComponent(out UnitActionStateController stateController))
-        {
-            stateController.ResetToIdle();
+            executor.ClearCommands();
+
+            if (executor.TryGetComponent(out IStopAction stopAction))
+            {
+                stopAction.StopOtherActions();
+            }
+
+            if (executor.TryGetComponent(out UnitActionStateController stateController))
+            {
+                stateController.ResetToIdle();
+            }
         }
     }
 
@@ -93,17 +103,31 @@ public sealed class SettlerActionUIController : MonoBehaviour
     {
         if (unitObject == null)
         {
-            model.SelectedExecutor = null;
+            selectionSet.Clear();
+            model.SelectedExecutors.Clear();
             return;
         }
 
-        unitObject.TryGetComponent(out CommandExecutor modelSelectedExecutor);
-        view.SetPanelVisible(modelSelectedExecutor != null);
+        if (!unitObject.TryGetComponent(out CommandExecutor executor) || executor == null)
+        {
+            return;
+        }
+
+        if (selectionSet.Add(executor))
+        {
+            model.SelectedExecutors.Add(executor);
+        }
+
+        if (view != null)
+        {
+            view.SetPanelVisible(model.SelectedExecutors.Count > 0);
+        }
     }
 
     private void OnDeselectedSettler()
     {
-        model.SelectedExecutor = null;
+        selectionSet.Clear();
+        model.SelectedExecutors.Clear();
 
         if (onCloseBuildConstructionUI != null)
         {
@@ -116,4 +140,3 @@ public sealed class SettlerActionUIController : MonoBehaviour
         }
     }
 }
-

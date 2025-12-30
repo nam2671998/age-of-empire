@@ -198,6 +198,7 @@ GameObject:
   - component: {fileID: 5132200848670505203}
   - component: {fileID: 7896757919707121538}
   - component: {fileID: 7292856075640927944}
+  - component: {fileID: 3694908028554164228}
   m_Layer: 9
   m_Name: Archery
   m_TagString: Untagged
@@ -245,10 +246,7 @@ MonoBehaviour:
   - {fileID: 4486204436165659213}
   - {fileID: 5314980727772437592}
   - {fileID: 469938095458028577}
-  progressStates:
-  - {fileID: 5645464838029577146}
-  - {fileID: 6694954751292644039}
-  - {fileID: 8182188537703621577}
+  visualController: {fileID: 3694908028554164228}
 --- !u!65 &6303283349121687938
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -283,6 +281,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConstructionSelectable
   selectionMode: 1
+  faction: 0
   constructionConfig: {fileID: 11400000, guid: bd90b83516542944a86c1a54b9645476, type: 2}
   onSelectedUnitProduceConstruction: {fileID: 11400000, guid: 381ef932aa4bb1d4985374f9b698d021, type: 2}
   selectionIndicator: {fileID: 2494525612247336944}
@@ -332,8 +331,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
   startHealth: 0
-  startDepleted: 1
   allowRevive: 1
+--- !u!114 &3694908028554164228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5295839458366976727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07a949c732b3e2848b88c685c09f02ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConstructionVisualController
+  progressStates:
+  - {fileID: 5645464838029577146}
+  - {fileID: 6694954751292644039}
+  - {fileID: 8182188537703621577}
 --- !u!1 &5868457203298876992
 GameObject:
   m_ObjectHideFlags: 0

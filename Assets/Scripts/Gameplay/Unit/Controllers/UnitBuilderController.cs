@@ -31,11 +31,6 @@ public class UnitBuilderController : MonoBehaviour, IBuildCapability
         {
             s.StopOtherActions();
         }
-        
-        if (target != null && target.GetGameObject() != null && TryGetComponent(out IMovementCapability movement))
-        {
-            movement.MoveTo(target.GetNearestBuildPosition(movement.transform.position), 0);
-        }
     }
 
     public void Build(IBuildable target)

@@ -5,6 +5,11 @@ public class BuildCommand : BaseCommand
     private IBuildable target;
     private float buildCooldown = 1f;
     private float lastBuildTime = 0f;
+    private CommandExecutor reservedExecutor;
+    private Vector3 reservedBuildPosition;
+    private bool hasReservedBuildPosition;
+    private float buildStoppingDistance = 0.25f;
+    private float lastReserveAttemptTime = float.NegativeInfinity;
 
     public BuildCommand(IBuildable target, float buildCooldown = 1f)
     {
@@ -31,6 +36,14 @@ public class BuildCommand : BaseCommand
         {
             buildUnit.SetBuildTarget(target);
             lastBuildTime = Time.time - buildCooldown;
+
+            reservedExecutor = executor;
+            TryReservePosition(executor);
+
+            if (executor.TryGetCapability(out IMovementCapability movement))
+            {
+                movement.MoveTo(reservedBuildPosition, buildStoppingDistance);
+            }
         }
         else
         {
@@ -64,9 +77,17 @@ public class BuildCommand : BaseCommand
             Complete();
             return;
         }
-        
-        Vector3 buildPosition = target.GetNearestBuildPosition(buildUnit.GetGameObject().transform.position);
-        if (buildUnit.IsInRange(target))
+
+        if (!hasReservedBuildPosition && Time.time >= lastReserveAttemptTime + 0.5f)
+        {
+            TryReservePosition(executor);
+        }
+
+        Vector3 unitPosition = movement.transform.position;
+        unitPosition.y = reservedBuildPosition.y;
+        float distance = Vector3.Distance(unitPosition, reservedBuildPosition);
+
+        if (distance <= buildStoppingDistance)
         {
             movement.StopMovement();
             if (Time.time >= lastBuildTime + buildCooldown && buildUnit.CanBuild())
@@ -74,10 +95,12 @@ public class BuildCommand : BaseCommand
                 buildUnit.Build(target);
                 lastBuildTime = Time.time;
             }
+            return;
         }
-        else
+
+        if (!movement.IsMoving)
         {
-            movement.MoveTo(buildPosition, 0);
+            movement.MoveTo(reservedBuildPosition, buildStoppingDistance);
         }
     }
     
@@ -88,11 +111,60 @@ public class BuildCommand : BaseCommand
         {
             buildUnit.StopBuilding();
         }
+
+        ReleaseReservation();
+    }
+
+    protected override void Complete()
+    {
+        ReleaseReservation();
+        base.Complete();
     }
     
     public override string GetDescription()
     {
+        if (target == null || target.GetGameObject() == null)
+        {
+            return "Build (target missing)";
+        }
+
         return $"Build {target.GetGameObject().name}";
+    }
+
+    private void TryReservePosition(CommandExecutor executor)
+    {
+        lastReserveAttemptTime = Time.time;
+
+        if (target != null && target.TryReserveBuildPosition(executor, out Vector3 position))
+        {
+            reservedBuildPosition = position;
+            hasReservedBuildPosition = true;
+            return;
+        }
+
+        if (hasReservedBuildPosition && target != null)
+        {
+            target.ReleaseBuildPosition(executor);
+        }
+
+        hasReservedBuildPosition = false;
+        reservedBuildPosition = target != null ? target.GetNearestBuildPosition(executor.transform.position) : executor.transform.position;
+    }
+
+    private void ReleaseReservation()
+    {
+        if (!hasReservedBuildPosition)
+        {
+            return;
+        }
+
+        if (target != null && !ReferenceEquals(reservedExecutor, null))
+        {
+            target.ReleaseBuildPosition(reservedExecutor);
+        }
+
+        hasReservedBuildPosition = false;
+        reservedExecutor = null;
     }
 }
 

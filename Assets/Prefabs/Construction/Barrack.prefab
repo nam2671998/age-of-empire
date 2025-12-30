@@ -46,8 +46,9 @@ GameObject:
   - component: {fileID: 7859323099909847953}
   - component: {fileID: 6470561381709063609}
   - component: {fileID: 4200843415937479032}
+  - component: {fileID: 4866261017367065606}
   m_Layer: 9
-  m_Name: Barrage
+  m_Name: Barrack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -93,10 +94,7 @@ MonoBehaviour:
   - {fileID: 8422000828700978188}
   - {fileID: 4756030202034479109}
   - {fileID: 3134645940124477922}
-  progressStates:
-  - {fileID: 703200696725309588}
-  - {fileID: 9136094656181628749}
-  - {fileID: 6016454612700094914}
+  visualController: {fileID: 4866261017367065606}
 --- !u!65 &6116625358889534189
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -131,6 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConstructionSelectable
   selectionMode: 1
+  faction: 0
   constructionConfig: {fileID: 11400000, guid: 3f88e976f0f274641a5c2a27bee5194f, type: 2}
   onSelectedUnitProduceConstruction: {fileID: 11400000, guid: 381ef932aa4bb1d4985374f9b698d021, type: 2}
   selectionIndicator: {fileID: 2982640879381324423}
@@ -180,8 +179,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
   startHealth: 0
-  startDepleted: 1
   allowRevive: 1
+--- !u!114 &4866261017367065606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2492220945594999143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07a949c732b3e2848b88c685c09f02ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConstructionVisualController
+  progressStates:
+  - {fileID: 703200696725309588}
+  - {fileID: 9136094656181628749}
+  - {fileID: 6016454612700094914}
 --- !u!1 &2982640879381324423
 GameObject:
   m_ObjectHideFlags: 0

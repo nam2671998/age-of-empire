@@ -1,5 +1,6 @@
+using System.Collections.Generic;
+
 public sealed class BuildConstructionUIModel
 {
-    public bool HasSelectedExecutor { get; set; }
+    public List<CommandExecutor> SelectedExecutors { get; } = new List<CommandExecutor>();
 }
-

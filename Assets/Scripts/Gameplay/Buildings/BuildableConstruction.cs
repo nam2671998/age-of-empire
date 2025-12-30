@@ -1,16 +1,23 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Health))]
+[RequireComponent(typeof(ConstructionVisualController))]
 public class BuildableConstruction : MonoBehaviour, IBuildable
 {
     [SerializeField] private Transform[] buildPositionTransforms;
-    [SerializeField] private GameObject[] progressStates;
+    [SerializeField] private ConstructionVisualController visualController;
 
     private Health health;
+    private ReservationController reservationController;
 
     private void Awake()
     {
         health = GetComponent<Health>();
+        reservationController = new ReservationController(buildPositionTransforms);
+        if (visualController == null)
+        {
+            visualController = GetComponent<ConstructionVisualController>();
+        }
     }
 
     private void Start()
@@ -32,7 +39,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
     private void OnHealthChanged(float currentHealth, float maxHealth)
     {
-        UpdateHealthState((int)currentHealth, (int)maxHealth);
+        visualController.UpdateHealthState((int)currentHealth, (int)maxHealth);
     }
 
     public bool Build(float percentage)
@@ -71,6 +78,30 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
         return nearest.position;
     }
+    
+    public bool TryReserveBuildPosition(CommandExecutor executor, out Vector3 position)
+    {
+        if (reservationController == null)
+        {
+            reservationController = new ReservationController(buildPositionTransforms);
+        }
+        else
+        {
+            reservationController.SetBuildPositionTransforms(buildPositionTransforms);
+        }
+
+        bool reserved = reservationController.TryReservePosition(executor, out position);
+        if (!reserved && !ReferenceEquals(executor, null) && executor != null)
+        {
+            position = GetNearestBuildPosition(executor.transform.position);
+        }
+        return reserved;
+    }
+
+    public void ReleaseBuildPosition(CommandExecutor executor)
+    {
+        reservationController?.ReleasePosition(executor);
+    }
 
     public GameObject GetGameObject()
     {
@@ -86,30 +117,5 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     private void OnComplete()
     {
         Debug.Log($"{gameObject.name} has been built fully");
-    }
-
-    private void UpdateHealthState(int currentHealth, int maxHealth)
-    {
-        if (currentHealth >= maxHealth)
-        {
-            SetCapacityState(2);
-            return;
-        }
-        float amountLeft = currentHealth * 1f / maxHealth;
-        if (amountLeft < 0.5f)
-        {
-            SetCapacityState(0);
-        }
-        else
-        {
-            SetCapacityState(1);
-        }
-    }
-    private void SetCapacityState(int state)
-    {
-        for (int i = 0; i < progressStates.Length; i++)
-        {
-            progressStates[i].SetActive(i == state);
-        }
     }
 }

@@ -1,5 +1,6 @@
+using System.Collections.Generic;
+
 public sealed class SettlerActionUIModel
 {
-    public CommandExecutor SelectedExecutor { get; set; }
+    public List<CommandExecutor> SelectedExecutors { get; } = new List<CommandExecutor>();
 }
-

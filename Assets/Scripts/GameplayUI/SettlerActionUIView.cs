@@ -5,8 +5,6 @@ public sealed class SettlerActionUIView : MonoBehaviour
     [SerializeField] private GameObject uiPanel;
     [SerializeField] private SettlerActionUIController controller;
 
-    private CanvasGroup panelCanvasGroup;
-
     private void Awake()
     {
         if (controller == null)
@@ -19,11 +17,6 @@ public sealed class SettlerActionUIView : MonoBehaviour
             controller.Initialize(this);
         }
 
-        if (uiPanel == gameObject)
-        {
-            uiPanel.TryGetComponent(out panelCanvasGroup);
-        }
-
         SetPanelVisible(false);
     }
 
@@ -32,6 +25,7 @@ public sealed class SettlerActionUIView : MonoBehaviour
         if (controller != null)
         {
             controller.RequestOpenBuildConstructionUI();
+            uiPanel.SetActive(false);
         }
     }
 
@@ -53,14 +47,6 @@ public sealed class SettlerActionUIView : MonoBehaviour
         if (uiPanel != gameObject)
         {
             uiPanel.SetActive(visible);
-            return;
-        }
-
-        if (panelCanvasGroup != null)
-        {
-            panelCanvasGroup.alpha = visible ? 1f : 0f;
-            panelCanvasGroup.interactable = visible;
-            panelCanvasGroup.blocksRaycasts = visible;
         }
     }
 }

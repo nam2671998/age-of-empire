@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
@@ -14,7 +15,8 @@ public class BuildModeController : MonoBehaviour
     private bool isBuildMode;
     private int selectedBuildingId;
     private GameObject previewInstance;
-    private CommandExecutor buildExecutor;
+    private readonly List<CommandExecutor> buildExecutors = new List<CommandExecutor>();
+    private readonly HashSet<CommandExecutor> buildExecutorSet = new HashSet<CommandExecutor>();
 
     private void Awake()
     {
@@ -100,21 +102,22 @@ public class BuildModeController : MonoBehaviour
             return;
         }
 
-        if (unitObject.TryGetComponent(out CommandExecutor executor))
+        if (unitObject.TryGetComponent(out CommandExecutor executor) && executor != null && buildExecutorSet.Add(executor))
         {
-            buildExecutor = executor;
+            buildExecutors.Add(executor);
         }
     }
 
     private void OnDeselectedBuildCapableUnit()
     {
-        buildExecutor = null;
+        buildExecutorSet.Clear();
+        buildExecutors.Clear();
         CancelBuildMode();
     }
 
     private void OnBuildConstructionSelected(int buildingId)
     {
-        if (buildExecutor == null)
+        if (buildExecutors.Count == 0)
         {
             return;
         }
@@ -161,7 +164,6 @@ public class BuildModeController : MonoBehaviour
     {
         isBuildMode = false;
         selectedBuildingId = 0;
-        buildExecutor = null;
 
         if (previewInstance != null)
         {
@@ -211,21 +213,31 @@ public class BuildModeController : MonoBehaviour
         isBuildMode = false;
         selectedBuildingId = 0;
 
-        if (buildExecutor == null)
+        if (buildExecutors.Count == 0)
         {
             Addressables.ReleaseInstance(placed);
             return;
         }
 
-        IBuildable buildable = FindBuildable(placed);
-        if (buildable == null)
+        IBuildable construction = GetConstruction(placed);
+        if (construction == null)
         {
             Addressables.ReleaseInstance(placed);
             return;
         }
 
-        buildExecutor.SetCommand(new BuildCommand(buildable));
-        buildExecutor = null;
+        for (int i = buildExecutors.Count - 1; i >= 0; i--)
+        {
+            CommandExecutor executor = buildExecutors[i];
+            if (executor == null)
+            {
+                buildExecutorSet.Remove(executor);
+                buildExecutors.RemoveAt(i);
+                continue;
+            }
+
+            executor.SetCommand(new BuildCommand(construction));
+        }
     }
 
     private static bool IsPointerOverUI()
@@ -233,22 +245,13 @@ public class BuildModeController : MonoBehaviour
         return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
     }
 
-    private static IBuildable FindBuildable(GameObject root)
+    private static IBuildable GetConstruction(GameObject root)
     {
         if (root == null)
         {
             return null;
         }
 
-        var behaviours = root.GetComponentsInChildren<MonoBehaviour>(true);
-        for (int i = 0; i < behaviours.Length; i++)
-        {
-            if (behaviours[i] is IBuildable buildable)
-            {
-                return buildable;
-            }
-        }
-
-        return null;
+        return root.GetComponentInChildren<IBuildable>(true);
     }
 }

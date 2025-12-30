@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class BuildConstructionUIController : MonoBehaviour
@@ -11,10 +12,12 @@ public sealed class BuildConstructionUIController : MonoBehaviour
 
     private BuildConstructionUIView view;
     private BuildConstructionUIModel model;
+    private HashSet<CommandExecutor> selectionSet;
 
     private void Awake()
     {
         model = new BuildConstructionUIModel();
+        selectionSet = new HashSet<CommandExecutor>();
     }
 
     public void Initialize(BuildConstructionUIView view)
@@ -80,7 +83,7 @@ public sealed class BuildConstructionUIController : MonoBehaviour
 
     public void SelectBuildOption(int buildingId)
     {
-        if (!model.HasSelectedExecutor)
+        if (model.SelectedExecutors.Count == 0)
         {
             return;
         }
@@ -93,12 +96,28 @@ public sealed class BuildConstructionUIController : MonoBehaviour
 
     private void OnSelectedBuildCapableUnit(GameObject unitObject)
     {
-        model.HasSelectedExecutor = unitObject != null && unitObject.TryGetComponent(out CommandExecutor _);
+        if (unitObject == null)
+        {
+            selectionSet.Clear();
+            model.SelectedExecutors.Clear();
+            return;
+        }
+
+        if (!unitObject.TryGetComponent(out CommandExecutor executor) || executor == null)
+        {
+            return;
+        }
+
+        if (selectionSet.Add(executor))
+        {
+            model.SelectedExecutors.Add(executor);
+        }
     }
 
     private void OnDeselectedBuildCapableUnit()
     {
-        model.HasSelectedExecutor = false;
+        selectionSet.Clear();
+        model.SelectedExecutors.Clear();
 
         if (onCancelBuildModeRequested != null)
         {
@@ -132,4 +151,3 @@ public sealed class BuildConstructionUIController : MonoBehaviour
         }
     }
 }
-

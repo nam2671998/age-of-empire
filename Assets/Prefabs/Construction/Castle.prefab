@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 4297366838134524781}
   - component: {fileID: 7697185898420744471}
   - component: {fileID: 1038384530028192491}
+  - component: {fileID: 5601508913136910485}
   m_Layer: 9
   m_Name: Castle
   m_TagString: Untagged
@@ -214,10 +215,7 @@ MonoBehaviour:
   - {fileID: 5820576549756524353}
   - {fileID: 8788484207855450482}
   - {fileID: 5952180954838976258}
-  progressStates:
-  - {fileID: 5078634103339347870}
-  - {fileID: 1136758994365192246}
-  - {fileID: 5170710733286603003}
+  visualController: {fileID: 5601508913136910485}
 --- !u!65 &4704687471461144878
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -252,6 +250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConstructionSelectable
   selectionMode: 1
+  faction: 0
   constructionConfig: {fileID: 11400000, guid: 3d33afbc37a52e24090d9fe24a6ea74b, type: 2}
   onSelectedUnitProduceConstruction: {fileID: 11400000, guid: 381ef932aa4bb1d4985374f9b698d021, type: 2}
   selectionIndicator: {fileID: 930769889424158656}
@@ -301,8 +300,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
   startHealth: 100
-  startDepleted: 0
   allowRevive: 0
+--- !u!114 &5601508913136910485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5557218969983699086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07a949c732b3e2848b88c685c09f02ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ConstructionVisualController
+  progressStates:
+  - {fileID: 5078634103339347870}
+  - {fileID: 1136758994365192246}
+  - {fileID: 5170710733286603003}
 --- !u!1 &6048468352410343724
 GameObject:
   m_ObjectHideFlags: 0

@@ -15,6 +15,21 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 6cd81adcec34c9742a07e3de80c0e7de
   m_SerializeEntries:
+  - m_GUID: 1cc50aac83fe59d4d91d3fcf0be515a7
+    m_Address: Constructions/1001000.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6cef5dc0915fcea409a36f83558eca13
+    m_Address: Constructions/1001002.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 90226afa15723e34fa05c0c5e40505f1
+    m_Address: Constructions/1001001.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ac053b12966b5da498722dabfd3a5916
     m_Address: Units/200100000.prefab
     m_ReadOnly: 0
