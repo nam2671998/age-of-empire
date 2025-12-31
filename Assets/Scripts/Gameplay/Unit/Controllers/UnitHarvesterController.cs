@@ -1,23 +1,34 @@
 using UnityEngine;
 
-public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
+public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 {
-    [Header("Harvest Settings")]
     [SerializeField] private int harvestAmount = 1;
     [SerializeField] private float harvestRange = 1;
     [SerializeField] private float harvestCooldown = 1f;
     [SerializeField] private float findNextRadius = 10f;
-
     [SerializeField] private LayerMask harvestableResourceMask;
-
     [SerializeField] private UnitAnimatorController animator;
-    
+
+    private static readonly IUnitHarvesterControllerState idleState = new UnitHarvesterIdleState();
+    private static readonly IUnitHarvesterControllerState movingToTargetState = new UnitHarvesterMovingToTargetState();
+    private static readonly IUnitHarvesterControllerState harvestingState = new UnitHarvesterHarvestingState();
+    private static readonly IUnitHarvesterControllerState searchingState = new UnitHarvesterSearchingState();
+
     private float lastHarvestTime = 0f;
-    private bool isHarvesting = false;
     private IHarvestable currentTarget;
     private ResourceType currentResourceType;
-    private Collider[] overlapResults = new Collider[32];
-    public bool IsHarvesting => isHarvesting;
+    private IUnitHarvesterControllerState currentState;
+    private IMovementCapability movement;
+
+    public bool IsHarvesting => currentState != null && currentState != idleState;
+    private bool HasValidTarget => currentTarget != null && currentTarget.GetGameObject() != null;
+    private bool IsTargetDepleted => currentTarget != null && currentTarget.IsDepleted();
+
+    private void Awake()
+    {
+        TryGetComponent(out movement);
+        SetState(idleState);
+    }
 
     public void StartHarvest(IHarvestable target)
     {
@@ -34,79 +45,30 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 
         currentTarget = target;
         currentResourceType = target.GetResourceType();
-        isHarvesting = true;
         lastHarvestTime = Time.time - harvestCooldown;
 
-        if (TryGetComponent(out IMovementCapability movement))
-        {
-            movement.MoveTo(target.GetHarvestPosition(), target.GetHarvestRadius());
-        }
+        SetState(movingToTargetState);
     }
 
     public void TickHarvest()
     {
-        if (!isHarvesting)
-            return;
-
-        if (currentTarget == null || currentTarget.GetGameObject() == null)
-        {
-            StopHarvest();
-            return;
-        }
-
-        if (currentTarget.IsDepleted())
-        {
-            OnHarvestCompleted();
-            return;
-        }
-
-        if (!TryGetComponent(out IMovementCapability movement))
-        {
-            StopHarvest();
-            return;
-        }
-
-        if (!IsInRange(currentTarget))
-        {
-            movement.MoveTo(currentTarget.GetHarvestPosition(), currentTarget.GetHarvestRadius());
-            return;
-        }
-
-        movement.StopMovement();
-        if (!CanHarvest())
-            return;
-
-        Harvest(currentTarget);
-        if (currentTarget == null || currentTarget.GetGameObject() == null)
-        {
-            StopHarvest();
-            return;
-        }
-
-        if (currentTarget.IsDepleted())
-        {
-            OnHarvestCompleted();
-        }
+        currentState?.Tick(this);
     }
-    
-    public void SetHarvestTarget(IHarvestable target)
-    {
-        StartHarvest(target);
-    }
-    
-    public bool CanHarvest()
+
+    private bool CanHarvest()
     {
         return Time.time >= lastHarvestTime + harvestCooldown;
     }
 
     public void StopHarvest()
     {
-        isHarvesting = false;
+        movement?.StopMovement();
         currentTarget = null;
         animator.TriggerIdle();
+        SetState(idleState);
     }
 
-    public int Harvest(IHarvestable target)
+    private int Harvest(IHarvestable target)
     {
         if (target == null || target.IsDepleted())
         {
@@ -119,10 +81,8 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         }
         
         FaceTarget(target);
-        int harvested = 0;
-        harvested = target.Harvest(harvestAmount);
+        int harvested = target.Harvest(harvestAmount);
         lastHarvestTime = Time.time;
-        isHarvesting = true;
 
         if (animator != null)
         {
@@ -138,8 +98,8 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         
         return harvested;
     }
-    
-    public bool IsInRange(IHarvestable target)
+
+    private bool IsInRange(IHarvestable target)
     {
         if (target == null)
             return false;
@@ -148,74 +108,25 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         return distance <= harvestRange;
     }
 
-    private void OnHarvestCompleted()
+    private void SetCurrentTarget(IHarvestable target)
     {
-        var next = FindNextHarvestable();
-        if (next == null)
-        {
-            if (TryGetComponent(out IMovementCapability movement))
-            {
-                movement.StopMovement();
-            }
-            StopHarvest();
+        if (target == null)
             return;
-        }
 
-        currentTarget = next;
-        currentResourceType = next.GetResourceType();
-        isHarvesting = true;
-
-        if (TryGetComponent(out IMovementCapability nextMovement))
-        {
-            nextMovement.MoveTo(next.GetHarvestPosition(), next.GetHarvestRadius());
-        }
+        currentTarget = target;
+        currentResourceType = target.GetResourceType();
     }
 
-    private IHarvestable FindNextHarvestable()
+    private void SetState(IUnitHarvesterControllerState nextState)
     {
-        if (currentTarget == null || currentTarget.GetGameObject() == null)
-            return null;
+        if (nextState == null || nextState == currentState)
+            return;
 
-        var currentGo = currentTarget.GetGameObject();
-        int hitCount = Physics.OverlapSphereNonAlloc(transform.position, findNextRadius, overlapResults, harvestableResourceMask);
-
-        IHarvestable best = null;
-        float bestSqrDistance = float.PositiveInfinity;
-
-        for (int i = 0; i < hitCount; i++)
-        {
-            var col = overlapResults[i];
-            if (col == null)
-                continue;
-
-            if (!col.TryGetComponent<IHarvestable>(out var candidate))
-                continue;
-
-            if (candidate == null)
-                continue;
-
-            var candidateGo = candidate.GetGameObject();
-            if (candidateGo == null || candidateGo == currentGo || !candidateGo.activeInHierarchy)
-                continue;
-
-            if (candidate.IsDepleted())
-                continue;
-
-            if (candidate.GetResourceType() != currentResourceType)
-                continue;
-
-            Vector3 candidatePos = candidate.GetHarvestPosition();
-            float sqr = (candidatePos - transform.position).sqrMagnitude;
-            if (sqr < bestSqrDistance)
-            {
-                bestSqrDistance = sqr;
-                best = candidate;
-            }
-        }
-
-        return best;
+        currentState?.Exit(this);
+        currentState = nextState;
+        currentState.Enter(this);
     }
-    
+
     private void FaceTarget(IHarvestable target)
     {
         Vector3 direction = (target.GetPosition() - transform.position);
@@ -227,5 +138,9 @@ public class UnitHarvesterController : MonoBehaviour, IHarvestCapability
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
         }
     }
-}
 
+    private void Idle()
+    {
+        animator.TriggerIdle();
+    }
+}

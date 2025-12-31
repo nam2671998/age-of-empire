@@ -232,7 +232,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitHarvesterController
   harvestAmount: 1
-  harvestRange: 1
+  harvestRange: 2
   harvestCooldown: 1
   findNextRadius: 10
   harvestableResourceMask:

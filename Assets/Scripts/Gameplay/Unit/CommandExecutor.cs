@@ -89,11 +89,5 @@ public class CommandExecutor : MonoBehaviour
     {
         return TryGetComponent(out capability);
     }
-    
-    public T GetCapability<T>() where T : class
-    {
-        TryGetComponent(out T capability);
-        return capability;
-    }
 }
 
