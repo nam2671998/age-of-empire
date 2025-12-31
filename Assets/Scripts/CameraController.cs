@@ -36,7 +36,7 @@ public class CameraController : MonoBehaviour
         currentSpeed = minSpeed;
         if (targetCamera != null)
         {
-            panPosition = targetCamera.transform.position;
+            panPosition = targetCamera.transform.localPosition;
         }
     }
 
@@ -53,7 +53,7 @@ public class CameraController : MonoBehaviour
         ApplyMovement(moveDirection);
         ApplyZoom(Input.mouseScrollDelta.y);
 
-        targetCamera.transform.position = panPosition + GetZoomDirection() * zoomOffset;
+        targetCamera.transform.localPosition = panPosition + GetZoomDirection() * zoomOffset;
     }
     
     private void GetMovementInput(out Vector3 moveDirection, out bool anyKeyHeld)
