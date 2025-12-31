@@ -2,14 +2,11 @@ using UnityEngine;
 
 public class HarvestCommand : BaseCommand
 {
-    private IHarvestable target;
-    private float harvestCooldown = 1f;
-    private float lastHarvestTime = float.NegativeInfinity;
+    private readonly IHarvestable target;
     
-    public HarvestCommand(IHarvestable target, float harvestCooldown = 1f)
+    public HarvestCommand(IHarvestable target)
     {
         this.target = target;
-        this.harvestCooldown = harvestCooldown;
     }
     
     public override void Execute(CommandExecutor executor)
@@ -35,8 +32,7 @@ public class HarvestCommand : BaseCommand
         
         if (executor.TryGetCapability(out IHarvestCapability harvestUnit))
         {
-            harvestUnit.SetHarvestTarget(target);
-            lastHarvestTime = Time.time - harvestCooldown;
+            harvestUnit.StartHarvest(target);
         }
         else
         {
@@ -59,33 +55,10 @@ public class HarvestCommand : BaseCommand
             return;
         }
         
-        if (target == null || target.GetGameObject() == null || target.IsDepleted())
-        {
-            harvestUnit.StopHarvest();
-            Complete();
-            return;
-        }
-        
-        if (!executor.TryGetCapability(out IMovementCapability movement))
+        harvestUnit.TickHarvest();
+        if (!harvestUnit.IsHarvesting)
         {
             Complete();
-            return;
-        }
-        
-        Vector3 harvestPosition = target.GetHarvestPosition();
-        
-        if (harvestUnit.IsInRange(target))
-        {
-            movement.StopMovement();
-            if (Time.time >= lastHarvestTime + harvestCooldown && harvestUnit.CanHarvest())
-            {
-                harvestUnit.Harvest(target);
-                lastHarvestTime = Time.time;
-            }
-        }
-        else
-        {
-            movement.MoveTo(harvestPosition, target.GetHarvestRadius());
         }
     }
     
