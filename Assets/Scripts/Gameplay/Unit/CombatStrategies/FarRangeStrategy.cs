@@ -18,8 +18,6 @@ public class FarRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTarge
         if (target == null || target.IsDestroyed())
             return;
         
-        FaceTarget(target, attackerTransform);
-        
         if (attackerTransform.TryGetComponent(out Unit unit))
         {
             target.TakeDamage(damage, unit);
@@ -77,18 +75,6 @@ public class FarRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTarge
     {
         float distance = Vector3.Distance(currentPosition, targetPosition);
         return distance < minDistance || distance > optimalDistance * 1.2f;
-    }
-    
-    private void FaceTarget(IDamageable target, Transform attackerTransform)
-    {
-        Vector3 direction = (target.GetPosition() - attackerTransform.position);
-        direction.y = 0f;
-        
-        if (direction.magnitude > 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
-            attackerTransform.rotation = Quaternion.RotateTowards(attackerTransform.rotation, targetRotation, 360f * Time.deltaTime);
-        }
     }
 }
 

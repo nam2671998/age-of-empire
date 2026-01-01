@@ -9,8 +9,6 @@ public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTar
         if (target == null || target.IsDestroyed())
             return;
         
-        FaceTarget(target, attackerTransform);
-        
         if (attackerTransform.TryGetComponent(out Unit unit))
         {
             target.TakeDamage(damage, unit);
@@ -68,18 +66,6 @@ public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTar
     {
         float distance = Vector3.Distance(currentPosition, targetPosition);
         return distance > optimalDistance * 1.2f;
-    }
-    
-    private void FaceTarget(IDamageable target, Transform attackerTransform)
-    {
-        Vector3 direction = (target.GetPosition() - attackerTransform.position);
-        direction.y = 0f;
-        
-        if (direction.magnitude > 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
-            attackerTransform.rotation = Quaternion.RotateTowards(attackerTransform.rotation, targetRotation, 360f * Time.deltaTime);
-        }
     }
 }
 

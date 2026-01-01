@@ -41,11 +41,12 @@ public interface IHarvestable
     /// Gets the world position of the harvestable
     /// </summary>
     Vector3 GetPosition();
-    
+
     /// <summary>
     /// Gets the position where a unit should stand when harvesting this resource
     /// </summary>
-    Vector3 GetHarvestPosition();
+    /// <param name="harvestPosition"></param>
+    bool TryGetHarvestPosition(out Vector3 harvestPosition);
     
     /// <summary>
     /// Gets the radius where a unit should stand inside when harvesting this resource

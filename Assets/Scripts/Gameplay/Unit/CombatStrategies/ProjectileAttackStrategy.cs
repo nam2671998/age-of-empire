@@ -36,7 +36,6 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy, INea
             return;
         
         Vector3 spawnPos = projectileSpawnPoint != null ? projectileSpawnPoint.position : attackerTransform.position;
-        FaceTarget(target, attackerTransform);
         Projectile projectile = ObjectPool.Spawn(projectilePrefab, spawnPos, Quaternion.identity);
         Unit attackerUnit = attackerTransform.GetComponent<Unit>();
         projectile.Initialize(target, damage, attackerUnit);
@@ -93,17 +92,5 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy, INea
     {
         float distance = Vector3.Distance(currentPosition, targetPosition);
         return distance < minDistance || distance > optimalDistance * 1.2f;
-    }
-
-    private void FaceTarget(IDamageable target, Transform attackerTransform)
-    {
-        Vector3 direction = (target.GetPosition() - attackerTransform.position);
-        direction.y = 0f;
-        
-        if (direction.magnitude > 0.1f)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
-            attackerTransform.rotation = Quaternion.RotateTowards(attackerTransform.rotation, targetRotation, 360f * Time.deltaTime);
-        }
     }
 }

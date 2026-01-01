@@ -15,7 +15,7 @@ public class MoveCommand : BaseCommand
     
     public override void Execute(CommandExecutor executor)
     {
-        if (executor == null || !executor.TryGetCapability(out IMovementCapability movement))
+        if (executor == null || !executor.TryGetCapability(out IMovementCapability movementOwner))
         {
             Debug.LogError("MoveCommand: IMovementCapability not found");
             return;
@@ -24,37 +24,45 @@ public class MoveCommand : BaseCommand
         // Free any previous cell reservation for this unit
         if (GridManager.Instance != null)
         {
-            GridManager.Instance.FreeUnitReservation(executor);
+            GridManager.Instance.FreeUnitReservation(movementOwner);
         }
 
         // Find nearest free cell and reserve it
         if (GridManager.Instance != null)
         {
-            reservedGridCell = GridManager.Instance.FindNearestFreeCell(targetPosition, executor);
-            GridManager.Instance.ReserveCell(reservedGridCell, executor);
+            reservedGridCell = GridManager.Instance.FindNearestFreeCell(targetPosition, movementOwner);
+            GridManager.Instance.ReserveCell(reservedGridCell, movementOwner);
             hasReservedCell = true;
 
             // Update target position to the center of the reserved cell
             targetPosition = GridManager.Instance.GridToWorld(reservedGridCell);
         }
         
-        movement.MoveTo(targetPosition, stoppingDistance);
+        movementOwner.MoveTo(targetPosition, stoppingDistance);
     }
     
     protected override void OnUpdate(CommandExecutor executor)
     {
-        if (executor == null || !executor.TryGetCapability(out IMovementCapability movement))
+        if (executor == null || !executor.TryGetCapability(out IMovementCapability movementOwner))
         {
             Complete();
             return;
         }
 
-        if (!movement.IsMoving)
+        if (!movementOwner.IsMoving)
         {
             Complete();
+            return;
         }
         
-        float distanceToTarget = Vector3.Distance(movement.transform.position, targetPosition);
+        Transform movementOwnerTransform = movementOwner.GetTransform();
+        if (movementOwnerTransform == null)
+        {
+            Complete();
+            return;
+        }
+            
+        float distanceToTarget = Vector3.Distance(movementOwnerTransform.position, targetPosition);
         if (distanceToTarget <= stoppingDistance)
         {
             Complete();
@@ -71,19 +79,19 @@ public class MoveCommand : BaseCommand
         base.Cancel(executor);
         
         // Free the reserved cell when command is cancelled
-        FreeReservedCell(executor);
         
-        if (executor != null && executor.TryGetCapability(out IMovementCapability movement))
+        if (executor != null && executor.TryGetCapability(out IMovementCapability movementOwner))
         {
-            movement.StopMovement();
+            FreeReservedCell(movementOwner);
+            movementOwner.StopMovement();
         }
     }
 
-    private void FreeReservedCell(CommandExecutor executor)
+    private void FreeReservedCell(IMovementCapability movementOwner)
     {
-        if (hasReservedCell && GridManager.Instance != null && executor != null)
+        if (hasReservedCell && GridManager.Instance != null && movementOwner != null)
         {
-            GridManager.Instance.FreeUnitReservation(executor);
+            GridManager.Instance.FreeUnitReservation(movementOwner);
             hasReservedCell = false;
         }
     }

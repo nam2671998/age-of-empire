@@ -4,7 +4,7 @@ using UnityEngine.Pool;
 
 public sealed class SlotReservationController
 {
-    private readonly Dictionary<CommandExecutor, Vector2Int> reservedSlotByExecutor = new Dictionary<CommandExecutor, Vector2Int>();
+    private readonly Dictionary<IMovementCapability, Vector2Int> reservedSlotByExecutor = new Dictionary<IMovementCapability, Vector2Int>();
     private readonly HashSet<Vector2Int> reservedSlots = new HashSet<Vector2Int>();
     private readonly List<Vector2Int> slots = new List<Vector2Int>();
 
@@ -18,23 +18,28 @@ public sealed class SlotReservationController
         InitializeSlots(center, radius, excludeRadius);
     }
 
-    public bool TryReservePosition(CommandExecutor executor, out Vector3 position)
+    public bool TryReservePosition(IMovementCapability movementOwner, out Vector3 position)
     {
         position = Vector3.zero;
-        if (ReferenceEquals(executor, null) || executor == null)
+        if (ReferenceEquals(movementOwner, null))
         {
             return false;
         }
+        Transform movementOwnerTransform = movementOwner.GetTransform();
+        if (movementOwnerTransform == null)
+        {
+            return false;
+        }
+        position = movementOwnerTransform.position;
 
         if (GridManager.Instance == null)
         {
-            position = executor.transform.position;
             return false;
         }
 
         CleanupDestroyedReservations();
 
-        if (reservedSlotByExecutor.TryGetValue(executor, out Vector2Int existingCell))
+        if (reservedSlotByExecutor.TryGetValue(movementOwner, out Vector2Int existingCell))
         {
             position = GridManager.Instance.GridToWorld(existingCell);
             return true;
@@ -42,11 +47,10 @@ public sealed class SlotReservationController
 
         if (slots.Count == 0)
         {
-            position = executor.transform.position;
             return false;
         }
 
-        Vector2Int fromCell = GridManager.Instance.WorldToGrid(executor.transform.position);
+        Vector2Int fromCell = GridManager.Instance.WorldToGrid(position);
         bool found = false;
         Vector2Int result = default;
         int shortestDistance = int.MaxValue;
@@ -75,39 +79,38 @@ public sealed class SlotReservationController
 
         if (!found)
         {
-            position = executor.transform.position;
             return false;
         }
 
-        GridManager.Instance.ReserveCell(result, executor);
+        GridManager.Instance.ReserveCell(result, movementOwner);
         reservedSlots.Add(result);
-        reservedSlotByExecutor[executor] = result;
+        reservedSlotByExecutor[movementOwner] = result;
         position = GridManager.Instance.GridToWorld(result);
         return true;
     }
 
-    public void ReleasePosition(CommandExecutor executor)
+    public void ReleasePosition(IMovementCapability movementOwner)
     {
-        if (ReferenceEquals(executor, null))
+        if (ReferenceEquals(movementOwner, null))
         {
             return;
         }
 
         if (GridManager.Instance == null)
         {
-            if (reservedSlotByExecutor.Remove(executor, out Vector2Int cellToRemove))
+            if (reservedSlotByExecutor.Remove(movementOwner, out Vector2Int cellToRemove))
             {
                 reservedSlots.Remove(cellToRemove);
             }
             return;
         }
 
-        if (reservedSlotByExecutor.Remove(executor, out Vector2Int cell))
+        if (reservedSlotByExecutor.Remove(movementOwner, out Vector2Int cell))
         {
             reservedSlots.Remove(cell);
 
-            CommandExecutor occupant = GridManager.Instance.GetCellReservation(cell);
-            if (occupant == null || occupant == executor)
+            IMovementCapability occupant = GridManager.Instance.GetCellReservation(cell);
+            if (occupant == null || occupant == movementOwner)
             {
                 GridManager.Instance.FreeCell(cell);
             }
@@ -122,7 +125,7 @@ public sealed class SlotReservationController
         }
 
         var cellsToFree = new List<Vector2Int>();
-        var keysToRemove = new List<CommandExecutor>();
+        var keysToRemove = new List<IMovementCapability>();
         foreach (var kvp in reservedSlotByExecutor)
         {
             if (kvp.Key == null)

@@ -11,7 +11,7 @@ public class GridManager : MonoBehaviour
     [Header("Grid Settings")]
     [SerializeField] private float cellSize = 1f;
 
-    private Dictionary<Vector2Int, CommandExecutor> reservedCells = new Dictionary<Vector2Int, CommandExecutor>();
+    private Dictionary<Vector2Int, IMovementCapability> reservedCells = new();
 
     private void Awake()
     {
@@ -28,8 +28,9 @@ public class GridManager : MonoBehaviour
     /// </summary>
     public Vector2Int WorldToGrid(Vector3 worldPosition)
     {
-        int x = Mathf.RoundToInt(worldPosition.x / cellSize);
-        int z = Mathf.RoundToInt(worldPosition.z / cellSize);
+        float half = cellSize * 0.5f;
+        int x = Mathf.RoundToInt((worldPosition.x - half) / cellSize);
+        int z = Mathf.RoundToInt((worldPosition.z - half) / cellSize);
         return new Vector2Int(x, z);
     }
 
@@ -38,7 +39,8 @@ public class GridManager : MonoBehaviour
     /// </summary>
     public Vector3 GridToWorld(Vector2Int gridPosition)
     {
-        return new Vector3(gridPosition.x * cellSize, 0, gridPosition.y * cellSize);
+        float half = cellSize * 0.5f;
+        return new Vector3((gridPosition.x * cellSize) + half, 0, (gridPosition.y * cellSize) + half);
     }
 
     /// <summary>
@@ -46,13 +48,17 @@ public class GridManager : MonoBehaviour
     /// </summary>
     public bool IsCellFree(Vector2Int gridPos)
     {
+        if (reservedCells.ContainsKey(gridPos) && (reservedCells[gridPos] == null || reservedCells[gridPos].GetTransform() == null))
+        {
+            reservedCells.Remove(gridPos);
+        }
         return !reservedCells.ContainsKey(gridPos);
     }
 
     /// <summary>
     /// Finds the nearest free cell to the target position
     /// </summary>
-    public Vector2Int FindNearestFreeCell(Vector3 targetWorldPosition, CommandExecutor requestingUnit = null)
+    public Vector2Int FindNearestFreeCell(Vector3 targetWorldPosition, IMovementCapability requestingUnit = null)
     {
         Vector2Int targetCell = WorldToGrid(targetWorldPosition);
 
@@ -61,7 +67,7 @@ public class GridManager : MonoBehaviour
             return targetCell;
 
         // If the requesting unit already has this cell reserved, use it
-        if (requestingUnit != null && reservedCells.TryGetValue(targetCell, out CommandExecutor occupant))
+        if (requestingUnit != null && reservedCells.TryGetValue(targetCell, out IMovementCapability occupant))
         {
             if (occupant == requestingUnit)
                 return targetCell;
@@ -85,7 +91,7 @@ public class GridManager : MonoBehaviour
                         return candidateCell;
 
                     // Check if this cell is reserved by the requesting unit
-                    if (requestingUnit != null && reservedCells.TryGetValue(candidateCell, out CommandExecutor owner))
+                    if (requestingUnit != null && reservedCells.TryGetValue(candidateCell, out IMovementCapability owner))
                     {
                         if (owner == requestingUnit)
                             return candidateCell;
@@ -102,7 +108,7 @@ public class GridManager : MonoBehaviour
     /// <summary>
     /// Reserves a cell for a specific unit
     /// </summary>
-    public bool ReserveCell(Vector2Int gridPos, CommandExecutor unit)
+    public bool ReserveCell(Vector2Int gridPos, IMovementCapability unit)
     {
         if (unit == null)
             return false;
@@ -126,7 +132,7 @@ public class GridManager : MonoBehaviour
     /// <summary>
     /// Frees any cell reserved by a specific unit
     /// </summary>
-    public void FreeUnitReservation(CommandExecutor unit)
+    public void FreeUnitReservation(IMovementCapability unit)
     {
         if (unit == null)
             return;
@@ -148,7 +154,7 @@ public class GridManager : MonoBehaviour
     /// <summary>
     /// Gets the unit that has reserved a specific cell
     /// </summary>
-    public CommandExecutor GetCellReservation(Vector2Int gridPos)
+    public IMovementCapability GetCellReservation(Vector2Int gridPos)
     {
         return reservedCells.GetValueOrDefault(gridPos);
     }

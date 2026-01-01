@@ -19,6 +19,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     private static readonly IUnitHarvesterControllerState depositingState = new UnitHarvesterDepositingState();
 
     private float lastHarvestTime = 0f;
+    private Vector3 currentHarvestPosition = new Vector3(float.MaxValue, float.MaxValue);
     private IHarvestable currentTarget;
     private ResourceType currentResourceType;
     private IUnitHarvesterControllerState currentState;
@@ -132,12 +133,9 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         return harvested;
     }
 
-    private bool IsInRange(IHarvestable target)
+    private bool IsInRange(Vector3 harvestPosition)
     {
-        if (target == null)
-            return false;
-        
-        float distance = Vector3.Distance(transform.position, target.GetHarvestPosition());
+        float distance = Vector3.Distance(transform.position, harvestPosition);
         return distance <= harvestRange;
     }
 
@@ -242,6 +240,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 
     private void FaceTarget(IHarvestable target)
     {
+        movement.SetAutoRotate(false);
         Vector3 direction = (target.GetPosition() - transform.position);
         direction.y = 0f;
         

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
@@ -17,6 +18,18 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
     public bool IsMoving => isMoving;
     public float MoveSpeed => moveSpeed;
 
+    public Transform GetTransform()
+    {
+        try
+        {
+            return transform;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     private void Awake()
     {
         if (agent == null)
@@ -32,6 +45,15 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
         }
 
         ApplyAgentSettings();
+    }
+
+    private void OnDisable()
+    {
+        // Free grid reservations when unit is destroyed
+        if (GridManager.Instance != null)
+        {
+            GridManager.Instance.FreeUnitReservation(this);
+        }
     }
 
     private void ApplyAgentSettings()
@@ -73,6 +95,7 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
         if (!isMoving)
         {
             animatorController.TriggerMove();
+            SetAutoRotate(true);
         }
         isMoving = true;
     }
@@ -163,6 +186,11 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
 
         agent.SetPath(path);
         return true;
+    }
+
+    public void SetAutoRotate(bool auto)
+    {
+        agent.updateRotation = auto;
     }
 }
 

@@ -88,17 +88,17 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
             slotReservationController.InitializeSlots(buildPositionTransforms);
         }
 
-        bool reserved = slotReservationController.TryReservePosition(executor, out position);
-        if (!reserved && !ReferenceEquals(executor, null) && executor != null)
+        bool reserved = slotReservationController.TryReservePosition(executor.GetComponent<IMovementCapability>(), out position);
+        if (!reserved && executor != null)
         {
             position = GetNearestBuildPosition(executor.transform.position);
         }
         return reserved;
     }
 
-    public void ReleaseBuildPosition(CommandExecutor executor)
+    public void ReleaseBuildPosition(IMovementCapability movementOwner)
     {
-        slotReservationController?.ReleasePosition(executor);
+        slotReservationController?.ReleasePosition(movementOwner);
     }
 
     public GameObject GetGameObject()

@@ -8,8 +8,8 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
     [SerializeField] private ResourceType resourceType = ResourceType.Generic;
     [SerializeField] private int maxResources = 100;
     
-    [SerializeField] private Transform harvestPositionTransform;
-    [SerializeField] private float harvestPositionRadius = 1;
+    [SerializeField] private int harvestPositionRadius = 1;
+    [SerializeField] private int occupiedRadius = 1;
 
     [SerializeField] private GameObject[] capacityStates;
     
@@ -67,14 +67,48 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
         return transform.position;
     }
     
-    public Vector3 GetHarvestPosition()
+    public bool TryGetHarvestPosition(out Vector3 harvestPosition)
     {
-        if (harvestPositionTransform != null)
+        Vector2Int center = GridManager.Instance.WorldToGrid(transform.position);
+        for (int r = 1; r <= harvestPositionRadius; r++)
         {
-            return harvestPositionTransform.position;
+            // Top & bottom edges
+            for (int x = -r; x <= r; x++)
+            {
+                var cell = new Vector2Int(center.x + x, center.y + r);
+                if (GridManager.Instance.IsCellFree(cell))
+                {
+                    harvestPosition = GridManager.Instance.GridToWorld(cell);
+                    return true;
+                }
+                cell = new Vector2Int(center.x + x, center.y - r);
+                if (GridManager.Instance.IsCellFree(cell))
+                {
+                    harvestPosition = GridManager.Instance.GridToWorld(cell);
+                    return true;
+                }
+            }
+
+            // Left & right edges (skip corners)
+            for (int y = -r + 1; y <= r - 1; y++)
+            {
+                var cell = new Vector2Int(center.x + r, center.y + y);
+                if (GridManager.Instance.IsCellFree(cell))
+                {
+                    harvestPosition = GridManager.Instance.GridToWorld(cell);
+                    return true;
+                }
+                cell = new Vector2Int(center.x - r, center.y + y);
+                if (GridManager.Instance.IsCellFree(cell))
+                {
+                    harvestPosition = GridManager.Instance.GridToWorld(cell);
+                    return true;
+                }
+            }
         }
-        
-        return transform.position;
+
+        harvestPosition = transform.position;
+        return false;
     }
 
     public float GetHarvestRadius()

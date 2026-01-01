@@ -74,7 +74,7 @@ public partial class UnitHarvesterController
                 if (candidate.GetResourceType() != controller.currentResourceType)
                     continue;
 
-                Vector3 candidatePos = candidate.GetHarvestPosition();
+                Vector3 candidatePos = candidateGo.transform.position;
                 float sqr = (candidatePos - controller.transform.position).sqrMagnitude;
                 if (sqr < shortestDistance)
                 {

@@ -11,7 +11,8 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float chaseRange = 20f;
-    
+
+    private IMovementCapability movementOwner;
     private IDamageable attackTarget;
     private float lastAttackTime;
     private bool isAttacking;
@@ -28,6 +29,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     private void Awake()
     {
         TryGetComponent(out animator);
+        TryGetComponent(out movementOwner);
     }
 
     public void SetAttackStrategy(IAttackStrategy strategy)
@@ -55,12 +57,12 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         
         attackTarget = target;
         
-        if (target != null && target.GetGameObject() != null && !target.IsDestroyed() && TryGetComponent(out IMovementCapability movement))
+        if (target != null && target.GetGameObject() != null && !target.IsDestroyed() && TryGetComponent(out IMovementCapability movementOwner))
         {
             float optimalDistance = distanceStrategy != null
                 ? distanceStrategy.GetOptimalDistance(attackRange)
                 : attackRange * 0.8f;
-            movement.MoveTo(target.GetPosition(), optimalDistance);
+            movementOwner.MoveTo(target.GetPosition(), optimalDistance);
             isAttacking = true;
         }
     }
@@ -90,6 +92,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         }
         
         attackStrategy.ExecuteAttack(target, attackDamage, transform);
+        FaceTarget(target);
         lastAttackTime = Time.time;
         lastTargetPosition = target.GetPosition();
         isAttacking = true;
@@ -177,7 +180,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             return;
         }
 
-        if (!TryGetComponent(out IMovementCapability movement))
+        if (!TryGetComponent(out IMovementCapability movementOwner))
         {
             StopAttacking();
             return;
@@ -187,9 +190,9 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             ? distanceStrategy.GetOptimalDistance(attackRange)
             : attackRange * 0.8f;
 
-        if (!movement.IsMoving)
+        if (!movementOwner.IsMoving)
         {
-            movement.MoveTo(targetPosition, optimalDistance);
+            movementOwner.MoveTo(targetPosition, optimalDistance);
         }
     }
 
@@ -269,6 +272,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     
     private void FaceTarget(IDamageable target)
     {
+        movementOwner.SetAutoRotate(false);
         Vector3 direction = (target.GetPosition() - transform.position);
         direction.y = 0f;
         

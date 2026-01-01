@@ -30,7 +30,7 @@ public partial class UnitHarvesterController
                 return;
             }
 
-            if (!controller.IsInRange(controller.currentTarget))
+            if (!controller.IsInRange(controller.currentHarvestPosition))
             {
                 controller.SetState(movingToTargetState);
                 return;

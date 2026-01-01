@@ -6,6 +6,7 @@ public interface IMovementCapability
     void StopMovement();
     bool IsMoving { get; }
     float MoveSpeed { get; }
-    Transform transform { get; }
+    Transform GetTransform();
+    void SetAutoRotate(bool auto);
 }
 

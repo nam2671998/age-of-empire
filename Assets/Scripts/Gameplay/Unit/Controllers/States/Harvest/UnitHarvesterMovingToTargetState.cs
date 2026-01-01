@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public partial class UnitHarvesterController
 {
     private sealed class UnitHarvesterMovingToTargetState : IUnitHarvesterControllerState
@@ -30,18 +32,24 @@ public partial class UnitHarvesterController
                 return;
             }
 
-            if (controller.IsInRange(controller.currentTarget))
+            if (controller.IsInRange(controller.currentHarvestPosition))
             {
                 controller.movement.StopMovement();
                 controller.SetState(harvestingState);
                 return;
             }
 
-            controller.movement.MoveTo(controller.currentTarget.GetHarvestPosition(), controller.currentTarget.GetHarvestRadius());
+            if (controller.currentTarget.TryGetHarvestPosition(out Vector3 harvestPosition))
+            {
+                controller.currentHarvestPosition = harvestPosition;
+                controller.movement.MoveTo(harvestPosition, 0.1f);
+                GridManager.Instance.ReserveCell(GridManager.Instance.WorldToGrid(harvestPosition), controller.movement);
+            }
         }
 
         void IUnitHarvesterControllerState.Exit(UnitHarvesterController controller)
         {
+            GridManager.Instance.FreeUnitReservation(controller.movement);
         }
     }
 }

@@ -20,7 +20,7 @@ public partial class UnitBuilderController : MonoBehaviour, IBuildCapability
     private float lastReserveAttemptTime = float.NegativeInfinity;
 
     private CommandExecutor executor;
-    private IMovementCapability movement;
+    private IMovementCapability movementOwner;
 
     public bool IsBuilding => currentState != null && currentState != idleState;
     private bool HasValidTarget => currentTarget != null && currentTarget.GetGameObject() != null;
@@ -28,7 +28,7 @@ public partial class UnitBuilderController : MonoBehaviour, IBuildCapability
     private void Awake()
     {
         TryGetComponent(out executor);
-        TryGetComponent(out movement);
+        TryGetComponent(out movementOwner);
         SetState(idleState);
     }
 
@@ -70,7 +70,7 @@ public partial class UnitBuilderController : MonoBehaviour, IBuildCapability
 
     public void StopBuilding()
     {
-        movement?.StopMovement();
+        movementOwner?.StopMovement();
         ReleaseReservation();
         currentTarget = null;
         animator?.TriggerIdle();
@@ -112,7 +112,7 @@ public partial class UnitBuilderController : MonoBehaviour, IBuildCapability
 
         if (hasReservedBuildPosition && executor != null)
         {
-            currentTarget.ReleaseBuildPosition(executor);
+            currentTarget.ReleaseBuildPosition(movementOwner);
             hasReservedBuildPosition = false;
         }
 
@@ -141,12 +141,13 @@ public partial class UnitBuilderController : MonoBehaviour, IBuildCapability
             return;
         }
 
-        currentTarget.ReleaseBuildPosition(executor);
+        currentTarget.ReleaseBuildPosition(movementOwner);
         hasReservedBuildPosition = false;
     }
 
     private void FaceTarget(IBuildable target)
     {
+        movementOwner.SetAutoRotate(false);
         Vector3 direction = target.GetGameObject().transform.position - transform.position;
         direction.y = 0f;
 
