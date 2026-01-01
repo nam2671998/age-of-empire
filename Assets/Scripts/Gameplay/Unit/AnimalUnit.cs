@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Damageable))]
 public class AnimalUnit : Unit, IStopAction
 {
-    private UnitCombatController combat;
+    private ICombatCapability combat;
     private Damageable damageable;
 
     protected override void InitializeComponents()
@@ -18,7 +18,6 @@ public class AnimalUnit : Unit, IStopAction
     {
         if (combat != null)
         {
-            combat.SetFaction(Faction.Neutral);
             CloseRangeStrategy strategy = new CloseRangeStrategy();
             combat.SetAttackStrategy(strategy);
             combat.SetDistanceStrategy(strategy);
@@ -26,7 +25,7 @@ public class AnimalUnit : Unit, IStopAction
 
         if (damageable != null)
         {
-            damageable.OnDamageTaken += OnDamageTaken;
+            damageable.OnDamageTakenHandler += OnDamageTaken;
         }
     }
 
@@ -52,7 +51,7 @@ public class AnimalUnit : Unit, IStopAction
     {
         if (damageable != null)
         {
-            damageable.OnDamageTaken -= OnDamageTaken;
+            damageable.OnDamageTakenHandler -= OnDamageTaken;
         }
     }
 

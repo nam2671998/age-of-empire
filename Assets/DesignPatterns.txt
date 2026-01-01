@@ -1,0 +1,128 @@
+Design Patterns used in Assets/Scripts and Assets/ScriptableObjects
+
+1) Command Pattern (+ Command Queue)
+Feature(s):
+- Unit right-click actions: Move, Attack, Harvest, Build
+Implementation:
+- ICommand + BaseCommand define the command interface/lifecycle:
+  - Assets/Scripts/Gameplay/Commands/ICommand.cs
+  - Assets/Scripts/Gameplay/Commands/BaseCommand.cs
+- Concrete commands implement one intent:
+  - Assets/Scripts/Gameplay/Commands/MoveCommand.cs
+  - Assets/Scripts/Gameplay/Commands/AttackCommand.cs
+  - Assets/Scripts/Gameplay/Commands/HarvestCommand.cs
+  - Assets/Scripts/Gameplay/Commands/BuildCommand.cs
+- CommandExecutor runs a queue and updates the active command each frame:
+  - Assets/Scripts/Gameplay/Unit/CommandExecutor.cs
+- Input resolvers act as a command “factory” from raycast hits:
+  - Assets/Scripts/Gameplay/InputCommandResolver/*.cs
+
+2) Template Method (within Command Pattern)
+Feature(s):
+- Shared “execute/update/cancel/complete” flow for all commands
+Implementation:
+- BaseCommand implements the invariant algorithm and calls hooks:
+  - Execute(...) (abstract)
+  - Update(...) calls OnStart/OnUpdate
+  - Cancel(...) calls OnCancel
+  - Assets/Scripts/Gameplay/Commands/BaseCommand.cs
+
+3) Strategy Pattern
+Feature(s):
+- Combat behavior (melee vs ranged projectile, distance rules)
+Implementation:
+- Interfaces define interchangeable behavior:
+  - Assets/Scripts/Gameplay/Unit/CombatStrategies/IAttackStrategy.cs
+  - Assets/Scripts/Gameplay/Unit/CombatStrategies/IDistanceStrategy.cs
+- Concrete strategies implement those behaviors:
+  - Assets/Scripts/Gameplay/Unit/CombatStrategies/CloseRangeStrategy.cs
+  - Assets/Scripts/Gameplay/Unit/CombatStrategies/FarRangeStrategy.cs
+  - Assets/Scripts/Gameplay/Unit/CombatStrategies/ProjectileAttackStrategy.cs
+- UnitCombatController composes strategies and delegates decisions:
+  - Assets/Scripts/Gameplay/Unit/Controllers/UnitCombatController.cs
+
+4) State Pattern (Harvesting state machine)
+Feature(s):
+- Harvester lifecycle: moving to resource, harvesting, searching next, idle
+Implementation:
+- IUnitHarvesterControllerState represents a harvesting state:
+  - Assets/Scripts/Gameplay/Unit/Controllers/States/Harvest/IUnitHarvesterControllerState.cs
+- UnitHarvesterController holds “current state” and delegates TickHarvest() to it:
+  - Assets/Scripts/Gameplay/Unit/Controllers/UnitHarvesterController.cs
+- Concrete state classes implement Enter/Tick/Exit (via partial files):
+  - Assets/Scripts/Gameplay/Unit/Controllers/States/Harvest/UnitHarvesterIdleState.cs
+  - Assets/Scripts/Gameplay/Unit/Controllers/States/Harvest/UnitHarvesterMovingToTargetState.cs
+  - Assets/Scripts/Gameplay/Unit/Controllers/States/Harvest/UnitHarvesterHarvestingState.cs
+  - Assets/Scripts/Gameplay/Unit/Controllers/States/Harvest/UnitHarvesterSearchingState.cs
+
+5) Observer / Publish-Subscribe (ScriptableObject Event Channels)
+Feature(s):
+- UI and gameplay systems decouple communication (selection, open/close UI, build mode, etc.)
+Implementation:
+- ScriptableObject channels store multicast delegates and expose Register/Unregister/Raise:
+  - Assets/Scripts/Gameplay/Events/EventChannelSO.cs
+  - Assets/Scripts/Gameplay/Events/EventChannelSOGeneric.cs
+- Typed channels derive from EventChannelSO<T>:
+  - Assets/Scripts/Gameplay/Events/*EventChannelSO*.cs
+- Assets under Assets/ScriptableObjects/Events are instances wired in the inspector:
+  - Assets/ScriptableObjects/Events/*.asset
+- Example consumers/producers:
+  - Assets/Scripts/GameplayUI/BuildConstructionUIController.cs
+  - Assets/Scripts/GameplayUI/SettlerActionUIController.cs
+  - Assets/Scripts/GameplayUI/ConstructionInteractionUIController.cs
+  - Assets/Scripts/Gameplay/BuildModeController.cs
+
+6) Singleton (Unity-style scene singleton)
+Feature(s):
+- Global grid reservation/lookup for movement targets
+Implementation:
+- GridManager exposes a static Instance set in Awake:
+  - Assets/Scripts/Gameplay/GridManager.cs
+- Used by movement and command logic for reserving/freeing cells:
+  - Assets/Scripts/Gameplay/Commands/MoveCommand.cs
+  - Assets/Scripts/Gameplay/Unit/CommandExecutor.cs
+
+7) Object Pool Pattern
+Feature(s):
+- Reuse projectile GameObjects instead of instantiating every attack
+Implementation:
+- ObjectPool provides Spawn/Despawn style APIs:
+  - Assets/Scripts/ObjectPool.cs
+- ProjectileAttackStrategy spawns pooled projectiles:
+  - Assets/Scripts/Gameplay/Unit/CombatStrategies/ProjectileAttackStrategy.cs
+- Projectile resets itself on enable and is re-initialized per shot:
+  - Assets/Scripts/Gameplay/Unit/Projectile.cs
+
+8) Collection Pooling (UnityEngine.Pool)
+Feature(s):
+- Reduce allocations during selection/command issue loops
+Implementation:
+- InputCommandResolverController uses ListPool<T> when gathering selected objects:
+  - Assets/Scripts/Gameplay/InputCommandResolver/InputCommandResolverController.cs
+
+9) MVC-style UI (Controller/View/Model separation)
+Feature(s):
+- Build construction UI and interaction UI
+Implementation:
+- Controller drives UI behavior and listens to events:
+  - Assets/Scripts/GameplayUI/*UIController.cs
+- View is MonoBehaviour for presentation and user input forwarding:
+  - Assets/Scripts/GameplayUI/*UIView.cs
+- Model is a plain data holder for UI state:
+  - Assets/Scripts/GameplayUI/*UIModel.cs
+- Example set:
+  - Assets/Scripts/GameplayUI/BuildConstructionUIController.cs
+  - Assets/Scripts/GameplayUI/BuildConstructionUIView.cs
+  - Assets/Scripts/GameplayUI/BuildConstructionUIModel.cs
+
+10) Data-Driven Configuration (ScriptableObject “Config Objects”)
+Feature(s):
+- Construction/unit production configuration driven by assets (no hardcoding IDs in code paths)
+Implementation:
+- Abstract base config:
+  - Assets/Scripts/Config/Construction/ConstructionConfig.cs
+- Concrete config assets via CreateAssetMenu:
+  - Assets/Scripts/Config/Construction/UnitProduceConstructionConfig.cs
+- Instances stored as assets:
+  - Assets/ScriptableObjects/Configs/Construction/*.asset
+

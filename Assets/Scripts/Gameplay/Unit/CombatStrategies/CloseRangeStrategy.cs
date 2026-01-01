@@ -1,8 +1,10 @@
 using UnityEngine;
 
-public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy
+public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTargetFinder
 {
-    public void ExecuteAttack(IDamageable target, float damage, Transform attackerTransform)
+    private static readonly Collider[] overlapResults = new Collider[64];
+
+    public void ExecuteAttack(IDamageable target, int damage, Transform attackerTransform)
     {
         if (target == null || target.IsDestroyed())
             return;
@@ -14,6 +16,43 @@ public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy
             target.TakeDamage(damage, unit);
         }
     }
+
+    public bool TryFindNearbyTarget(Faction attackerFaction, Vector3 origin, float searchRadius, out IDamageable target)
+    {
+        target = null;
+        int count = Physics.OverlapSphereNonAlloc(origin, searchRadius, overlapResults);
+
+        float bestDistanceSqr = float.PositiveInfinity;
+        for (int i = 0; i < count; i++)
+        {
+            Collider col = overlapResults[i];
+            if (col == null)
+            {
+                continue;
+            }
+
+            IDamageable candidate = col.GetComponentInParent<IDamageable>();
+            if (candidate == null || candidate.IsDestroyed() || candidate.GetGameObject() == null)
+            {
+                continue;
+            }
+
+            if (attackerFaction == candidate.Faction)
+            {
+                continue;
+            }
+
+            Vector3 delta = candidate.GetPosition() - origin;
+            float distSqr = delta.sqrMagnitude;
+            if (distSqr < bestDistanceSqr)
+            {
+                bestDistanceSqr = distSqr;
+                target = candidate;
+            }
+        }
+
+        return target != null;
+    }
     
     public bool CanAttack(float lastAttackTime, float attackCooldown)
     {
@@ -23,19 +62,6 @@ public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy
     public float GetOptimalDistance(float baseRange)
     {
         return baseRange * 0.8f;
-    }
-    
-    public Vector3 CalculatePosition(Vector3 targetPosition, Vector3 currentPosition, float optimalDistance)
-    {
-        Vector3 direction = (targetPosition - currentPosition);
-        direction.y = 0f;
-        
-        if (direction.magnitude <= optimalDistance)
-        {
-            return currentPosition;
-        }
-        
-        return targetPosition - direction.normalized * optimalDistance;
     }
     
     public bool ShouldMaintainDistance(Vector3 targetPosition, Vector3 currentPosition, float optimalDistance)

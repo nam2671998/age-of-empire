@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 [RequireComponent(typeof(Health))]
 [RequireComponent(typeof(ConstructionVisualController))]
@@ -6,6 +7,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 {
     [SerializeField] private Transform[] buildPositionTransforms;
     [SerializeField] private ConstructionVisualController visualController;
+    [SerializeField] NavMeshObstacle navMeshObstacle;
 
     private Health health;
     private ReservationController reservationController;
@@ -37,19 +39,19 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         }
     }
 
-    private void OnHealthChanged(float currentHealth, float maxHealth)
+    private void OnHealthChanged(int currentHealth, int maxHealth)
     {
-        visualController.UpdateHealthState((int)currentHealth, (int)maxHealth);
+        visualController.UpdateHealthState(currentHealth, maxHealth);
     }
 
-    public bool Build(float percentage)
+    public bool Build(int progress)
     {
         if (IsComplete())
             return false;
             
         if (health == null) return false;
         
-        int amount = Mathf.RoundToInt(health.MaxHealth * percentage);
+        int amount = Mathf.Clamp(progress, 0, health.MaxHealth - health.CurrentHealth);
         health.Heal(amount, null);
         
         Debug.Log($"{gameObject.name} is built/repaired by {amount}.");
@@ -112,6 +114,16 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     {
         if (health == null) return false;
         return health.CurrentHealth >= health.MaxHealth;
+    }
+
+    public void Preview()
+    {
+        navMeshObstacle.enabled = false;
+    }
+
+    public void Place()
+    {
+        navMeshObstacle.enabled = true;
     }
 
     private void OnComplete()

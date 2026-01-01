@@ -8,7 +8,7 @@ public class ArcherUnit : Unit, IStopAction
     [SerializeField] private Transform projectileSpawnPoint;
     [SerializeField] private float projectileSpawnDelay = 0.33f;
     
-    private UnitCombatController combat;
+    private ICombatCapability combat;
 
     protected override void InitializeComponents()
     {

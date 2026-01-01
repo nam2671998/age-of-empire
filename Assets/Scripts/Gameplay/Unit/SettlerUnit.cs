@@ -8,9 +8,9 @@ using UnityEngine;
 [RequireComponent(typeof(Damageable))]
 public class SettlerUnit : Unit, IStopAction
 {
-    private UnitCombatController combat;
-    private UnitHarvesterController harvester;
-    private UnitBuilderController builder;
+    private ICombatCapability combat;
+    private IHarvestCapability harvester;
+    private IBuildCapability builder;
     
     protected override void InitializeComponents()
     {

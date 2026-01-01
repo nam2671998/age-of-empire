@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
@@ -91,7 +92,7 @@ public class BuildModeController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUI())
         {
-            PlaceAndCommand();
+            PlaceConstruction();
         }
     }
 
@@ -132,11 +133,6 @@ public class BuildModeController : MonoBehaviour
         isBuildMode = true;
         selectedBuildingId = buildingId;
 
-        if (mainCamera == null)
-        {
-            mainCamera = Camera.main;
-        }
-
         string key = $"Constructions/{buildingId}.prefab";
         Addressables.InstantiateAsync(key).Completed += handle =>
         {
@@ -156,12 +152,21 @@ public class BuildModeController : MonoBehaviour
             }
 
             previewInstance = handle.Result;
+            IBuildable construction = GetConstruction(previewInstance);
+            if (construction == null)
+            {
+                Addressables.ReleaseInstance(previewInstance);
+                return;
+            }
+            construction.Preview();
             UpdatePreviewPosition();
         };
     }
 
     public void CancelBuildMode()
     {
+        if (!isBuildMode)
+            return;
         isBuildMode = false;
         selectedBuildingId = 0;
 
@@ -178,17 +183,6 @@ public class BuildModeController : MonoBehaviour
         {
             return;
         }
-
-        if (mainCamera == null)
-        {
-            mainCamera = Camera.main;
-        }
-
-        if (mainCamera == null)
-        {
-            return;
-        }
-
         Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
         Plane plane = new Plane(Vector3.up, Vector3.zero);
         if (!plane.Raycast(ray, out float distance))
@@ -201,7 +195,7 @@ public class BuildModeController : MonoBehaviour
         previewInstance.transform.position = snapped;
     }
 
-    private void PlaceAndCommand()
+    private void PlaceConstruction()
     {
         if (previewInstance == null)
         {
@@ -226,6 +220,7 @@ public class BuildModeController : MonoBehaviour
             return;
         }
 
+        construction.Place();
         for (int i = buildExecutors.Count - 1; i >= 0; i--)
         {
             CommandExecutor executor = buildExecutors[i];

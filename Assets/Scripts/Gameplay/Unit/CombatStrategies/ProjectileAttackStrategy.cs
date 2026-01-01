@@ -1,7 +1,9 @@
 using UnityEngine;
 
-public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy
+public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy, INearbyTargetFinder
 {
+    private static readonly Collider[] overlapResults = new Collider[64];
+
     private Projectile projectilePrefab;
     private Transform projectileSpawnPoint;
     private float rangeMultiplier = 1.5f;
@@ -17,7 +19,7 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy
         this.projectileSpawnDelay = projectileSpawnDelay;
     }
 
-    public async void ExecuteAttack(IDamageable target, float damage, Transform attackerTransform)
+    public async void ExecuteAttack(IDamageable target, int damage, Transform attackerTransform)
     {
         if (target == null || target.IsDestroyed())
             return;
@@ -40,6 +42,43 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy
         projectile.Initialize(target, damage, attackerUnit);
     }
 
+    public bool TryFindNearbyTarget(Faction attackerFaction, Vector3 origin, float searchRadius, out IDamageable target)
+    {
+        target = null;
+        int count = Physics.OverlapSphereNonAlloc(origin, searchRadius, overlapResults);
+
+        float bestDistanceSqr = float.PositiveInfinity;
+        for (int i = 0; i < count; i++)
+        {
+            Collider col = overlapResults[i];
+            if (col == null)
+            {
+                continue;
+            }
+
+            IDamageable candidate = col.GetComponentInParent<IDamageable>();
+            if (candidate == null || candidate.IsDestroyed() || candidate.GetGameObject() == null)
+            {
+                continue;
+            }
+
+            if (attackerFaction == candidate.Faction)
+            {
+                continue;
+            }
+
+            Vector3 delta = candidate.GetPosition() - origin;
+            float distSqr = delta.sqrMagnitude;
+            if (distSqr < bestDistanceSqr)
+            {
+                bestDistanceSqr = distSqr;
+                target = candidate;
+            }
+        }
+
+        return target != null;
+    }
+
     public bool CanAttack(float lastAttackTime, float attackCooldown)
     {
         return Time.time >= lastAttackTime + attackCooldown;
@@ -48,26 +87,6 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy
     public float GetOptimalDistance(float baseRange)
     {
         return baseRange * rangeMultiplier;
-    }
-
-    public Vector3 CalculatePosition(Vector3 targetPosition, Vector3 currentPosition, float optimalDistance)
-    {
-        Vector3 direction = (targetPosition - currentPosition);
-        direction.y = 0f;
-        
-        float currentDistance = direction.magnitude;
-        
-        if (currentDistance >= minDistance && currentDistance <= optimalDistance)
-        {
-            return currentPosition;
-        }
-        
-        if (currentDistance < minDistance)
-        {
-            return currentPosition - direction.normalized * (minDistance - currentDistance);
-        }
-        
-        return targetPosition - direction.normalized * optimalDistance;
     }
 
     public bool ShouldMaintainDistance(Vector3 targetPosition, Vector3 currentPosition, float optimalDistance)

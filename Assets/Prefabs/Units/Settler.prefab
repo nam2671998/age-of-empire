@@ -219,6 +219,7 @@ MonoBehaviour:
   attackDamage: 10
   attackRange: 2
   attackCooldown: 1
+  chaseRange: 20
 --- !u!114 &4793693934113337177
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,8 +252,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 190780fdd2e5d95408c45aac603fa692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitBuilderController
-  buildingPercentage: 0.1
+  buildingPower: 10
   buildCooldown: 1
+  buildStoppingDistance: 0.25
   animator: {fileID: 1394233975726215313}
 --- !u!114 &5392314553581897824
 MonoBehaviour:

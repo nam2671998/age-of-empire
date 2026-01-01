@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Damageable))]
 public class FighterUnit : Unit, IStopAction
 {
-    private UnitCombatController combat;
+    private ICombatCapability combat;
     
     protected override void InitializeComponents()
     {

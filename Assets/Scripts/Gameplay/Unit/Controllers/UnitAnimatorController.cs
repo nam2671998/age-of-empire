@@ -100,54 +100,21 @@ public class UnitAnimatorController : MonoBehaviour
     {
         if (!useAnimator || animator == null || string.IsNullOrEmpty(triggerName))
             return;
-
-        if (animator.parameters != null)
-        {
-            foreach (AnimatorControllerParameter param in animator.parameters)
-            {
-                if (param.name == triggerName && param.type == AnimatorControllerParameterType.Trigger)
-                {
-                    animator.SetTrigger(triggerName);
-                    return;
-                }
-            }
-        }
+        animator.SetTrigger(triggerName);
     }
     
     private void SetAnimatorBool(string parameterName, bool value)
     {
         if (!useAnimator || animator == null || string.IsNullOrEmpty(parameterName))
             return;
-        
-        if (animator.parameters != null)
-        {
-            foreach (AnimatorControllerParameter param in animator.parameters)
-            {
-                if (param.name == parameterName && param.type == AnimatorControllerParameterType.Bool)
-                {
-                    animator.SetBool(parameterName, value);
-                    return;
-                }
-            }
-        }
+        animator.SetBool(parameterName, value);
     }
     
     private void SetAnimatorFloat(string parameterName, float value)
     {
         if (!useAnimator || animator == null || string.IsNullOrEmpty(parameterName))
             return;
-        
-        if (animator.parameters != null)
-        {
-            foreach (AnimatorControllerParameter param in animator.parameters)
-            {
-                if (param.name == parameterName && param.type == AnimatorControllerParameterType.Float)
-                {
-                    animator.SetFloat(parameterName, value);
-                    return;
-                }
-            }
-        }
+        animator.SetFloat(parameterName, value);
     }
 }
 

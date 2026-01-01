@@ -44,7 +44,7 @@ public class BoxSelection : MonoBehaviour
         }
     }
     
-    void Update()
+    void LateUpdate()
     {
         HandleSelectionInput();
         UpdateSelectionBox();
@@ -52,7 +52,7 @@ public class BoxSelection : MonoBehaviour
     
     private void HandleSelectionInput()
     {
-        if (!isSelecting && IsPointerOverUI())
+        if (IsPointerOverUI())
         {
             return;
         }
@@ -325,14 +325,6 @@ public class BoxSelection : MonoBehaviour
     {
         selectedObjectsHolder.Clear();
         selectedObjectsHolder.AddRange(selectedObjects);
-    }
-    
-    /// <summary>
-    /// Clears the current selection
-    /// </summary>
-    public void ClearSelection()
-    {
-        DeselectAll();
     }
 }
 

@@ -1,68 +1,66 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
-public class UnitBuilderController : MonoBehaviour, IBuildCapability
+public partial class UnitBuilderController : MonoBehaviour, IBuildCapability
 {
-    [SerializeField] private float buildingPercentage = 0.1f;
+    [SerializeField] private int buildingPower = 20;
     [SerializeField] private float buildCooldown = 1f;
-    
+    [SerializeField] private float buildStoppingDistance = 0.25f;
     [SerializeField] private UnitAnimatorController animator;
-    
-    private float lastBuildTime = 0f;
-    private bool isBuilding = false;
-    public bool IsBuilding => isBuilding;
-    
-    public void SetHarvestTarget(IHarvestable target)
+
+    private static readonly IUnitBuilderControllerState idleState = new UnitBuilderIdleState();
+    private static readonly IUnitBuilderControllerState movingToTargetState = new UnitBuilderMovingToTargetState();
+    private static readonly IUnitBuilderControllerState buildingState = new UnitBuilderBuildingState();
+
+    private IBuildable currentTarget;
+    private IUnitBuilderControllerState currentState;
+    private float lastBuildTime;
+
+    private Vector3 reservedBuildPosition;
+    private bool hasReservedBuildPosition;
+    private float lastReserveAttemptTime = float.NegativeInfinity;
+
+    private CommandExecutor executor;
+    private IMovementCapability movement;
+
+    public bool IsBuilding => currentState != null && currentState != idleState;
+    private bool HasValidTarget => currentTarget != null && currentTarget.GetGameObject() != null;
+
+    private void Awake()
     {
-        if (target != null && TryGetComponent(out IStopAction s))
-        {
-            s.StopOtherActions();
-        }
-        
-        if (target != null && target.GetGameObject() != null && TryGetComponent(out IMovementCapability movement))
-        {
-            movement.MoveTo(target.GetHarvestPosition(), target.GetHarvestRadius());
-        }
+        TryGetComponent(out executor);
+        TryGetComponent(out movement);
+        SetState(idleState);
     }
 
     public void SetBuildTarget(IBuildable target)
     {
-        if (target != null && TryGetComponent(out IStopAction s))
+        if (target == null || target.GetGameObject() == null || target.IsComplete())
+        {
+            StopBuilding();
+            return;
+        }
+
+        if (TryGetComponent(out IStopAction s))
         {
             s.StopOtherActions();
         }
+
+        currentTarget = target;
+        lastBuildTime = Time.time - buildCooldown;
+        hasReservedBuildPosition = false;
+        lastReserveAttemptTime = float.NegativeInfinity;
+
+        SetState(movingToTargetState);
     }
 
     public void Build(IBuildable target)
     {
-        if (target == null || target.IsComplete())
+        if (target != null && !ReferenceEquals(target, currentTarget))
         {
-            isBuilding = false;
-            return;
+            currentTarget = target;
         }
-        
-        if (!CanBuild())
-        {
-            animator.TriggerIdle();
-            return;
-        }
-        
-        FaceTarget(target);
-        bool progressed = target.Build(buildingPercentage);
-        lastBuildTime = Time.time;
-        isBuilding = true;
 
-        if (animator != null)
-        {
-            if (progressed && !target.IsComplete())
-            {
-                animator.TriggerBuild();
-            }
-            else
-            {
-                animator.TriggerIdle();
-            }
-        }
+        currentState?.Tick(this);
     }
 
     public bool CanBuild()
@@ -72,29 +70,86 @@ public class UnitBuilderController : MonoBehaviour, IBuildCapability
 
     public void StopBuilding()
     {
-        isBuilding = false;
+        movement?.StopMovement();
+        ReleaseReservation();
+        currentTarget = null;
+        animator?.TriggerIdle();
+        SetState(idleState);
     }
 
     public bool IsInRange(IBuildable target)
     {
         if (target == null)
+        {
             return false;
+        }
+
         Vector3 position = transform.position;
-        Vector3 nearestBuildPosition = target.GetNearestBuildPosition(position);
-        position.y = nearestBuildPosition.y;
-        return Vector3.Distance(position, nearestBuildPosition) < 0.01f;
+        position.y = reservedBuildPosition.y;
+        return Vector3.Distance(position, reservedBuildPosition) <= buildStoppingDistance;
     }
 
-    public GameObject GetGameObject()
+    private void SetState(IUnitBuilderControllerState nextState)
     {
-        return gameObject;
+        if (nextState == null || nextState == currentState)
+        {
+            return;
+        }
+
+        currentState?.Exit(this);
+        currentState = nextState;
+        currentState.Enter(this);
+    }
+
+    private bool TryReservePosition()
+    {
+        lastReserveAttemptTime = Time.time;
+
+        if (!HasValidTarget)
+        {
+            return false;
+        }
+
+        if (hasReservedBuildPosition && executor != null)
+        {
+            currentTarget.ReleaseBuildPosition(executor);
+            hasReservedBuildPosition = false;
+        }
+
+        if (executor == null)
+        {
+            reservedBuildPosition = currentTarget.GetNearestBuildPosition(transform.position);
+            return false;
+        }
+
+        bool reserved = currentTarget.TryReserveBuildPosition(executor, out Vector3 position);
+        reservedBuildPosition = position;
+        hasReservedBuildPosition = reserved;
+        return reserved;
+    }
+
+    private void ReleaseReservation()
+    {
+        if (!hasReservedBuildPosition)
+        {
+            return;
+        }
+
+        if (executor == null || !HasValidTarget)
+        {
+            hasReservedBuildPosition = false;
+            return;
+        }
+
+        currentTarget.ReleaseBuildPosition(executor);
+        hasReservedBuildPosition = false;
     }
 
     private void FaceTarget(IBuildable target)
     {
-        Vector3 direction = target.GetGameObject().transform.position - target.GetNearestBuildPosition(transform.position);
+        Vector3 direction = target.GetGameObject().transform.position - transform.position;
         direction.y = 0f;
-        
+
         if (direction.magnitude > 0.1f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);

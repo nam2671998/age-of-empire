@@ -4,38 +4,35 @@ using UnityEngine;
 [RequireComponent(typeof(Health))]
 public class Damageable : MonoBehaviour, IDamageable
 {
-    [Header("Faction")]
-    [SerializeField] private Faction faction = global::Faction.Neutral;
-
+    [SerializeField] private Faction faction = Faction.Neutral;
     [SerializeField] private bool destroyOnDeath = true;
 
-    public event Action OnDeath;
-    public event Action<float> OnHealthChanged;
-    public event Action<Unit> OnDamageTaken;
-    public event Action<float, float> HealthChanged;
-    public event Action<float, Unit> Damaged;
-    public event Action<float> Healed;
-    public event Action<Unit> Depleted;
+    public event Action<Unit> OnDeath;
+    public event Action<Unit> OnDamageTakenHandler;
+    public event Action<int, int> OnHealthChangedHandler;
+    public event Action<int, Unit> OnDamagedHandler;
+    public event Action<int> OnHealedHandler;
 
     private Health health;
 
     public bool IsDead => health != null && health.IsDepleted;
+    public Faction Faction => faction;
 
     private void Awake()
     {
         health = GetComponent<Health>();
         if (health != null)
         {
-            health.HealthChanged += OnUnderlyingHealthChanged;
-            health.Damaged += OnUnderlyingDamaged;
-            health.Healed += OnUnderlyingHealed;
-            health.Depleted += OnUnderlyingDepleted;
+            health.HealthChanged += OnHealthChanged;
+            health.Damaged += OnDamaged;
+            health.Healed += OnHealed;
+            health.Depleted += OnDepleted;
 
-            OnUnderlyingHealthChanged(health.CurrentHealth, health.MaxHealth);
+            OnHealthChanged(health.CurrentHealth, health.MaxHealth);
         }
     }
 
-    public void Heal(float amount)
+    public void Heal(int amount)
     {
         if (health == null)
         {
@@ -45,7 +42,7 @@ public class Damageable : MonoBehaviour, IDamageable
         health.Heal(amount, null);
     }
 
-    public void TakeDamage(float damage, Unit attacker)
+    public void TakeDamage(int damage, Unit attacker)
     {
         if (health == null)
         {
@@ -56,7 +53,7 @@ public class Damageable : MonoBehaviour, IDamageable
 
         if (damage > 0f)
         {
-            OnDamageTaken?.Invoke(attacker);
+            OnDamageTakenHandler?.Invoke(attacker);
         }
     }
 
@@ -80,35 +77,31 @@ public class Damageable : MonoBehaviour, IDamageable
 
     public Vector3 GetPosition() => transform.position;
 
-    public Faction Faction => faction;
-
     public void SetFaction(Faction newFaction)
     {
         faction = newFaction;
     }
 
-    private void OnUnderlyingHealthChanged(float current, float max)
+    private void OnHealthChanged(int current, int max)
     {
-        OnHealthChanged?.Invoke(current);
-        HealthChanged?.Invoke(current, max);
+        OnHealthChangedHandler?.Invoke(current, max);
     }
 
-    private void OnUnderlyingDamaged(float amount, GameObject source)
+    private void OnDamaged(int amount, GameObject source)
     {
         Unit attacker = source != null ? source.GetComponent<Unit>() : null;
-        Damaged?.Invoke(amount, attacker);
+        OnDamagedHandler?.Invoke(amount, attacker);
     }
 
-    private void OnUnderlyingHealed(float amount, GameObject source)
+    private void OnHealed(int amount, GameObject source)
     {
-        Healed?.Invoke(amount);
+        OnHealedHandler?.Invoke(amount);
     }
 
-    private void OnUnderlyingDepleted(GameObject source)
+    private void OnDepleted(GameObject source)
     {
         Unit attacker = source != null ? source.GetComponent<Unit>() : null;
-        Depleted?.Invoke(attacker);
-        OnDeath?.Invoke();
+        OnDeath?.Invoke(attacker);
 
         if (destroyOnDeath)
         {

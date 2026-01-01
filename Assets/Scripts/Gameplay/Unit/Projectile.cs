@@ -6,7 +6,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float hitDistance = 0.5f;
     
     private IDamageable target;
-    private float damage;
+    private int damage;
     private Unit attacker;
     private Vector3 lastKnownPosition;
     private bool initialized = false;
@@ -16,7 +16,7 @@ public class Projectile : MonoBehaviour
         ResetState();
     }
 
-    public void Initialize(IDamageable target, float damage, Unit attacker)
+    public void Initialize(IDamageable target, int damage, Unit attacker)
     {
         this.target = target;
         this.damage = damage;
@@ -78,7 +78,7 @@ public class Projectile : MonoBehaviour
     {
         initialized = false;
         target = null;
-        damage = 0f;
+        damage = 0;
         attacker = null;
         lastKnownPosition = transform.position;
     }
