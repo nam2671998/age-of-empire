@@ -245,8 +245,8 @@ public class BoxSelection : MonoBehaviour
         if (hitCount == 0)
             return;
 
-        IGameSelectable bestSelectable = null;
-        float bestDistanceSqr = float.PositiveInfinity;
+        IGameSelectable closest = null;
+        float shortestDistance = float.PositiveInfinity;
 
         for (int i = 0; i < hitCount; i++)
         {
@@ -270,20 +270,20 @@ public class BoxSelection : MonoBehaviour
             float dz = pos.z - clickWorldPosition.z;
             float distSqr = (dx * dx) + (dz * dz);
 
-            if (distSqr < bestDistanceSqr)
+            if (distSqr < shortestDistance)
             {
-                bestDistanceSqr = distSqr;
-                bestSelectable = selectable;
+                shortestDistance = distSqr;
+                closest = selectable;
             }
         }
 
-        if (bestSelectable == null)
+        if (closest == null)
             return;
 
         selectedObjects.Clear();
-        selectedObjects.Add(bestSelectable);
-        bestSelectable.OnSelected();
-        Debug.Log($"Selected: {bestSelectable.GetGameObject().name}", bestSelectable.GetGameObject());
+        selectedObjects.Add(closest);
+        closest.OnSelected();
+        Debug.Log($"Selected: {closest.GetGameObject().name}", closest.GetGameObject());
     }
     
     private bool IsObjectInSelectionBox(IGameSelectable selectable, float minX, float maxX, float minZ, float maxZ)

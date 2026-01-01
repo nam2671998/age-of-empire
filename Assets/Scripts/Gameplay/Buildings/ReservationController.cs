@@ -51,8 +51,8 @@ public sealed class ReservationController
 
         Vector2Int fromCell = GridManager.Instance.WorldToGrid(executor.transform.position);
         bool found = false;
-        Vector2Int bestCell = default;
-        int bestDistance = int.MaxValue;
+        Vector2Int result = default;
+        int shortestDistance = int.MaxValue;
 
         for (int i = 0; i < edgeSlots.Count; i++)
         {
@@ -69,10 +69,10 @@ public sealed class ReservationController
 
             Vector2Int delta = cell - fromCell;
             int distance = delta.sqrMagnitude;
-            if (distance < bestDistance)
+            if (distance < shortestDistance)
             {
-                bestDistance = distance;
-                bestCell = cell;
+                shortestDistance = distance;
+                result = cell;
                 found = true;
             }
         }
@@ -83,10 +83,10 @@ public sealed class ReservationController
             return false;
         }
 
-        GridManager.Instance.ReserveCell(bestCell, executor);
-        reservedCells.Add(bestCell);
-        reservedCellByExecutor[executor] = bestCell;
-        position = GridManager.Instance.GridToWorld(bestCell);
+        GridManager.Instance.ReserveCell(result, executor);
+        reservedCells.Add(result);
+        reservedCellByExecutor[executor] = result;
+        position = GridManager.Instance.GridToWorld(result);
         return true;
     }
 

@@ -248,6 +248,7 @@ MonoBehaviour:
   - {fileID: 469938095458028577}
   visualController: {fileID: 3694908028554164228}
   navMeshObstacle: {fileID: 7896757919707121538}
+  health: {fileID: 7292856075640927944}
 --- !u!65 &6303283349121687938
 BoxCollider:
   m_ObjectHideFlags: 0

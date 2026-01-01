@@ -19,7 +19,7 @@ public class HarvestCommand : BaseCommand
         
         if (target == null || target.GetGameObject() == null)
         {
-            Debug.LogWarning("HarvestCommand: Target is null or destroyed");
+            Debug.LogError("HarvestCommand: Target is null or destroyed");
             Complete();
             return;
         }
@@ -36,7 +36,7 @@ public class HarvestCommand : BaseCommand
         }
         else
         {
-            Debug.LogWarning($"HarvestCommand: IHarvestUnit capability not found");
+            Debug.LogError($"HarvestCommand: IHarvestUnit capability not found");
             Complete();
         }
     }

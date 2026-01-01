@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
@@ -8,25 +9,36 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     [SerializeField] private float findNextRadius = 10f;
     [SerializeField] private LayerMask harvestableResourceMask;
     [SerializeField] private UnitAnimatorController animator;
+    [SerializeField] private int inventoryCapacity = 10;
 
     private static readonly IUnitHarvesterControllerState idleState = new UnitHarvesterIdleState();
     private static readonly IUnitHarvesterControllerState movingToTargetState = new UnitHarvesterMovingToTargetState();
     private static readonly IUnitHarvesterControllerState harvestingState = new UnitHarvesterHarvestingState();
     private static readonly IUnitHarvesterControllerState searchingState = new UnitHarvesterSearchingState();
+    private static readonly IUnitHarvesterControllerState movingToDepositState = new UnitHarvesterMovingToDepositState();
+    private static readonly IUnitHarvesterControllerState depositingState = new UnitHarvesterDepositingState();
 
     private float lastHarvestTime = 0f;
     private IHarvestable currentTarget;
     private ResourceType currentResourceType;
     private IUnitHarvesterControllerState currentState;
     private IMovementCapability movement;
+    private IFactionOwner factionOwner;
+
+    private readonly Dictionary<ResourceType, int> inventory = new Dictionary<ResourceType, int>();
+    private int inventoryCount;
+    private IResourceHolderConstruction depositTarget;
 
     public bool IsHarvesting => currentState != null && currentState != idleState;
     private bool HasValidTarget => currentTarget != null && currentTarget.GetGameObject() != null;
     private bool IsTargetDepleted => currentTarget != null && currentTarget.IsDepleted();
+    private bool IsInventoryFull => inventoryCapacity > 0 && inventoryCount >= inventoryCapacity;
+    private bool HasValidDepositTarget => depositTarget != null && depositTarget.GetGameObject() != null;
 
     private void Awake()
     {
         TryGetComponent(out movement);
+        TryGetComponent(out factionOwner);
         SetState(idleState);
     }
 
@@ -46,6 +58,15 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         currentTarget = target;
         currentResourceType = target.GetResourceType();
         lastHarvestTime = Time.time - harvestCooldown;
+
+        if (IsInventoryFull)
+        {
+            if (!TryStartDepositing())
+            {
+                StopHarvest();
+            }
+            return;
+        }
 
         SetState(movingToTargetState);
     }
@@ -79,10 +100,22 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         {
             return 0;
         }
-        
+
         FaceTarget(target);
-        int harvested = target.Harvest(harvestAmount);
+        int freeSpace = inventoryCapacity > 0 ? inventoryCapacity - inventoryCount : harvestAmount;
+        if (freeSpace <= 0)
+        {
+            return 0;
+        }
+
+        int requested = Mathf.Min(harvestAmount, freeSpace);
+        int harvested = target.Harvest(requested);
         lastHarvestTime = Time.time;
+
+        if (harvested > 0)
+        {
+            AddToInventory(currentResourceType, harvested);
+        }
 
         if (animator != null)
         {
@@ -115,6 +148,86 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 
         currentTarget = target;
         currentResourceType = target.GetResourceType();
+    }
+
+    private Faction GetFaction()
+    {
+        return factionOwner != null ? factionOwner.Faction : Faction.Neutral;
+    }
+
+    private void AddToInventory(ResourceType type, int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        int freeSpace = inventoryCapacity > 0 ? inventoryCapacity - inventoryCount : amount;
+        if (freeSpace <= 0)
+        {
+            return;
+        }
+
+        int added = inventoryCapacity > 0 ? Mathf.Min(amount, freeSpace) : amount;
+        if (added <= 0)
+        {
+            return;
+        }
+
+        if (!inventory.TryGetValue(type, out int current))
+        {
+            current = 0;
+        }
+
+        inventory[type] = current + added;
+        inventoryCount += added;
+    }
+
+    private bool TryStartDepositing()
+    {
+        if (inventoryCount <= 0)
+        {
+            return false;
+        }
+
+        depositTarget = ResourceHolderConstructionRegistry.GetBestDropoff(GetFaction(), transform.position);
+        if (depositTarget == null || depositTarget.GetGameObject() == null)
+        {
+            depositTarget = null;
+            return false;
+        }
+
+        SetState(movingToDepositState);
+        return true;
+    }
+
+    private bool IsInDepositRange(IResourceHolderConstruction construction)
+    {
+        if (construction == null || construction.GetGameObject() == null)
+        {
+            return false;
+        }
+
+        float radius = Mathf.Max(construction.GetDepositRadius(), 0.01f);
+        Vector3 pos = construction.GetDepositPosition();
+        return Vector3.Distance(transform.position, pos) <= radius;
+    }
+
+    private void DepositAll()
+    {
+        if (inventoryCount <= 0)
+        {
+            return;
+        }
+
+        Faction faction = GetFaction();
+        foreach (var kvp in inventory)
+        {
+            PlayerResourceInventory.Add(faction, kvp.Key, kvp.Value);
+        }
+
+        inventory.Clear();
+        inventoryCount = 0;
     }
 
     private void SetState(IUnitHarvesterControllerState nextState)

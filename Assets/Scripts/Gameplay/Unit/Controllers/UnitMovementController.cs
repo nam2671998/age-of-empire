@@ -70,6 +70,10 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
         }
 
         agent.isStopped = false;
+        if (!isMoving)
+        {
+            animatorController.TriggerMove();
+        }
         isMoving = true;
     }
     
@@ -115,7 +119,7 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
 
         if (agent.pathStatus == NavMeshPathStatus.PathPartial)
         {
-            Debug.LogWarning($"{nameof(UnitMovementController)} could not reach destination (partial path).", this);
+            Debug.LogError("Could not reach destination (partial path).", this);
             Stop();
             return;
         }
@@ -145,14 +149,14 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability
 
         if (!hasPath || path.status == NavMeshPathStatus.PathInvalid)
         {
-            Debug.LogWarning($"{nameof(UnitMovementController)} could not calculate a path to destination.", this);
+            Debug.LogError("Could not calculate a path to destination.", this);
             agent.ResetPath();
             return false;
         }
 
         if (path.status == NavMeshPathStatus.PathPartial)
         {
-            Debug.LogWarning($"{nameof(UnitMovementController)} destination is unreachable (partial path).", this);
+            Debug.LogError("Destination is unreachable (partial path).", this);
             agent.ResetPath();
             return false;
         }

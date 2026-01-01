@@ -12,6 +12,15 @@ public partial class UnitHarvesterController
 
         void IUnitHarvesterControllerState.Tick(UnitHarvesterController controller)
         {
+            if (controller.IsInventoryFull)
+            {
+                if (!controller.TryStartDepositing())
+                {
+                    controller.StopHarvest();
+                }
+                return;
+            }
+
             var next = FindNext(controller);
             if (next == null)
             {
@@ -39,8 +48,8 @@ public partial class UnitHarvesterController
             if (hitCount == 0)
                 return null;
 
-            IHarvestable best = null;
-            float bestSqrDistance = float.PositiveInfinity;
+            IHarvestable result = null;
+            float shortestDistance = float.PositiveInfinity;
             var currentGo = controller.currentTarget != null ? controller.currentTarget.GetGameObject() : null;
 
             for (int i = 0; i < hitCount; i++)
@@ -67,14 +76,14 @@ public partial class UnitHarvesterController
 
                 Vector3 candidatePos = candidate.GetHarvestPosition();
                 float sqr = (candidatePos - controller.transform.position).sqrMagnitude;
-                if (sqr < bestSqrDistance)
+                if (sqr < shortestDistance)
                 {
-                    bestSqrDistance = sqr;
-                    best = candidate;
+                    shortestDistance = sqr;
+                    result = candidate;
                 }
             }
 
-            return best;
+            return result;
         }
     }
 }

@@ -44,7 +44,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     {
         if (target != null && !CanAttackTarget(target))
         {
-            Debug.LogWarning($"{gameObject.name} cannot attack {target.GetGameObject().name} - same faction ({faction})");
+            Debug.Log($"{gameObject.name} cannot attack {target.GetGameObject().name} - same faction ({faction})");
             return;
         }
         
@@ -230,7 +230,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         Vector3 origin = transform.position;
         int count = Physics.OverlapSphereNonAlloc(origin, searchRadius, overlapResults);
 
-        float bestDistanceSqr = float.PositiveInfinity;
+        float shortestDistance = float.PositiveInfinity;
         for (int i = 0; i < count; i++)
         {
             Collider col = overlapResults[i];
@@ -257,9 +257,9 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
 
             Vector3 delta = candidate.GetPosition() - origin;
             float distSqr = delta.sqrMagnitude;
-            if (distSqr < bestDistanceSqr)
+            if (distSqr < shortestDistance)
             {
-                bestDistanceSqr = distSqr;
+                shortestDistance = distSqr;
                 target = candidate;
             }
         }

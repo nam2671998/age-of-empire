@@ -7,14 +7,12 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 {
     [SerializeField] private Transform[] buildPositionTransforms;
     [SerializeField] private ConstructionVisualController visualController;
-    [SerializeField] NavMeshObstacle navMeshObstacle;
-
-    private Health health;
+    [SerializeField] private NavMeshObstacle navMeshObstacle;
+    [SerializeField] private Health health;
     private ReservationController reservationController;
 
     private void Awake()
     {
-        health = GetComponent<Health>();
         reservationController = new ReservationController(buildPositionTransforms);
         if (visualController == null)
         {
@@ -53,8 +51,6 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         
         int amount = Mathf.Clamp(progress, 0, health.MaxHealth - health.CurrentHealth);
         health.Heal(amount, null);
-        
-        Debug.Log($"{gameObject.name} is built/repaired by {amount}.");
 
         if (IsComplete())
         {
@@ -128,6 +124,6 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
     private void OnComplete()
     {
-        Debug.Log($"{gameObject.name} has been built fully");
+        
     }
 }

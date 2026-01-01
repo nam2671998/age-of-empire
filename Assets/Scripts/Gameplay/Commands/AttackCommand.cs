@@ -20,7 +20,7 @@ public class AttackCommand : BaseCommand
         
         if (target == null || target.GetGameObject() == null)
         {
-            Debug.LogWarning("AttackCommand: Target is null or destroyed");
+            Debug.LogError("AttackCommand: Target is null or destroyed");
             Complete();
             return;
         }

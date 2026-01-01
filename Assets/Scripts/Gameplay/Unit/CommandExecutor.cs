@@ -5,19 +5,29 @@ public class CommandExecutor : MonoBehaviour
 {
     private Queue<ICommand> commandQueue = new Queue<ICommand>();
     private ICommand currentCommand = null;
+    private ICommand idleCommand = new IdleCommand();
+
+    private bool IsIdle => currentCommand == null || currentCommand == idleCommand;
     
     void Update()
     {
-        if (currentCommand == null && commandQueue.Count > 0)
+        if (IsIdle)
         {
-            currentCommand = commandQueue.Dequeue();
-            if (currentCommand != null)
+            if (commandQueue.Count > 0)
             {
-                currentCommand.Execute(this);
+                currentCommand = commandQueue.Dequeue();
+                if (!IsIdle)
+                {
+                    currentCommand.Execute(this);
+                }
+            }
+            else
+            {
+                currentCommand = idleCommand;
             }
         }
         
-        if (currentCommand != null)
+        if (!IsIdle)
         {
             currentCommand.Update(this);
             
@@ -27,7 +37,7 @@ public class CommandExecutor : MonoBehaviour
             }
         }
     }
-    
+
     private void OnDisable()
     {
         // Free grid reservations when unit is destroyed
@@ -41,8 +51,13 @@ public class CommandExecutor : MonoBehaviour
     {
         if (command == null)
         {
-            Debug.LogWarning("CommandExecutor: Attempted to enqueue null command");
+            Debug.LogError("CommandExecutor: Attempted to enqueue null command");
             return;
+        }
+
+        if (currentCommand == idleCommand)
+        {
+            currentCommand = null;
         }
         
         commandQueue.Enqueue(command);
@@ -61,6 +76,10 @@ public class CommandExecutor : MonoBehaviour
     
     public void ClearCommands()
     {
+        if (currentCommand == idleCommand)
+        {
+            return;
+        }
         if (currentCommand != null)
         {
             currentCommand.Cancel(this);
@@ -68,21 +87,6 @@ public class CommandExecutor : MonoBehaviour
         }
         
         commandQueue.Clear();
-    }
-    
-    public ICommand GetCurrentCommand()
-    {
-        return currentCommand;
-    }
-    
-    public int GetQueueCount()
-    {
-        return commandQueue.Count;
-    }
-    
-    public bool HasCommands()
-    {
-        return currentCommand != null || commandQueue.Count > 0;
     }
     
     public bool TryGetCapability<T>(out T capability) where T : class

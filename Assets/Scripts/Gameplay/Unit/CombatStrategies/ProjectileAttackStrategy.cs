@@ -47,7 +47,7 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy, INea
         target = null;
         int count = Physics.OverlapSphereNonAlloc(origin, searchRadius, overlapResults);
 
-        float bestDistanceSqr = float.PositiveInfinity;
+        float shortestDistance = float.PositiveInfinity;
         for (int i = 0; i < count; i++)
         {
             Collider col = overlapResults[i];
@@ -69,9 +69,9 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy, INea
 
             Vector3 delta = candidate.GetPosition() - origin;
             float distSqr = delta.sqrMagnitude;
-            if (distSqr < bestDistanceSqr)
+            if (distSqr < shortestDistance)
             {
-                bestDistanceSqr = distSqr;
+                shortestDistance = distSqr;
                 target = candidate;
             }
         }

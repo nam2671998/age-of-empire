@@ -9,6 +9,15 @@ public partial class UnitHarvesterController
 
         void IUnitHarvesterControllerState.Tick(UnitHarvesterController controller)
         {
+            if (controller.IsInventoryFull)
+            {
+                if (!controller.TryStartDepositing())
+                {
+                    controller.StopHarvest();
+                }
+                return;
+            }
+
             if (!controller.HasValidTarget || controller.IsTargetDepleted)
             {
                 controller.SetState(searchingState);
@@ -32,6 +41,14 @@ public partial class UnitHarvesterController
                 return;
 
             int harvested = controller.Harvest(controller.currentTarget);
+            if (controller.IsInventoryFull)
+            {
+                if (!controller.TryStartDepositing())
+                {
+                    controller.StopHarvest();
+                }
+                return;
+            }
 
             if (!controller.HasValidTarget || controller.IsTargetDepleted)
             {

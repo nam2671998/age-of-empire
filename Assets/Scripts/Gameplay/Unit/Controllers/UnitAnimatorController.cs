@@ -79,11 +79,11 @@ public class UnitAnimatorController : MonoBehaviour
         if (!useAnimator || animator == null)
             return;
         
-        UpdateSpeed(speed);
-        SetMoving(state == UnitActionState.Moving);
-        SetAttacking(state == UnitActionState.Attacking);
-        SetHarvesting(state == UnitActionState.Harvesting);
-        SetBuilding(state == UnitActionState.Building);
+        // UpdateSpeed(speed);
+        // SetMoving(state == UnitActionState.Moving);
+        // SetAttacking(state == UnitActionState.Attacking);
+        // SetHarvesting(state == UnitActionState.Harvesting);
+        // SetBuilding(state == UnitActionState.Building);
 
         if (!previousState.HasValue || previousState.Value != state)
         {
