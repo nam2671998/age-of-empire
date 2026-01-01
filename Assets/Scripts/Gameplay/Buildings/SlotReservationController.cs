@@ -1,23 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
-public sealed class ReservationController
+public sealed class SlotReservationController
 {
-    private readonly Dictionary<CommandExecutor, Vector2Int> reservedCellByExecutor = new Dictionary<CommandExecutor, Vector2Int>();
-    private readonly HashSet<Vector2Int> reservedCells = new HashSet<Vector2Int>();
-    private readonly List<Vector2Int> edgeSlots = new List<Vector2Int>();
+    private readonly Dictionary<CommandExecutor, Vector2Int> reservedSlotByExecutor = new Dictionary<CommandExecutor, Vector2Int>();
+    private readonly HashSet<Vector2Int> reservedSlots = new HashSet<Vector2Int>();
+    private readonly List<Vector2Int> slots = new List<Vector2Int>();
 
-    private Transform[] buildPositionTransforms;
-
-    public ReservationController(Transform[] buildPositionTransforms)
+    public SlotReservationController(Transform[] verticesTransforms)
     {
-        this.buildPositionTransforms = buildPositionTransforms;
+        InitializeSlots(verticesTransforms);
     }
-
-    public void SetBuildPositionTransforms(Transform[] buildPositionTransforms)
+    
+    public SlotReservationController(Vector2Int center, int radius, int excludeRadius)
     {
-        this.buildPositionTransforms = buildPositionTransforms;
-        edgeSlots.Clear();
+        InitializeSlots(center, radius, excludeRadius);
     }
 
     public bool TryReservePosition(CommandExecutor executor, out Vector3 position)
@@ -35,15 +33,14 @@ public sealed class ReservationController
         }
 
         CleanupDestroyedReservations();
-        EnsureEdgeSlots();
 
-        if (reservedCellByExecutor.TryGetValue(executor, out Vector2Int existingCell))
+        if (reservedSlotByExecutor.TryGetValue(executor, out Vector2Int existingCell))
         {
             position = GridManager.Instance.GridToWorld(existingCell);
             return true;
         }
 
-        if (edgeSlots.Count == 0)
+        if (slots.Count == 0)
         {
             position = executor.transform.position;
             return false;
@@ -54,10 +51,9 @@ public sealed class ReservationController
         Vector2Int result = default;
         int shortestDistance = int.MaxValue;
 
-        for (int i = 0; i < edgeSlots.Count; i++)
+        foreach (var cell in slots)
         {
-            Vector2Int cell = edgeSlots[i];
-            if (reservedCells.Contains(cell))
+            if (reservedSlots.Contains(cell))
             {
                 continue;
             }
@@ -84,8 +80,8 @@ public sealed class ReservationController
         }
 
         GridManager.Instance.ReserveCell(result, executor);
-        reservedCells.Add(result);
-        reservedCellByExecutor[executor] = result;
+        reservedSlots.Add(result);
+        reservedSlotByExecutor[executor] = result;
         position = GridManager.Instance.GridToWorld(result);
         return true;
     }
@@ -99,18 +95,16 @@ public sealed class ReservationController
 
         if (GridManager.Instance == null)
         {
-            if (reservedCellByExecutor.TryGetValue(executor, out Vector2Int cellToRemove))
+            if (reservedSlotByExecutor.Remove(executor, out Vector2Int cellToRemove))
             {
-                reservedCellByExecutor.Remove(executor);
-                reservedCells.Remove(cellToRemove);
+                reservedSlots.Remove(cellToRemove);
             }
             return;
         }
 
-        if (reservedCellByExecutor.TryGetValue(executor, out Vector2Int cell))
+        if (reservedSlotByExecutor.Remove(executor, out Vector2Int cell))
         {
-            reservedCellByExecutor.Remove(executor);
-            reservedCells.Remove(cell);
+            reservedSlots.Remove(cell);
 
             CommandExecutor occupant = GridManager.Instance.GetCellReservation(cell);
             if (occupant == null || occupant == executor)
@@ -122,14 +116,14 @@ public sealed class ReservationController
 
     private void CleanupDestroyedReservations()
     {
-        if (reservedCellByExecutor.Count == 0)
+        if (reservedSlotByExecutor.Count == 0)
         {
             return;
         }
 
         var cellsToFree = new List<Vector2Int>();
         var keysToRemove = new List<CommandExecutor>();
-        foreach (var kvp in reservedCellByExecutor)
+        foreach (var kvp in reservedSlotByExecutor)
         {
             if (kvp.Key == null)
             {
@@ -138,42 +132,42 @@ public sealed class ReservationController
             }
         }
 
-        for (int i = 0; i < keysToRemove.Count; i++)
+        foreach (var commandExecutor in keysToRemove)
         {
-            reservedCellByExecutor.Remove(keysToRemove[i]);
+            reservedSlotByExecutor.Remove(commandExecutor);
         }
 
-        for (int i = 0; i < cellsToFree.Count; i++)
+        foreach (var cell in cellsToFree)
         {
-            reservedCells.Remove(cellsToFree[i]);
+            reservedSlots.Remove(cell);
             if (GridManager.Instance != null)
             {
-                GridManager.Instance.FreeCell(cellsToFree[i]);
+                GridManager.Instance.FreeCell(cell);
             }
         }
     }
 
-    private void EnsureEdgeSlots()
+    public void InitializeSlots(Transform[] verticesTransforms)
     {
-        edgeSlots.Clear();
+        slots.Clear();
 
-        if (buildPositionTransforms == null || GridManager.Instance == null)
+        if (verticesTransforms == null || GridManager.Instance == null)
         {
             return;
         }
 
-        var vertices = new List<Vector2Int>(buildPositionTransforms.Length);
-        for (int i = 0; i < buildPositionTransforms.Length; i++)
+        List<Vector2Int> vertices = ListPool<Vector2Int>.Get();
+        foreach (var transform in verticesTransforms)
         {
-            var t = buildPositionTransforms[i];
-            if (t != null)
+            if (transform != null)
             {
-                vertices.Add(GridManager.Instance.WorldToGrid(t.position));
+                vertices.Add(GridManager.Instance.WorldToGrid(transform.position));
             }
         }
 
         if (vertices.Count < 2)
         {
+            ListPool<Vector2Int>.Release(vertices);
             return;
         }
 
@@ -182,7 +176,33 @@ public sealed class ReservationController
         {
             Vector2Int a = vertices[i];
             Vector2Int b = vertices[(i + 1) % vertices.Count];
-            GridLineCells.AddLineCells(a, b, unique, edgeSlots, true);
+            GridLineCells.AddLineCells(a, b, unique, slots, true);
+        }
+        ListPool<Vector2Int>.Release(vertices);
+    }
+
+    private void InitializeSlots(Vector2Int center, int radius, int excludeRadius)
+    {
+        slots.Clear();
+
+        if (radius <= excludeRadius)
+            return;
+
+        for (int r = excludeRadius + 1; r <= radius; r++)
+        {
+            // Top & bottom edges
+            for (int x = -r; x <= r; x++)
+            {
+                slots.Add(new Vector2Int(center.x + x, center.y + r));
+                slots.Add(new Vector2Int(center.x + x, center.y - r));
+            }
+
+            // Left & right edges (skip corners)
+            for (int y = -r + 1; y <= r - 1; y++)
+            {
+                slots.Add(new Vector2Int(center.x + r, center.y + y));
+                slots.Add(new Vector2Int(center.x - r, center.y + y));
+            }
         }
     }
 }

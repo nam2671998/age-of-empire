@@ -9,11 +9,11 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     [SerializeField] private ConstructionVisualController visualController;
     [SerializeField] private NavMeshObstacle navMeshObstacle;
     [SerializeField] private Health health;
-    private ReservationController reservationController;
+    private SlotReservationController slotReservationController;
 
     private void Awake()
     {
-        reservationController = new ReservationController(buildPositionTransforms);
+        slotReservationController = new SlotReservationController(buildPositionTransforms);
         if (visualController == null)
         {
             visualController = GetComponent<ConstructionVisualController>();
@@ -79,16 +79,16 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     
     public bool TryReserveBuildPosition(CommandExecutor executor, out Vector3 position)
     {
-        if (reservationController == null)
+        if (slotReservationController == null)
         {
-            reservationController = new ReservationController(buildPositionTransforms);
+            slotReservationController = new SlotReservationController(buildPositionTransforms);
         }
         else
         {
-            reservationController.SetBuildPositionTransforms(buildPositionTransforms);
+            slotReservationController.InitializeSlots(buildPositionTransforms);
         }
 
-        bool reserved = reservationController.TryReservePosition(executor, out position);
+        bool reserved = slotReservationController.TryReservePosition(executor, out position);
         if (!reserved && !ReferenceEquals(executor, null) && executor != null)
         {
             position = GetNearestBuildPosition(executor.transform.position);
@@ -98,7 +98,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
     public void ReleaseBuildPosition(CommandExecutor executor)
     {
-        reservationController?.ReleasePosition(executor);
+        slotReservationController?.ReleasePosition(executor);
     }
 
     public GameObject GetGameObject()
