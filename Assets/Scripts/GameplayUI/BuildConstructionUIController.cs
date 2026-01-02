@@ -88,10 +88,51 @@ public sealed class BuildConstructionUIController : MonoBehaviour
             return;
         }
 
+        Faction faction = GetSelectedFaction();
+        if (!HasEnoughResources(faction, buildingId))
+        {
+            return;
+        }
+
         if (onBuildConstructionSelected != null)
         {
             onBuildConstructionSelected.Raise(buildingId);
         }
+    }
+
+    private Faction GetSelectedFaction()
+    {
+        if (model.SelectedExecutors.Count == 0)
+        {
+            return Faction.Player1;
+        }
+
+        CommandExecutor executor = model.SelectedExecutors[0];
+        if (executor != null && executor.TryGetComponent(out IFactionOwner factionOwner) && factionOwner != null)
+        {
+            return factionOwner.Faction;
+        }
+
+        return Faction.Player1;
+    }
+
+    private static bool HasEnoughResources(Faction faction, int buildingId)
+    {
+        if (!ConfigManager.TryGetConstructionCosts(buildingId, out var costs) || costs == null || costs.Count == 0)
+        {
+            return true;
+        }
+
+        for (int i = 0; i < costs.Count; i++)
+        {
+            var cost = costs[i];
+            if (PlayerResourceInventory.GetAmount(faction, cost.ResourceType) < cost.Amount)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void OnSelectedBuildCapableUnit(GameObject unitObject)

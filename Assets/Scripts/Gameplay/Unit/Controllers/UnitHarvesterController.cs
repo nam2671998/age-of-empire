@@ -10,6 +10,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     [SerializeField] private LayerMask harvestableResourceMask;
     [SerializeField] private UnitAnimatorController animator;
     [SerializeField] private int inventoryCapacity = 10;
+    [SerializeField] private VoidEventChannelSO onResourceInventoryChanged;
 
     private static readonly IUnitHarvesterControllerState idleState = new UnitHarvesterIdleState();
     private static readonly IUnitHarvesterControllerState movingToTargetState = new UnitHarvesterMovingToTargetState();
@@ -226,6 +227,11 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 
         inventory.Clear();
         inventoryCount = 0;
+
+        if (onResourceInventoryChanged != null)
+        {
+            onResourceInventoryChanged.Raise();
+        }
     }
 
     private void SetState(IUnitHarvesterControllerState nextState)

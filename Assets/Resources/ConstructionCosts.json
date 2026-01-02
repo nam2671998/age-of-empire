@@ -1,0 +1,17 @@
+{
+  "constructions": [
+    {
+      "id": 1001001,
+      "costs": [
+        { "type": "Wood", "amount": 175 }
+      ]
+    },
+    {
+      "id": 1001002,
+      "costs": [
+        { "type": "Wood", "amount": 200 },
+        { "type": "Stone", "amount": 50 }
+      ]
+    }
+  ]
+}
