@@ -49,7 +49,14 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
     
     public GameObject GetGameObject()
     {
-        return gameObject;
+        try
+        {
+            return gameObject;
+        }
+        catch
+        {
+            return null;
+        }
     }
     
     public Vector3 GetPosition()

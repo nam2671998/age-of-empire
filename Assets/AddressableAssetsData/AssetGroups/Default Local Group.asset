@@ -15,8 +15,33 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 6cd81adcec34c9742a07e3de80c0e7de
   m_SerializeEntries:
+  - m_GUID: 01d9f1004847a9049840d9adb43d2fac
+    m_Address: Icons/200100000.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 06fe3f9a119c728408b6aab796195892
+    m_Address: Icons/1001003.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 1cc50aac83fe59d4d91d3fcf0be515a7
     m_Address: Constructions/1001000.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 1cf5ea136d6bbef47a67926f0297e878
+    m_Address: Icons/1001001.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 3833bc70f28a67f48923fa9e17738aca
+    m_Address: Icons/1001002.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 605a3a46962016c4cbe0aa4fca41da20
+    m_Address: Icons/200100100.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -35,13 +60,28 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a2fe66a9773112249b76cc3c10951c58
+    m_Address: Icons/1001004.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ac053b12966b5da498722dabfd3a5916
     m_Address: Units/200100000.prefab
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ae8e74c25168cb24ba22cefd4966fe57
+    m_Address: Constructions/1001004.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dd870c99798a5fc499fce6ac052bb01e
     m_Address: Units/200100100.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: efbbac3c5fb55514aadcb0ae7660d57c
+    m_Address: Icons/200100200.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

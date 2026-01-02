@@ -22,7 +22,8 @@ public static class ConfigManager
     {
         new BuildOption(1001001, "Barrack"),
         new BuildOption(1001002, "Archery"),
-        new BuildOption(1001003, "Granary")
+        new BuildOption(1001003, "Granary"),
+        new BuildOption(1001004, "Farm")
     };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]

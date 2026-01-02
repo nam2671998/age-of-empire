@@ -10,6 +10,8 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float maxSpeed = 20f; // Maximum speed when holding keys
     [SerializeField] private float acceleration = 10f; // How fast speed increases per second
     [SerializeField] private bool allowArrowKeyMovement = true;
+    [SerializeField] private bool constrainToMovementBounds = true;
+    [SerializeField] private BoxCollider movementBounds;
 
     [Header("Zoom Settings")]
     [SerializeField] private float zoomStep = 5f;
@@ -50,6 +52,13 @@ public class CameraController : MonoBehaviour
         {
             panPosition = targetCamera.transform.localPosition;
         }
+
+        if (movementBounds == null)
+        {
+            movementBounds = GetComponent<BoxCollider>();
+        }
+
+        ClampPanPositionToBounds();
     }
 
     void Update()
@@ -152,6 +161,7 @@ public class CameraController : MonoBehaviour
         
         // Apply the movement directly to the camera position
         panPosition += movement;
+        ClampPanPositionToBounds();
     }
 
     private void ApplyZoom(float scrollDelta)
@@ -203,6 +213,7 @@ public class CameraController : MonoBehaviour
 
         Vector3 dragMovement = new Vector3(-delta.x, 0f, -delta.y) * middleMouseDragSpeed;
         panPosition += dragMovement;
+        ClampPanPositionToBounds();
     }
 
     private Vector3 GetEdgeScrollDirection()
@@ -236,5 +247,23 @@ public class CameraController : MonoBehaviour
         }
 
         return direction;
+    }
+
+    private void ClampPanPositionToBounds()
+    {
+        if (!constrainToMovementBounds || movementBounds == null)
+        {
+            return;
+        }
+
+        Vector3 center = movementBounds.center;
+        Vector3 halfSize = movementBounds.size * 0.5f;
+        float minX = center.x - halfSize.x;
+        float maxX = center.x + halfSize.x;
+        float minZ = center.z - halfSize.z;
+        float maxZ = center.z + halfSize.z;
+
+        panPosition.x = Mathf.Clamp(panPosition.x, minX, maxX);
+        panPosition.z = Mathf.Clamp(panPosition.z, minZ, maxZ);
     }
 }

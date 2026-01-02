@@ -9,6 +9,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     [SerializeField] private ConstructionVisualController visualController;
     [SerializeField] private NavMeshObstacle navMeshObstacle;
     [SerializeField] private Health health;
+    [SerializeField] private GameObject beingSabotageFx;
     private SlotReservationController slotReservationController;
 
     private void Awake()
@@ -24,9 +25,10 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     {
         if (health != null)
         {
-            health.HealthChanged += OnHealthChanged;
-            OnHealthChanged(health.CurrentHealth, health.MaxHealth);
+            if (health.CurrentHealth < health.MaxHealth)
+                health.HealthChanged += OnBuild;
         }
+        beingSabotageFx.SetActive(false);
     }
 
     private void OnDestroy()
@@ -34,12 +36,23 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         if (health != null)
         {
             health.HealthChanged -= OnHealthChanged;
+            health.HealthChanged -= OnBuild;
         }
     }
 
     private void OnHealthChanged(int currentHealth, int maxHealth)
     {
-        visualController.UpdateHealthState(currentHealth, maxHealth);
+        beingSabotageFx.SetActive(currentHealth < maxHealth);
+    }
+    
+    private void OnBuild(int currentHealth, int maxHealth)
+    {
+        visualController.UpdateBuildState(currentHealth, maxHealth);
+        if (currentHealth >= maxHealth)
+        {
+            health.HealthChanged -= OnBuild;
+            health.HealthChanged += OnHealthChanged;
+        }
     }
 
     public bool Build(int progress)
@@ -103,7 +116,14 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
     public GameObject GetGameObject()
     {
-        return gameObject;
+        try
+        {
+            return gameObject;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public bool IsComplete()

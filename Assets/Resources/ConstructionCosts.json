@@ -3,14 +3,26 @@
     {
       "id": 1001001,
       "costs": [
-        { "type": "Wood", "amount": 175 }
+        { "type": "Wood", "amount": 200 }
       ]
     },
     {
       "id": 1001002,
       "costs": [
-        { "type": "Wood", "amount": 200 },
+        { "type": "Wood", "amount": 300 },
         { "type": "Stone", "amount": 50 }
+      ]
+    },
+    {
+      "id": 1001003,
+      "costs": [
+        { "type": "Wood", "amount": 100 }
+      ]
+    },
+    {
+      "id": 1001004,
+      "costs": [
+        { "type": "Wood", "amount": 20 }
       ]
     }
   ]

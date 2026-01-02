@@ -50,7 +50,7 @@ public sealed class ConstructionInteractionUIController : MonoBehaviour
         }
     }
 
-    public void ProduceFirstUnit()
+    public void SelectProduceUnit(int unitId)
     {
         if (!model.HasSelection)
         {
@@ -59,7 +59,7 @@ public sealed class ConstructionInteractionUIController : MonoBehaviour
 
         if (onStartProduceUnit != null)
         {
-            onStartProduceUnit.Raise(new UnitProducingData(model.SelectedConstructionId, model.FirstUnitId));
+            onStartProduceUnit.Raise(new UnitProducingData(model.SelectedConstructionId, unitId));
         }
     }
 
@@ -68,22 +68,29 @@ public sealed class ConstructionInteractionUIController : MonoBehaviour
         if (constructionConfig == null)
         {
             model.SelectedConstructionId = 0;
-            model.FirstUnitId = 0;
+            model.ProducibleUnitIds = null;
             model.HasSelection = false;
-            view.SetProduceButtonVisible(false);
+            if (view != null)
+            {
+                view.SetProduceButtonVisible(false);
+            }
             return;
         }
 
         model.SelectedConstructionId = constructionConfig.ConstructionId;
-        model.FirstUnitId = constructionConfig.UnitProducible[0];
+        model.ProducibleUnitIds = constructionConfig.UnitProducible;
         model.HasSelection = true;
-        view.SetProduceButtonVisible(true);
+        if (view != null)
+        {
+            view.SetProduceButtonVisible(true);
+            view.RefreshProduceOptions(model.ProducibleUnitIds);
+        }
     }
 
     private void OnDeselectedConstruction(int constructionId)
     {
         model.SelectedConstructionId = 0;
-        model.FirstUnitId = 0;
+        model.ProducibleUnitIds = null;
         model.HasSelection = false;
 
         if (view != null)
@@ -92,4 +99,3 @@ public sealed class ConstructionInteractionUIController : MonoBehaviour
         }
     }
 }
-

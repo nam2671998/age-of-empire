@@ -5,7 +5,7 @@ public sealed class ConstructionVisualController : MonoBehaviour
 {
     [SerializeField] private GameObject[] progressStates;
 
-    public void UpdateHealthState(int currentHealth, int maxHealth)
+    public void UpdateBuildState(int currentHealth, int maxHealth)
     {
         if (maxHealth <= 0)
         {

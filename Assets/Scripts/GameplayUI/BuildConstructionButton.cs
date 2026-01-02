@@ -1,10 +1,11 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
 public sealed class BuildConstructionButton : MonoBehaviour
 {
-    [SerializeField] private TMP_Text textBuilding;
+    [SerializeField] private Image icon;
     private BuildConstructionUIController controller;
     private int buildingId;
 
@@ -12,7 +13,7 @@ public sealed class BuildConstructionButton : MonoBehaviour
     {
         this.controller = controller;
         this.buildingId = buildingId;
-        textBuilding.text = displayName;
+        Addressables.LoadAssetAsync<Sprite>($"Icons/{buildingId}.png").Completed += handle => icon.sprite = handle.Result;
     }
 
     public void OnClick()

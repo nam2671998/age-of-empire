@@ -44,8 +44,11 @@ public partial class UnitHarvesterController
             {
                 controller.currentHarvestPosition = harvestPosition;
                 controller.movementOwner.MoveTo(harvestPosition, 0.1f);
-                GridManager.Instance.ReserveCell(GridManager.Instance.WorldToGrid(harvestPosition), controller.movementOwner);
+                Vector2Int cellPos = GridManager.Instance.WorldToGrid(harvestPosition);
+                GridManager.Instance.ReserveCell(cellPos, controller.movementOwner);
+                return;
             }
+            controller.StopHarvest();
         }
 
         void IUnitHarvesterControllerState.Exit(UnitHarvesterController controller)
