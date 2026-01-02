@@ -108,7 +108,6 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
 
     private void UpdateCapacityState()
     {
-        Debug.Log(currentResources, gameObject);
         if (currentResources == 0)
         {
             SetCapacityState(0);

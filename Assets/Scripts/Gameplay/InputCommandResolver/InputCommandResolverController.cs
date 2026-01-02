@@ -55,7 +55,7 @@ public class InputCommandResolverController : MonoBehaviour
         if (mainCamera == null || boxSelection == null || resolvers == null || resolvers.Count == 0)
             return;
 
-        if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out var hit, Mathf.Infinity))
+        if (!Physics.SphereCast(mainCamera.ScreenPointToRay(Input.mousePosition), 0.5f, out var hit, Mathf.Infinity))
             return;
 
         foreach (var resolver in resolvers)

@@ -224,10 +224,8 @@ public class BoxSelection : MonoBehaviour
             if (!IsObjectInSelectionBox(selectable, minX, maxX, minZ, maxZ))
                 continue;
 
-            GameObject obj = selectable.GetGameObject();
             selectedObjects.Add(selectable);
             selectable.OnSelected();
-            Debug.Log($"Selected: {obj.name}", obj);
         }
         HashSetPool<IGameSelectable>.Release(found);
     }
