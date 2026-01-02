@@ -5,6 +5,7 @@ public partial class UnitHarvesterController
     private sealed class UnitHarvesterSearchingState : IUnitHarvesterControllerState
     {
         private readonly Collider[] overlapResults = new Collider[128];
+        string IUnitHarvesterControllerState.Name  => "Search";
 
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {

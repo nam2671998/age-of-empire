@@ -25,6 +25,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 863f711cc77dbf941a8de3afba7f6673
+    m_Address: Constructions/1001003.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 90226afa15723e34fa05c0c5e40505f1
     m_Address: Constructions/1001001.prefab
     m_ReadOnly: 0

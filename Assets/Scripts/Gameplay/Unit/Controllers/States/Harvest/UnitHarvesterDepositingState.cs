@@ -2,6 +2,8 @@ public partial class UnitHarvesterController
 {
     private sealed class UnitHarvesterDepositingState : IUnitHarvesterControllerState
     {
+        string IUnitHarvesterControllerState.Name  => "Deposit";
+
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {
             controller.movementOwner?.StopMovement();

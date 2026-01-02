@@ -403,7 +403,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalScale: {x: 100, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -4539,9 +4539,15 @@ MonoBehaviour:
   minSpeed: 10
   maxSpeed: 20
   acceleration: 10
+  allowArrowKeyMovement: 1
   zoomStep: 5
   minZoomOffset: -10
   maxZoomOffset: 20
+  allowEdgeScroll: 1
+  edgeScrollSpeed: 12
+  edgeThresholdPixels: 16
+  allowMiddleMouseDrag: 1
+  middleMouseDragSpeed: 0.02
 --- !u!1001 &970483507
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ public partial class UnitHarvesterController
 {
     private sealed class UnitHarvesterHarvestingState : IUnitHarvesterControllerState
     {
+        string IUnitHarvesterControllerState.Name  => "Harvest";
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {
             controller.movementOwner?.StopMovement();

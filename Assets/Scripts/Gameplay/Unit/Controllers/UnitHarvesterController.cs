@@ -203,9 +203,8 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
             return false;
         }
 
-        float radius = Mathf.Max(construction.GetDepositRadius(), 0.01f);
         Vector3 pos = construction.GetNearestDepositPosition(transform.position);
-        return Vector3.Distance(transform.position, pos) <= radius;
+        return Vector3.Distance(transform.position, pos) <= 0.1f;
     }
 
     private void DepositAll()
@@ -234,7 +233,17 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     {
         if (nextState == null || nextState == currentState)
             return;
-
+        if (nextState.Name == "Idle")
+        {
+            if (currentState == null)
+            {
+                Debug.Log("Change to Idle from null");
+            }
+            else
+            {
+                Debug.Log("Change to Idle from " + currentState.Name);
+            }
+        }
         currentState?.Exit(this);
         currentState = nextState;
         currentState.Enter(this);

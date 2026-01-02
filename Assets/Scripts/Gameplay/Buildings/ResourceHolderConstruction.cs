@@ -6,7 +6,6 @@ public sealed class ResourceHolderConstruction : MonoBehaviour, IResourceHolderC
     [SerializeField] private int priority = 0;
     [SerializeField] private Faction faction = Faction.Player1;
     [SerializeField] private Transform[] depositPoints;
-    [SerializeField] private float depositRadius = 1f;
     [SerializeField] private Health health;
 
     private IBuildable buildable;
@@ -61,11 +60,6 @@ public sealed class ResourceHolderConstruction : MonoBehaviour, IResourceHolderC
             }
         }
         return shortest;
-    }
-
-    public float GetDepositRadius()
-    {
-        return depositRadius;
     }
 
     private void OnHealthChanged(int current, int max)

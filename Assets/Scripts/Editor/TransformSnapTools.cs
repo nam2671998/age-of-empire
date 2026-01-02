@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class TransformSnapTools
 {
-    [MenuItem("CONTEXT/Transform/Snap Children To Integer Position")]
+    [MenuItem("CONTEXT/Transform/Snap Children To Center Cell")]
     private static void SnapChildrenToIntegerPosition(MenuCommand command)
     {
         if (command?.context is not Transform root)
@@ -19,7 +19,7 @@ public static class TransformSnapTools
 
         Undo.IncrementCurrentGroup();
         int group = Undo.GetCurrentGroup();
-        Undo.SetCurrentGroupName("Snap Children To Integer Position");
+        Undo.SetCurrentGroupName("Snap Children To Center Cell");
 
         for (int i = 0; i < root.childCount; i++)
         {
@@ -29,7 +29,7 @@ public static class TransformSnapTools
                 continue;
             }
 
-            Undo.RecordObject(t, "Snap Children To Integer Position");
+            Undo.RecordObject(t, "Snap Children To Center Cell");
 
             Vector3 p = t.localPosition;
             Vector3 snapped = new Vector3(Mathf.Round(p.x), Mathf.Round(p.y), Mathf.Round(p.z));

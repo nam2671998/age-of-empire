@@ -102,7 +102,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableResource
   resourceType: 2
   maxResources: 10
-  harvestPositionRadius: 1
+  harvestPositionRadius: 5
   occupiedRadius: 1
   capacityStates:
   - {fileID: 3190485271258928428}

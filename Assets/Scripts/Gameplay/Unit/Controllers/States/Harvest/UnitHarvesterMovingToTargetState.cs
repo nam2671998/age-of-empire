@@ -4,6 +4,7 @@ public partial class UnitHarvesterController
 {
     private sealed class UnitHarvesterMovingToTargetState : IUnitHarvesterControllerState
     {
+        string IUnitHarvesterControllerState.Name  => "Move To Target";
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {
             controller.currentHarvestPosition = Vector3.positiveInfinity;

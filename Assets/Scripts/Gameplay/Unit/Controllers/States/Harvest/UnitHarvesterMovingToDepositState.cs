@@ -4,9 +4,10 @@ public partial class UnitHarvesterController
 {
     private sealed class UnitHarvesterMovingToDepositState : IUnitHarvesterControllerState
     {
+        string IUnitHarvesterControllerState.Name  => "Move To Deposit";
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {
-            controller.currentHarvestPosition = Vector3.positiveInfinity;
+            
         }
 
         void IUnitHarvesterControllerState.Tick(UnitHarvesterController controller)
@@ -46,7 +47,7 @@ public partial class UnitHarvesterController
                 return;
             }
 
-            controller.movementOwner.MoveTo(controller.depositTarget.GetNearestDepositPosition(controller.movementOwner.GetTransform().position), controller.depositTarget.GetDepositRadius());
+            controller.movementOwner.MoveTo(controller.depositTarget.GetNearestDepositPosition(controller.movementOwner.GetTransform().position), 0.1f);
         }
 
         void IUnitHarvesterControllerState.Exit(UnitHarvesterController controller)
