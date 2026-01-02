@@ -16,10 +16,14 @@ public static class ConfigManager
         }
     }
 
-    private const string constructionCostsResourcePath = "ConstructionCosts";
-
     private static bool initialized;
     private static readonly Dictionary<int, List<ResourceCost>> constructionCostsById = new();
+    public static List<BuildOption> BuildableConstructions { get; } = new()
+    {
+        new BuildOption(1001001, "Barrack"),
+        new BuildOption(1001002, "Archery"),
+        new BuildOption(1001003, "Granary")
+    };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void Initialize()
@@ -27,7 +31,7 @@ public static class ConfigManager
         initialized = true;
         constructionCostsById.Clear();
 
-        TextAsset configAsset = Resources.Load<TextAsset>(constructionCostsResourcePath);
+        TextAsset configAsset = Resources.Load<TextAsset>("ConstructionCosts");
         if (configAsset == null || string.IsNullOrWhiteSpace(configAsset.text))
         {
             return;
@@ -100,6 +104,18 @@ public static class ConfigManager
     {
         public string type;
         public int amount;
+    }
+}
+
+public readonly struct BuildOption
+{
+    public readonly int id;
+    public readonly string displayName;
+
+    public BuildOption(int id, string displayName)
+    {
+        this.id = id;
+        this.displayName = displayName;
     }
 }
 

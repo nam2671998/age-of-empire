@@ -34,7 +34,6 @@ public sealed class BuildConstructionUIView : MonoBehaviour
 
     public void Close()
     {
-        ClearButtons();
         SetPanelVisible(false);
     }
 
@@ -53,60 +52,55 @@ public sealed class BuildConstructionUIView : MonoBehaviour
 
     private void RefreshBuildOptions()
     {
-        ClearButtons();
-
         if (buildOptionsContainer == null || buildOptionButtonPrefab == null)
         {
             return;
         }
 
-        foreach (var option in GetFakeBuildOptions())
+        int requiredCount = ConfigManager.BuildableConstructions.Count;
+        EnsureButtonCount(requiredCount);
+
+        for (int i = 0; i < requiredCount; i++)
         {
-            var localOption = option;
-            Button button = Instantiate(buildOptionButtonPrefab, buildOptionsContainer);
+            var construction = ConfigManager.BuildableConstructions[i];
+            Button button = spawnedButtons[i];
+            if (button == null)
+            {
+                button = Instantiate(buildOptionButtonPrefab, buildOptionsContainer);
+                spawnedButtons[i] = button;
+            }
+            else if (button.transform.parent != buildOptionsContainer)
+            {
+                button.transform.SetParent(buildOptionsContainer, false);
+            }
+
             button.gameObject.SetActive(true);
-            spawnedButtons.Add(button);
             
             BuildConstructionButton buildButton = button.GetComponent<BuildConstructionButton>();
             if (buildButton == null)
             {
                 buildButton = button.gameObject.AddComponent<BuildConstructionButton>();
             }
-            buildButton.Initialize(controller, localOption.id, localOption.displayName);
+            buildButton.Initialize(controller, construction.id, construction.displayName);
         }
-    }
 
-    private void ClearButtons()
-    {
-        for (int i = 0; i < spawnedButtons.Count; i++)
+        for (int i = requiredCount; i < spawnedButtons.Count; i++)
         {
-            if (spawnedButtons[i] != null)
+            Button button = spawnedButtons[i];
+            if (button != null)
             {
-                Destroy(spawnedButtons[i].gameObject);
+                button.gameObject.SetActive(false);
             }
         }
-
-        spawnedButtons.Clear();
     }
 
-    private static List<BuildOption> GetFakeBuildOptions()
+    private void EnsureButtonCount(int requiredCount)
     {
-        return new List<BuildOption>
+        for (int i = spawnedButtons.Count; i < requiredCount; i++)
         {
-            new BuildOption(1001001, "Barrack"),
-            new BuildOption(1001002, "Archery"),
-        };
-    }
-
-    private readonly struct BuildOption
-    {
-        public readonly int id;
-        public readonly string displayName;
-
-        public BuildOption(int id, string displayName)
-        {
-            this.id = id;
-            this.displayName = displayName;
+            Button button = Instantiate(buildOptionButtonPrefab, buildOptionsContainer);
+            button.gameObject.SetActive(false);
+            spawnedButtons.Add(button);
         }
     }
 }
