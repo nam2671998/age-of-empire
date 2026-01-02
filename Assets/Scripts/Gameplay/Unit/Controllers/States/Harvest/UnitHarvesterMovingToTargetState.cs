@@ -15,7 +15,7 @@ public partial class UnitHarvesterController
             {
                 if (!controller.TryStartDepositing())
                 {
-                    controller.StopHarvest();
+                    controller.SetState(searchingState);
                 }
                 return;
             }
@@ -26,7 +26,7 @@ public partial class UnitHarvesterController
                 return;
             }
 
-            if (controller.movement == null)
+            if (controller.movementOwner == null || controller.movementOwner.GetTransform() == null)
             {
                 controller.StopHarvest();
                 return;
@@ -34,7 +34,7 @@ public partial class UnitHarvesterController
 
             if (controller.IsInRange(controller.currentHarvestPosition))
             {
-                controller.movement.StopMovement();
+                controller.movementOwner.StopMovement();
                 controller.SetState(harvestingState);
                 return;
             }
@@ -42,14 +42,14 @@ public partial class UnitHarvesterController
             if (controller.currentTarget.TryGetHarvestPosition(out Vector3 harvestPosition))
             {
                 controller.currentHarvestPosition = harvestPosition;
-                controller.movement.MoveTo(harvestPosition, 0.1f);
-                GridManager.Instance.ReserveCell(GridManager.Instance.WorldToGrid(harvestPosition), controller.movement);
+                controller.movementOwner.MoveTo(harvestPosition, 0.1f);
+                GridManager.Instance.ReserveCell(GridManager.Instance.WorldToGrid(harvestPosition), controller.movementOwner);
             }
         }
 
         void IUnitHarvesterControllerState.Exit(UnitHarvesterController controller)
         {
-            GridManager.Instance.FreeUnitReservation(controller.movement);
+            GridManager.Instance.FreeUnitReservation(controller.movementOwner);
         }
     }
 }

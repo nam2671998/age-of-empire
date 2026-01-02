@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1809453680905153621}
   - component: {fileID: 1809453680903677541}
   - component: {fileID: 1172002899291969388}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 3301878348594103607}
   - component: {fileID: 3301878348595573799}
   - component: {fileID: 529212882253556136}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -271,8 +271,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableResource
   resourceType: 1
   maxResources: 10
-  harvestPositionTransform: {fileID: 1406181451342082161}
   harvestPositionRadius: 1
+  occupiedRadius: 1
   capacityStates:
   - {fileID: 7641335370570974304}
   - {fileID: 3301878348597269931}

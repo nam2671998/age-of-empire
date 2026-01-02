@@ -24,7 +24,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     private IHarvestable currentTarget;
     private ResourceType currentResourceType;
     private IUnitHarvesterControllerState currentState;
-    private IMovementCapability movement;
+    private IMovementCapability movementOwner;
     private IFactionOwner factionOwner;
 
     private readonly Dictionary<ResourceType, int> inventory = new Dictionary<ResourceType, int>();
@@ -39,7 +39,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 
     private void Awake()
     {
-        TryGetComponent(out movement);
+        TryGetComponent(out movementOwner);
         TryGetComponent(out factionOwner);
         SetState(idleState);
     }
@@ -85,7 +85,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 
     public void StopHarvest()
     {
-        movement?.StopMovement();
+        movementOwner?.StopMovement();
         currentTarget = null;
         animator.TriggerIdle();
         SetState(idleState);
@@ -103,7 +103,6 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
             return 0;
         }
 
-        FaceTarget(target);
         int freeSpace = inventoryCapacity > 0 ? inventoryCapacity - inventoryCount : harvestAmount;
         if (freeSpace <= 0)
         {
@@ -173,10 +172,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
             return;
         }
 
-        if (!inventory.TryGetValue(type, out int current))
-        {
-            current = 0;
-        }
+        int current = inventory.GetValueOrDefault(type, 0);
 
         inventory[type] = current + added;
         inventoryCount += added;
@@ -208,7 +204,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
         }
 
         float radius = Mathf.Max(construction.GetDepositRadius(), 0.01f);
-        Vector3 pos = construction.GetDepositPosition();
+        Vector3 pos = construction.GetNearestDepositPosition(transform.position);
         return Vector3.Distance(transform.position, pos) <= radius;
     }
 
@@ -246,7 +242,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
 
     private void FaceTarget(IHarvestable target)
     {
-        movement.SetAutoRotate(false);
+        movementOwner.SetAutoRotate(false);
         Vector3 direction = (target.GetPosition() - transform.position);
         direction.y = 0f;
         

@@ -4,7 +4,7 @@ public partial class UnitHarvesterController
     {
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {
-            controller.movement?.StopMovement();
+            controller.movementOwner?.StopMovement();
         }
 
         void IUnitHarvesterControllerState.Tick(UnitHarvesterController controller)
@@ -24,7 +24,7 @@ public partial class UnitHarvesterController
                 return;
             }
 
-            if (controller.movement == null)
+            if (controller.movementOwner == null || controller.movementOwner.GetTransform() == null)
             {
                 controller.StopHarvest();
                 return;
@@ -36,7 +36,8 @@ public partial class UnitHarvesterController
                 return;
             }
 
-            controller.movement.StopMovement();
+            controller.FaceTarget(controller.currentTarget);
+            controller.movementOwner.StopMovement();
             if (!controller.CanHarvest())
                 return;
 

@@ -13,16 +13,6 @@ public interface IHarvestable
     int Harvest(int amount);
     
     /// <summary>
-    /// Gets the remaining resources in this object
-    /// </summary>
-    float GetRemainingResources();
-    
-    /// <summary>
-    /// Gets the maximum resources this object can hold
-    /// </summary>
-    float GetMaxResources();
-    
-    /// <summary>
     /// Gets the resource type
     /// </summary>
     ResourceType GetResourceType();
@@ -47,11 +37,6 @@ public interface IHarvestable
     /// </summary>
     /// <param name="harvestPosition"></param>
     bool TryGetHarvestPosition(out Vector3 harvestPosition);
-    
-    /// <summary>
-    /// Gets the radius where a unit should stand inside when harvesting this resource
-    /// </summary>
-    float GetHarvestRadius();
 }
 
 /// <summary>

@@ -37,16 +37,6 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
         return harvested;
     }
     
-    public float GetRemainingResources()
-    {
-        return currentResources;
-    }
-    
-    public float GetMaxResources()
-    {
-        return maxResources;
-    }
-    
     public ResourceType GetResourceType()
     {
         return resourceType;
@@ -111,11 +101,6 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
         return false;
     }
 
-    public float GetHarvestRadius()
-    {
-        return harvestPositionRadius;
-    }
-
     private void OnDepleted()
     {
         // gameObject.SetActive(false);
@@ -123,6 +108,7 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
 
     private void UpdateCapacityState()
     {
+        Debug.Log(currentResources, gameObject);
         if (currentResources == 0)
         {
             SetCapacityState(0);

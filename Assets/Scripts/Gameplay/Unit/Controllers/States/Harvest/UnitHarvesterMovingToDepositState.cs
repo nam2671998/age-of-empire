@@ -20,17 +20,11 @@ public partial class UnitHarvesterController
                     return;
                 }
 
-                if (controller.currentTarget != null)
-                {
-                    controller.SetState(searchingState);
-                    return;
-                }
-
-                controller.StopHarvest();
+                controller.SetState(searchingState);
                 return;
             }
 
-            if (controller.movement == null)
+            if (controller.movementOwner == null || controller.movementOwner.GetTransform() == null)
             {
                 controller.StopHarvest();
                 return;
@@ -40,19 +34,19 @@ public partial class UnitHarvesterController
             {
                 if (!controller.TryStartDepositing())
                 {
-                    controller.StopHarvest();
+                    controller.SetState(searchingState);
                     return;
                 }
             }
 
             if (controller.IsInDepositRange(controller.depositTarget))
             {
-                controller.movement.StopMovement();
+                controller.movementOwner.StopMovement();
                 controller.SetState(depositingState);
                 return;
             }
 
-            controller.movement.MoveTo(controller.depositTarget.GetDepositPosition(), controller.depositTarget.GetDepositRadius());
+            controller.movementOwner.MoveTo(controller.depositTarget.GetNearestDepositPosition(controller.movementOwner.GetTransform().position), controller.depositTarget.GetDepositRadius());
         }
 
         void IUnitHarvesterControllerState.Exit(UnitHarvesterController controller)

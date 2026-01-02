@@ -4,12 +4,12 @@ public partial class UnitHarvesterController
     {
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {
-            controller.movement?.StopMovement();
+            controller.movementOwner?.StopMovement();
         }
 
         void IUnitHarvesterControllerState.Tick(UnitHarvesterController controller)
         {
-            controller.movement?.StopMovement();
+            controller.movementOwner?.StopMovement();
 
             if (!controller.HasValidDepositTarget)
             {
@@ -32,13 +32,7 @@ public partial class UnitHarvesterController
                 return;
             }
 
-            if (controller.currentTarget != null)
-            {
-                controller.SetState(searchingState);
-                return;
-            }
-
-            controller.StopHarvest();
+            controller.SetState(searchingState);
         }
 
         void IUnitHarvesterControllerState.Exit(UnitHarvesterController controller)

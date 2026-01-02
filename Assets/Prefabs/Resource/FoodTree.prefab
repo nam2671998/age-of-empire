@@ -71,8 +71,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableResource
   resourceType: 3
   maxResources: 10
-  harvestPositionTransform: {fileID: 1406181451342082161}
   harvestPositionRadius: 1
+  occupiedRadius: 1
   capacityStates:
   - {fileID: 3293002580836780414}
   - {fileID: 7905104041088692669}
@@ -88,6 +88,10 @@ PrefabInstance:
     - target: {fileID: 168714, guid: 999200afe6b45cc4da2c0bda41570269, type: 3}
       propertyPath: m_Name
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 168714, guid: 999200afe6b45cc4da2c0bda41570269, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 418004, guid: 999200afe6b45cc4da2c0bda41570269, type: 3}
       propertyPath: m_LocalPosition.x
@@ -156,6 +160,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 110140, guid: afe2818fc38e1c44ea0e9758dd1992d2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 495822, guid: afe2818fc38e1c44ea0e9758dd1992d2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -222,6 +230,10 @@ PrefabInstance:
     - target: {fileID: 114718, guid: 03c9d794d270d6a42a8617eaebbd1558, type: 3}
       propertyPath: m_Name
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114718, guid: 03c9d794d270d6a42a8617eaebbd1558, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 405788, guid: 03c9d794d270d6a42a8617eaebbd1558, type: 3}
       propertyPath: m_LocalPosition.x

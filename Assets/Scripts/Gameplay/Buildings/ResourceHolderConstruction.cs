@@ -5,7 +5,7 @@ public sealed class ResourceHolderConstruction : MonoBehaviour, IResourceHolderC
 {
     [SerializeField] private int priority = 0;
     [SerializeField] private Faction faction = Faction.Player1;
-    [SerializeField] private Transform depositPoint;
+    [SerializeField] private Transform[] depositPoints;
     [SerializeField] private float depositRadius = 1f;
     [SerializeField] private Health health;
 
@@ -50,9 +50,17 @@ public sealed class ResourceHolderConstruction : MonoBehaviour, IResourceHolderC
         return gameObject;
     }
 
-    public Vector3 GetDepositPosition()
+    public Vector3 GetNearestDepositPosition(Vector3 from)
     {
-        return depositPoint != null ? depositPoint.position : transform.position;
+        Vector3 shortest = depositPoints[0].position;
+        for (int i = 1; i < depositPoints.Length; i++)
+        {
+            if ((depositPoints[i].position - from).sqrMagnitude < (shortest - from).sqrMagnitude)
+            {
+                shortest = depositPoints[i].position;
+            }
+        }
+        return shortest;
     }
 
     public float GetDepositRadius()

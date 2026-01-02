@@ -61,7 +61,7 @@ public static class ResourceHolderConstructionRegistry
             }
 
             int priority = construction.Priority;
-            Vector3 pos = construction.GetDepositPosition();
+            Vector3 pos = construction.GetNearestDepositPosition(fromPosition);
             float sqr = (pos - fromPosition).sqrMagnitude;
 
             if (priority < lowestPriority)

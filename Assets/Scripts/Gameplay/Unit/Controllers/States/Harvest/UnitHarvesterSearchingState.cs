@@ -25,7 +25,7 @@ public partial class UnitHarvesterController
             var next = FindNext(controller);
             if (next == null)
             {
-                controller.movement?.StopMovement();
+                controller.movementOwner?.StopMovement();
                 controller.StopHarvest();
                 return;
             }
@@ -43,7 +43,7 @@ public partial class UnitHarvesterController
             if (controller == null)
                 return null;
 
-            int hitCount = Physics.OverlapSphereNonAlloc(controller.transform.position, controller.findNextRadius,
+            int hitCount = Physics.OverlapSphereNonAlloc(controller.currentHarvestPosition, controller.findNextRadius,
                 overlapResults, controller.harvestableResourceMask);
 
             if (hitCount == 0)

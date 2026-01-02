@@ -4,7 +4,7 @@ public interface IResourceHolderConstruction : IFactionOwner
 {
     int Priority { get; }
     GameObject GetGameObject();
-    Vector3 GetDepositPosition();
+    Vector3 GetNearestDepositPosition(Vector3 from);
     float GetDepositRadius();
 }
 

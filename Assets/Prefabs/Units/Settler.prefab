@@ -162,13 +162,13 @@ NavMeshAgent:
   m_GameObject: {fileID: 3766930393146225059}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.2
   m_Speed: 3.5
   m_Acceleration: 100
   avoidancePriority: 50
   m_AngularSpeed: 120
   m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
+  m_AutoTraverseOffMeshLink: 0
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
@@ -241,6 +241,7 @@ MonoBehaviour:
     m_Bits: 256
   animator: {fileID: 1394233975726215313}
   inventoryCapacity: 10
+  onResourceInventoryChanged: {fileID: 11400000, guid: 514f83e6748352f46b95589f260fde95, type: 2}
 --- !u!114 &1943828229108026956
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,7 +301,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.25
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0.75, z: 0}

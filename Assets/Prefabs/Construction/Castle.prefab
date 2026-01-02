@@ -334,7 +334,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ResourceHolderBuilding
   priority: 999
   faction: 0
-  depositPoint: {fileID: 6208151367740146941}
+  depositPoints:
+  - {fileID: 6208151367740146941}
+  - {fileID: 5820576549756524353}
+  - {fileID: 8788484207855450482}
+  - {fileID: 5952180954838976258}
   depositRadius: 1
   health: {fileID: 1038384530028192491}
 --- !u!1 &6048468352410343724

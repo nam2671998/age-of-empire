@@ -14,12 +14,13 @@ public class HarvestCommandResolver : ICommandResolver
         if (!IsInLayer(hit.collider.gameObject.layer, resourceLayer))
             return false;
 
-        return hit.collider.TryGetComponent<IHarvestable>(out _);
+        return hit.collider.GetComponentInParent<IHarvestable>() != null;
     }
 
     public ICommand CreateCommand(RaycastHit hit)
     {
-        if (hit.collider != null && hit.collider.TryGetComponent<IHarvestable>(out var harvestable))
+        IHarvestable harvestable = hit.collider.GetComponentInParent<IHarvestable>();
+        if (hit.collider != null && harvestable != null)
             return new HarvestCommand(harvestable);
 
         return null;
