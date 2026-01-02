@@ -235,11 +235,12 @@ MonoBehaviour:
   harvestAmount: 1
   harvestRange: 2
   harvestCooldown: 1
-  findNextRadius: 10
+  findNextRadius: 20
   harvestableResourceMask:
     serializedVersion: 2
     m_Bits: 256
   animator: {fileID: 1394233975726215313}
+  inventoryCapacity: 10
 --- !u!114 &1943828229108026956
 MonoBehaviour:
   m_ObjectHideFlags: 0

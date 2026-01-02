@@ -1,9 +1,12 @@
+using UnityEngine;
+
 public partial class UnitHarvesterController
 {
     private sealed class UnitHarvesterMovingToDepositState : IUnitHarvesterControllerState
     {
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {
+            controller.currentHarvestPosition = Vector3.positiveInfinity;
         }
 
         void IUnitHarvesterControllerState.Tick(UnitHarvesterController controller)

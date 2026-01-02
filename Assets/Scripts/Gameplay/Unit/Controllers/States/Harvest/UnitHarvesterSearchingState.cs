@@ -8,6 +8,7 @@ public partial class UnitHarvesterController
 
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)
         {
+            
         }
 
         void IUnitHarvesterControllerState.Tick(UnitHarvesterController controller)
