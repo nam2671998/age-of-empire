@@ -1,10 +1,13 @@
+using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public sealed class ConstructionProduceUnitButton : MonoBehaviour
+public sealed class ConstructionProduceUnitButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Image icon;
+    [SerializeField] private RequirementEventChannelSo onRequirementHovered;
     private ConstructionInteractionUIController controller;
     private int unitId;
 
@@ -27,6 +30,29 @@ public sealed class ConstructionProduceUnitButton : MonoBehaviour
         {
             controller.SelectProduceUnit(unitId);
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (onRequirementHovered == null)
+        {
+            return;
+        }
+
+        if (ConfigManager.TryGetUnitCosts(unitId, out var costs))
+        {
+            onRequirementHovered.Raise(costs);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (onRequirementHovered == null)
+        {
+            return;
+        }
+
+        onRequirementHovered.Raise(Array.Empty<ResourceCost>());
     }
 }
 

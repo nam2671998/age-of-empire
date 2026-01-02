@@ -44,10 +44,9 @@ public interface IHarvestable
 /// </summary>
 public enum ResourceType
 {
-    Gold,
-    Wood,
-    Stone,
-    Food,
-    Generic
+    None,
+    Wood = 1,
+    Stone = 2,
+    Food = 3
 }
 

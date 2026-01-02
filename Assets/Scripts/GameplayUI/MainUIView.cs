@@ -10,11 +10,6 @@ public sealed class MainUIView : MonoBehaviour
 
     private void Awake()
     {
-        if (controller == null)
-        {
-            controller = GetComponent<MainUIController>();
-        }
-
         if (controller != null)
         {
             controller.Initialize(this);

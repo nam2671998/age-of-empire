@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public class HarvestableResource : MonoBehaviour, IHarvestable
 {
-    [SerializeField] private ResourceType resourceType = ResourceType.Generic;
+    [SerializeField] private ResourceType resourceType = ResourceType.None;
     [SerializeField] private int maxResources = 100;
     
     [SerializeField] private int harvestPositionRadius = 1;

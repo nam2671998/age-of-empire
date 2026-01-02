@@ -118,15 +118,15 @@ public sealed class BuildConstructionUIController : MonoBehaviour
 
     private static bool HasEnoughResources(Faction faction, int buildingId)
     {
-        if (!ConfigManager.TryGetConstructionCosts(buildingId, out var costs) || costs == null || costs.Count == 0)
+        if (!ConfigManager.TryGetConstructionCosts(buildingId, out var costs) || costs == null || costs.Length == 0)
         {
             return true;
         }
 
-        for (int i = 0; i < costs.Count; i++)
+        for (int i = 0; i < costs.Length; i++)
         {
             var cost = costs[i];
-            if (PlayerResourceInventory.GetAmount(faction, cost.ResourceType) < cost.Amount)
+            if (PlayerResourceInventory.GetAmount(faction, (ResourceType)cost.type) < cost.amount)
             {
                 return false;
             }

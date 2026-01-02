@@ -5,6 +5,7 @@ public static class ResourceHolderConstructionRegistry
 {
     private static readonly Dictionary<Faction, HashSet<IResourceHolderConstruction>> holdersByFaction = new();
 
+    [RuntimeInitializeOnLoadMethod]
     public static void Initialize()
     {
         holdersByFaction.Clear();

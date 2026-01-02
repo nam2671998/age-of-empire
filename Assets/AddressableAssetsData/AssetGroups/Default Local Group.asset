@@ -40,6 +40,16 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 51c65106772bb5f46ad75ef910d0eb0c
+    m_Address: Icons/Food.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5c5a17a671152b2469f51b54d073b6ab
+    m_Address: Icons/Wood.png
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 605a3a46962016c4cbe0aa4fca41da20
     m_Address: Icons/200100100.png
     m_ReadOnly: 0
@@ -72,6 +82,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: ae8e74c25168cb24ba22cefd4966fe57
     m_Address: Constructions/1001004.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b13ab40a63926cd408c27134ec3e7ed9
+    m_Address: Units/200100200.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dd38b591896ee684584ac2949a756a7d
+    m_Address: Icons/Stone.png
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

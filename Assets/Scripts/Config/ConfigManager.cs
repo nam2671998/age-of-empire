@@ -4,20 +4,9 @@ using UnityEngine;
 
 public static class ConfigManager
 {
-    public readonly struct ResourceCost
-    {
-        public readonly ResourceType ResourceType;
-        public readonly int Amount;
-
-        public ResourceCost(ResourceType resourceType, int amount)
-        {
-            ResourceType = resourceType;
-            Amount = amount;
-        }
-    }
-
     private static bool initialized;
-    private static readonly Dictionary<int, List<ResourceCost>> constructionCostsById = new();
+    private static readonly Dictionary<int, ResourceCost[]> constructionCostsById = new();
+    private static readonly Dictionary<int, ResourceCost[]> unitCostsById = new();
     public static List<BuildOption> BuildableConstructions { get; } = new()
     {
         new BuildOption(1001001, "Barrack"),
@@ -31,7 +20,14 @@ public static class ConfigManager
     {
         initialized = true;
         constructionCostsById.Clear();
+        unitCostsById.Clear();
 
+        LoadConstructionCosts();
+        LoadUnitCosts();
+    }
+
+    private static void LoadConstructionCosts()
+    {
         TextAsset configAsset = Resources.Load<TextAsset>("ConstructionCosts");
         if (configAsset == null || string.IsNullOrWhiteSpace(configAsset.text))
         {
@@ -52,38 +48,43 @@ public static class ConfigManager
                 continue;
             }
 
-            var list = new List<ResourceCost>(entry.costs.Length);
-            for (int j = 0; j < entry.costs.Length; j++)
-            {
-                ResourceCostEntry cost = entry.costs[j];
-                if (cost == null || cost.amount <= 0 || string.IsNullOrWhiteSpace(cost.type))
-                {
-                    continue;
-                }
-
-                if (!Enum.TryParse(cost.type, ignoreCase: true, out ResourceType parsedType))
-                {
-                    continue;
-                }
-
-                list.Add(new ResourceCost(parsedType, cost.amount));
-            }
-
-            constructionCostsById[entry.id] = list;
+            constructionCostsById[entry.id] = entry.costs;
         }
     }
 
-    public static bool TryGetConstructionCosts(int constructionId, out List<ResourceCost> costs)
+    public static bool TryGetConstructionCosts(int constructionId, out ResourceCost[] costs)
     {
-        EnsureInitialized();
         return constructionCostsById.TryGetValue(constructionId, out costs);
     }
 
-    private static void EnsureInitialized()
+    public static bool TryGetUnitCosts(int unitId, out ResourceCost[] costs)
     {
-        if (!initialized)
+        return unitCostsById.TryGetValue(unitId, out costs);
+    }
+
+    private static void LoadUnitCosts()
+    {
+        TextAsset configAsset = Resources.Load<TextAsset>("UnitCosts");
+        if (configAsset == null || string.IsNullOrWhiteSpace(configAsset.text))
         {
-            Initialize();
+            return;
+        }
+
+        UnitCostsConfig config = JsonUtility.FromJson<UnitCostsConfig>(configAsset.text);
+        if (config == null || config.units == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < config.units.Length; i++)
+        {
+            UnitCostsEntry entry = config.units[i];
+            if (entry == null || entry.id == 0 || entry.costs == null)
+            {
+                continue;
+            }
+
+            unitCostsById[entry.id] = entry.costs;
         }
     }
 
@@ -97,14 +98,20 @@ public static class ConfigManager
     private sealed class ConstructionCostsEntry
     {
         public int id;
-        public ResourceCostEntry[] costs;
+        public ResourceCost[] costs;
     }
 
     [Serializable]
-    private sealed class ResourceCostEntry
+    private sealed class UnitCostsConfig
     {
-        public string type;
-        public int amount;
+        public UnitCostsEntry[] units;
+    }
+
+    [Serializable]
+    private sealed class UnitCostsEntry
+    {
+        public int id;
+        public ResourceCost[] costs;
     }
 }
 
@@ -118,5 +125,13 @@ public readonly struct BuildOption
         this.id = id;
         this.displayName = displayName;
     }
+}
+
+[Serializable]
+public struct ResourceCost
+{
+    public int type;
+    public int amount;
+    public ResourceType ResourceType => (ResourceType)type;
 }
 

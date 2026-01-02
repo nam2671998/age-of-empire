@@ -8,14 +8,10 @@ public sealed class MainUIController : MonoBehaviour
     private MainUIView view;
     private MainUIModel model;
 
-    private void Awake()
-    {
-        model = new MainUIModel(faction);
-    }
-
     public void Initialize(MainUIView view)
     {
         this.view = view;
+        model = new MainUIModel(faction);
         RefreshView(force: true);
     }
 
