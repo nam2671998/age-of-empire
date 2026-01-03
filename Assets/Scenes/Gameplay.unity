@@ -4740,10 +4740,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   targetCamera: {fileID: 963194227}
   minSpeed: 10
-  maxSpeed: 20
-  acceleration: 10
+  maxSpeed: 50
+  acceleration: 5
   allowArrowKeyMovement: 1
-  constrainToMovementBounds: 1
   movementBounds: {fileID: 759814919}
   zoomStep: 5
   minZoomOffset: -10

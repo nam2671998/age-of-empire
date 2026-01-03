@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
   startHealth: 1
-  allowRevive: 0
+  allowRevive: 1
 --- !u!114 &3902955421165834812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,6 +192,7 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 5251726632545688862}
   health: {fileID: 3442154067805758788}
   beingSabotageFx: {fileID: 7529793828241715969}
+  gridEntity: {fileID: 2435274063104184083}
 --- !u!208 &5251726632545688862
 NavMeshObstacle:
   m_ObjectHideFlags: 0

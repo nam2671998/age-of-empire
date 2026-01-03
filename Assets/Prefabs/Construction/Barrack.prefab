@@ -100,6 +100,7 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 6470561381709063609}
   health: {fileID: 4200843415937479032}
   beingSabotageFx: {fileID: 3951625481526062350}
+  gridEntity: {fileID: 4779142240282321494}
 --- !u!65 &6116625358889534189
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -154,7 +155,7 @@ MonoBehaviour:
   onProduceUnit: {fileID: 11400000, guid: 47619ac666262b14cafd8e5c3490a383, type: 2}
   constructionConfig: {fileID: 11400000, guid: 3f88e976f0f274641a5c2a27bee5194f, type: 2}
   ownCollider: {fileID: 6116625358889534189}
-  onResourceInventoryChanged: {fileID: 0}
+  onResourceInventoryChanged: {fileID: 11400000, guid: 514f83e6748352f46b95589f260fde95, type: 2}
 --- !u!208 &6470561381709063609
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -184,7 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
-  startHealth: 0
+  startHealth: 1
   allowRevive: 1
 --- !u!114 &4866261017367065606
 MonoBehaviour:

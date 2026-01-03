@@ -62,7 +62,7 @@ public class BuildConstructionUIView : MonoBehaviour
 
         for (int i = 0; i < requiredCount; i++)
         {
-            var construction = ConfigManager.BuildableConstructions[i];
+            var constructionId = ConfigManager.BuildableConstructions[i];
             Button button = spawnedButtons[i];
             if (button == null)
             {
@@ -81,7 +81,7 @@ public class BuildConstructionUIView : MonoBehaviour
             {
                 buildButton = button.gameObject.AddComponent<BuildConstructionButton>();
             }
-            buildButton.Initialize(controller, construction.id, construction.displayName);
+            buildButton.Initialize(controller, constructionId);
         }
 
         for (int i = requiredCount; i < spawnedButtons.Count; i++)

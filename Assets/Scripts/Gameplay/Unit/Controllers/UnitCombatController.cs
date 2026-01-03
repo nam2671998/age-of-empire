@@ -1,5 +1,15 @@
 using UnityEngine;
 
+/// <summary>
+/// Control an unit's combat loop: keep a target, chase into range, and fire attacks on cooldown.
+/// </summary>
+/// <remarks>
+/// <see cref="StartAttack"/> sets a target and marks combat as active
+/// <see cref="TickAttack"/> is basically Update()
+/// <see cref="Attack"/> performs the actual damage via the configured strategy.
+/// Actual damage is delegated to <see cref="IAttackStrategy"/>.
+/// Spacing while moving is handled by <see cref="IDistanceStrategy"/> when present.
+/// </remarks>
 public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOwner
 {
     private static readonly Collider[] overlapResults = new Collider[64];
@@ -48,12 +58,14 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     
     public void SetAttackTarget(IDamageable target)
     {
+        // Prevent friendly fire at the moment a target is assigned.
         if (target != null && !CanAttackTarget(target))
         {
             Debug.Log($"{gameObject.name} cannot attack {target.GetGameObject().name} - same faction ({faction})");
             return;
         }
         
+        // If we are switching to combat, stop other ongoing actions (e.g., harvesting/building).
         if (target != null && TryGetComponent(out IStopAction s))
         {
             s.StopOtherActions();
@@ -61,6 +73,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         
         attackTarget = target;
         
+        // Assigning a target also triggers chasing so the unit starts moving into range.
         if (target != null && target.GetGameObject() != null && !target.IsDestroyed() && TryGetComponent(out IMovementCapability movementOwner))
         {
             float optimalDistance = distanceStrategy != null
@@ -71,6 +84,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         }
     }
     
+    // Attack() is the "apply damage" step. Target selection/chasing happens elsewhere.
     public void Attack(IDamageable target)
     {
         if (target == null || target.IsDestroyed())
@@ -98,6 +112,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         attackStrategy.ExecuteAttack(target, attackDamage, transform);
         FaceTarget(target);
         lastAttackTime = Time.time;
+        // Used as a hint for reacquiring nearby targets after losing the current one.
         lastTargetPosition = target.GetPosition();
         isAttacking = true;
 
@@ -133,6 +148,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         return Time.time >= lastAttackTime + attackCooldown;
     }
 
+    // Entry point: set a target and arm the combat loop.
     public void StartAttack(IDamageable target)
     {
         SetAttackTarget(target);
@@ -146,10 +162,12 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         }
     }
 
+    // Called repeatedly while attacking to handle reacquire/chase/attack execution.
     public void TickAttack()
     {
         if (attackTarget == null || attackTarget.GetGameObject() == null || attackTarget.IsDestroyed())
         {
+            // If we lost the target, try to pick a new one nearby before giving up.
             if (TryFindNearbyTarget(chaseRange, out IDamageable nearby))
             {
                 SetAttackTarget(nearby);
@@ -171,12 +189,14 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
         if (distanceToTarget > chaseRange)
         {
+            // Too far from the target; stop rather than chasing across the whole map.
             StopAttacking();
             return;
         }
 
         if (IsInRange(attackTarget))
         {
+            // In range: only attack when cooldown allows it.
             if (CanAttack())
             {
                 Attack(attackTarget);
@@ -194,6 +214,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             ? distanceStrategy.GetOptimalDistance(attackRange)
             : attackRange * 0.8f;
 
+        // Out of range: chase the target until we reach the desired spacing.
         if (!movementOwner.IsMoving)
         {
             movementOwner.MoveTo(targetPosition, optimalDistance);
@@ -229,11 +250,13 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             return false;
         }
 
+        // If the attack strategy knows a better way to find targets, prefer it (e.g., team systems, caches).
         if (attackStrategy is INearbyTargetFinder finder && finder.TryFindNearbyTarget(faction, lastTargetPosition, searchRadius, out target))
         {
             return true;
         }
 
+        // Fallback: physics overlap search, then pick the closest valid enemy.
         Vector3 origin = transform.position;
         int count = Physics.OverlapSphereNonAlloc(origin, searchRadius, overlapResults);
 
@@ -276,6 +299,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     
     private void FaceTarget(IDamageable target)
     {
+        // Manual facing makes attacks feel responsive, especially when movement auto-rotation is disabled.
         movementOwner.SetAutoRotate(false);
         Vector3 direction = (target.GetPosition() - transform.position);
         direction.y = 0f;

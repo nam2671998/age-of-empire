@@ -14,10 +14,26 @@
       ]
     },
     {
+      "id": 200100101,
+      "costs": [
+        { "type": 3, "amount": 100 },
+        { "type": 2, "amount": 50 },
+        { "type": 1, "amount": 50 }
+      ]
+    },
+    {
       "id": 200100200,
       "costs": [
         { "type": 3, "amount": 100 },
         { "type": 1, "amount": 50 }
+      ]
+    },
+    {
+      "id": 200100500,
+      "costs": [
+        { "type": 3, "amount": 200 },
+        { "type": 2, "amount": 50 },
+        { "type": 1, "amount": 100 }
       ]
     }
   ]

@@ -11,13 +11,11 @@ public class BuildConstructionButton : MonoBehaviour, IPointerEnterHandler, IPoi
     [SerializeField] private RequirementEventChannelSo onRequirementHovered;
     private BuildConstructionUIController controller;
     private int buildingId;
-    private string displayName;
 
-    public void Initialize(BuildConstructionUIController controller, int buildingId, string displayName)
+    public void Initialize(BuildConstructionUIController controller, int buildingId)
     {
         this.controller = controller;
         this.buildingId = buildingId;
-        this.displayName = displayName;
         Addressables.LoadAssetAsync<Sprite>($"Icons/{buildingId}.png").Completed += handle => icon.sprite = handle.Result;
     }
 

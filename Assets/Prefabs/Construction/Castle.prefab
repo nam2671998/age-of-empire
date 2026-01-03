@@ -257,6 +257,7 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 7697185898420744471}
   health: {fileID: 1038384530028192491}
   beingSabotageFx: {fileID: 1886125533410244947}
+  gridEntity: {fileID: 392179721585959480}
 --- !u!65 &4704687471461144878
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -311,7 +312,7 @@ MonoBehaviour:
   onProduceUnit: {fileID: 11400000, guid: 47619ac666262b14cafd8e5c3490a383, type: 2}
   constructionConfig: {fileID: 11400000, guid: 3d33afbc37a52e24090d9fe24a6ea74b, type: 2}
   ownCollider: {fileID: 4704687471461144878}
-  onResourceInventoryChanged: {fileID: 0}
+  onResourceInventoryChanged: {fileID: 11400000, guid: 514f83e6748352f46b95589f260fde95, type: 2}
 --- !u!208 &7697185898420744471
 NavMeshObstacle:
   m_ObjectHideFlags: 0

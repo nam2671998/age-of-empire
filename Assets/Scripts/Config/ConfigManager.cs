@@ -7,13 +7,7 @@ public static class ConfigManager
     private static bool initialized;
     private static readonly Dictionary<int, ResourceCost[]> constructionCostsById = new();
     private static readonly Dictionary<int, ResourceCost[]> unitCostsById = new();
-    public static List<BuildOption> BuildableConstructions { get; } = new()
-    {
-        new BuildOption(1001001, "Barrack"),
-        new BuildOption(1001002, "Archery"),
-        new BuildOption(1001003, "Granary"),
-        new BuildOption(1001004, "Farm")
-    };
+    public static List<int> BuildableConstructions { get; } = new();
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void Initialize()
@@ -23,6 +17,7 @@ public static class ConfigManager
         unitCostsById.Clear();
 
         LoadConstructionCosts();
+        LoadBuilableConstructions();
         LoadUnitCosts();
     }
 
@@ -52,6 +47,15 @@ public static class ConfigManager
         }
     }
 
+    private static void LoadBuilableConstructions() // Temp. Should have upgrade construction here first
+    {
+        BuildableConstructions.Clear();
+        foreach (var id in constructionCostsById.Keys)
+        {
+            BuildableConstructions.Add(id);
+        }
+    }
+    
     public static bool TryGetConstructionCosts(int constructionId, out ResourceCost[] costs)
     {
         return constructionCostsById.TryGetValue(constructionId, out costs);
@@ -118,12 +122,10 @@ public static class ConfigManager
 public readonly struct BuildOption
 {
     public readonly int id;
-    public readonly string displayName;
 
-    public BuildOption(int id, string displayName)
+    public BuildOption(int id)
     {
         this.id = id;
-        this.displayName = displayName;
     }
 }
 

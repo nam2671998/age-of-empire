@@ -226,6 +226,7 @@ MonoBehaviour:
   navMeshObstacle: {fileID: 1247466375750551672}
   health: {fileID: 5667109207472380019}
   beingSabotageFx: {fileID: 4641226112604398631}
+  gridEntity: {fileID: 6893544101288378583}
 --- !u!65 &5964429326502319566
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -276,7 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
-  startHealth: 0
+  startHealth: 1
   allowRevive: 1
 --- !u!114 &17282361788868224
 MonoBehaviour:

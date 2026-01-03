@@ -12,8 +12,6 @@ public class UnitProduceConstruction : MonoBehaviour
 
     private IFactionOwner factionOwner;
 
-    public ConstructionConfig ConstructionConfig => constructionConfig;
-
     private void Awake()
     {
         factionOwner = GetComponentInParent<IFactionOwner>();

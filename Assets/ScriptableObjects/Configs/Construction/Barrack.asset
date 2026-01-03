@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 29f1160844ae4cf2b765be3e54fb2cf2, type: 3}
-  m_Name: Barrage
+  m_Name: Barrack
   m_EditorClassIdentifier: Assembly-CSharp::UnitProduceConstructionConfig
   constructionId: 1001001
-  unitProducible: 0449ed0b
+  unitProducible: 0449ed0b0549ed0b

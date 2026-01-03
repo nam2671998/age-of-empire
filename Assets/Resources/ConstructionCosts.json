@@ -24,6 +24,13 @@
       "costs": [
         { "type": 1, "amount": 20 }
       ]
+    },
+    {
+      "id": 1001005,
+      "costs": [
+        { "type": 1, "amount": 300 },
+        { "type": 2, "amount": 200 }
+      ]
     }
   ]
 }
