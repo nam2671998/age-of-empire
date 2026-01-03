@@ -7,10 +7,10 @@ public class Damageable : MonoBehaviour, IDamageable
     [SerializeField] private Faction faction = Faction.Neutral;
     [SerializeField] private bool destroyOnDeath = true;
 
-    public event Action<Unit> OnDeath;
-    public event Action<Unit> OnDamageTakenHandler;
+    public event Action OnDeath;
+    public event Action OnDamageTakenHandler;
     public event Action<int, int> OnHealthChangedHandler;
-    public event Action<int, Unit> OnDamagedHandler;
+    public event Action<int> OnDamagedHandler;
     public event Action<int> OnHealedHandler;
 
     private Health health;
@@ -43,21 +43,21 @@ public class Damageable : MonoBehaviour, IDamageable
             return;
         }
 
-        health.Heal(amount, null);
+        health.Heal(amount);
     }
 
-    public void TakeDamage(int damage, Unit attacker)
+    public void TakeDamage(int damage)
     {
         if (health == null)
         {
             return;
         }
 
-        health.ApplyDamage(damage, attacker != null ? attacker.gameObject : null);
+        health.ApplyDamage(damage);
 
         if (damage > 0f)
         {
-            OnDamageTakenHandler?.Invoke(attacker);
+            OnDamageTakenHandler?.Invoke();
         }
     }
 
@@ -91,21 +91,19 @@ public class Damageable : MonoBehaviour, IDamageable
         OnHealthChangedHandler?.Invoke(current, max);
     }
 
-    private void OnDamaged(int amount, GameObject source)
+    private void OnDamaged(int amount)
     {
-        Unit attacker = source != null ? source.GetComponent<Unit>() : null;
-        OnDamagedHandler?.Invoke(amount, attacker);
+        OnDamagedHandler?.Invoke(amount);
     }
 
-    private void OnHealed(int amount, GameObject source)
+    private void OnHealed(int amount)
     {
         OnHealedHandler?.Invoke(amount);
     }
 
-    private void OnDepleted(GameObject source)
+    private void OnDepleted()
     {
-        Unit attacker = source != null ? source.GetComponent<Unit>() : null;
-        OnDeath?.Invoke(attacker);
+        OnDeath?.Invoke();
 
         if (destroyOnDeath)
         {

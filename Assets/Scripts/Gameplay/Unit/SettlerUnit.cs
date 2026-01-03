@@ -8,6 +8,7 @@ using UnityEngine;
 [RequireComponent(typeof(Damageable))]
 public class SettlerUnit : Unit, IStopAction
 {
+    [SerializeField] private float attackWindUpDuration = 0;
     private ICombatCapability combat;
     private IHarvestCapability harvester;
     private IBuildCapability builder;
@@ -24,7 +25,7 @@ public class SettlerUnit : Unit, IStopAction
     {
         if (combat != null)
         {
-            CloseRangeStrategy closeRangeStrategy = new CloseRangeStrategy();
+            CloseRangeStrategy closeRangeStrategy = new CloseRangeStrategy(attackWindUpDuration);
             combat.SetAttackStrategy(closeRangeStrategy);
             combat.SetDistanceStrategy(closeRangeStrategy);
         }

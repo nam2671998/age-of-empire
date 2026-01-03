@@ -9,8 +9,7 @@ public interface IDamageable : IFactionOwner
     /// Called when the object is attacked
     /// </summary>
     /// <param name="damage">The amount of damage dealt</param>
-    /// <param name="attacker">The unit that attacked</param>
-    void TakeDamage(int damage, Unit attacker);
+    void TakeDamage(int damage);
     
     /// <summary>
     /// Gets the current health of the object

@@ -7,11 +7,13 @@ using UnityEngine;
 public class AnimalUnit : MonoBehaviour, IStopAction
 {
     [SerializeField] private GameObject meatPrefab;
+    [SerializeField] private float attackWindUpDuration = 0;
     private ICombatCapability combat;
     private Damageable damageable;
     private UnitMovementController movement;
     private UnitActionStateController stateManager;
     private UnitAnimatorController animator;
+    private static readonly Collider[] overlapResults = new Collider[64];
     
     void Awake()
     {
@@ -51,7 +53,7 @@ public class AnimalUnit : MonoBehaviour, IStopAction
     {
         if (combat != null)
         {
-            CloseRangeStrategy strategy = new CloseRangeStrategy();
+            CloseRangeStrategy strategy = new CloseRangeStrategy(attackWindUpDuration);
             combat.SetAttackStrategy(strategy);
             combat.SetDistanceStrategy(strategy);
         }
@@ -63,22 +65,26 @@ public class AnimalUnit : MonoBehaviour, IStopAction
         }
     }
 
-    private void OnDeath(Unit attacker)
+    private void OnDeath()
     {
         ObjectPool.Spawn(meatPrefab, transform.position, Quaternion.identity);
         gameObject.SetActive(false);
     }
 
-    private void OnDamageTaken(Unit attacker)
+    private void OnDamageTaken()
     {
-        if (attacker != null && combat != null)
+        if (combat != null)
         {
             // Retaliate if not already attacking someone else? Or switch target?
             // Switch target to latest aggressor is common.
-            IDamageable target = attacker.GetComponent<IDamageable>();
-            if (target != null)
+            int hitCount = Physics.OverlapSphereNonAlloc(transform.position, 20, overlapResults, LayerMask.GetMask("Unit"));
+            for (int i = 0; i < hitCount; i++)
             {
-                combat.SetAttackTarget(target);
+                Collider col = overlapResults[i];
+                if (col.gameObject.TryGetComponent(out IDamageable target))
+                {
+                    combat.SetAttackTarget(target);
+                }
             }
         }
     }

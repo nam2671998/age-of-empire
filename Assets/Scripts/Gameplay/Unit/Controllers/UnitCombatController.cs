@@ -20,6 +20,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     [SerializeField] private int attackDamage = 10;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 1f;
+    [SerializeField] private float attackWindup = 0.5f;
     [SerializeField] private float chaseRange = 20f;
 
     private IMovementCapability movementOwner;
@@ -109,7 +110,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             return;
         }
         
-        attackStrategy.ExecuteAttack(target, attackDamage, transform);
+        attackStrategy.ExecuteAttack(target, attackDamage);
         FaceTarget(target);
         lastAttackTime = Time.time;
         // Used as a hint for reacquiring nearby targets after losing the current one.

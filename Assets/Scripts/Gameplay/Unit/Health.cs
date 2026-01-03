@@ -10,9 +10,9 @@ public class Health : MonoBehaviour
     private int currentHealth;
 
     public event Action<int, int> HealthChanged;
-    public event Action<int, GameObject> Damaged;
-    public event Action<int, GameObject> Healed;
-    public event Action<GameObject> Depleted;
+    public event Action<int> Damaged;
+    public event Action<int> Healed;
+    public event Action Depleted;
 
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
@@ -30,7 +30,7 @@ public class Health : MonoBehaviour
         RaiseHealthChanged();
     }
 
-    public void Heal(int amount, GameObject source = null)
+    public void Heal(int amount)
     {
         if (amount <= 0)
         {
@@ -48,12 +48,12 @@ public class Health : MonoBehaviour
         int applied = currentHealth - previous;
         if (applied > 0)
         {
-            Healed?.Invoke(applied, source);
+            Healed?.Invoke(applied);
             RaiseHealthChanged();
         }
     }
 
-    public void ApplyDamage(int amount, GameObject source = null)
+    public void ApplyDamage(int amount)
     {
         if (IsDepleted)
         {
@@ -71,21 +71,21 @@ public class Health : MonoBehaviour
         int applied = previous - currentHealth;
         if (applied > 0)
         {
-            Damaged?.Invoke(applied, source);
+            Damaged?.Invoke(applied);
             RaiseHealthChanged();
         }
 
         if (previous > 0 && currentHealth <= 0)
         {
-            Deplete(source);
+            Deplete();
         }
     }
 
-    private void Deplete(GameObject source)
+    private void Deplete()
     {
         currentHealth = 0;
         RaiseHealthChanged();
-        Depleted?.Invoke(source);
+        Depleted?.Invoke();
     }
 
     private void RaiseHealthChanged()

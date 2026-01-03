@@ -2,7 +2,7 @@ using UnityEngine;
 
 public interface IAttackStrategy
 {
-    void ExecuteAttack(IDamageable target, int damage, Transform attackerTransform);
+    void ExecuteAttack(IDamageable target, int damage);
     bool CanAttack(float lastAttackTime, float attackCooldown);
 }
 

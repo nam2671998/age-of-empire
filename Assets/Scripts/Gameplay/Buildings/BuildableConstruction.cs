@@ -37,7 +37,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         beingSabotageFx.SetActive(false);
     }
 
-    private void OnDamaged(int damage, GameObject attacker)
+    private void OnDamaged(int damage)
     {
         if (damage > 0)
             beingSabotageFx.SetActive(true);
@@ -78,7 +78,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         if (health == null) return false;
         
         int amount = Mathf.Clamp(progress, 0, health.MaxHealth - health.CurrentHealth);
-        health.Heal(amount, null);
+        health.Heal(amount);
 
         if (IsComplete())
         {

@@ -7,7 +7,6 @@ public class Projectile : MonoBehaviour
     
     private IDamageable target;
     private int damage;
-    private Unit attacker;
     private Vector3 lastKnownPosition;
     private bool initialized = false;
 
@@ -16,11 +15,10 @@ public class Projectile : MonoBehaviour
         ResetState();
     }
 
-    public void Initialize(IDamageable target, int damage, Unit attacker)
+    public void Initialize(IDamageable target, int damage)
     {
         this.target = target;
         this.damage = damage;
-        this.attacker = attacker;
         initialized = true;
         
         if (target != null)
@@ -69,7 +67,7 @@ public class Projectile : MonoBehaviour
     {
         if (target != null && !target.IsDestroyed())
         {
-            target.TakeDamage(damage, attacker);
+            target.TakeDamage(damage);
         }
         this.Recycle();
     }
@@ -79,7 +77,6 @@ public class Projectile : MonoBehaviour
         initialized = false;
         target = null;
         damage = 0;
-        attacker = null;
         lastKnownPosition = transform.position;
     }
 }

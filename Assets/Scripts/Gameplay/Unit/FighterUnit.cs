@@ -6,6 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Damageable))]
 public class FighterUnit : Unit, IStopAction
 {
+    [SerializeField] private float attackWindUpDuration = 0;
     private ICombatCapability combat;
     
     protected override void InitializeComponents()
@@ -18,7 +19,7 @@ public class FighterUnit : Unit, IStopAction
     {
         if (combat != null)
         {
-            CloseRangeStrategy closeRangeStrategy = new CloseRangeStrategy();
+            CloseRangeStrategy closeRangeStrategy = new CloseRangeStrategy(attackWindUpDuration);
             combat.SetAttackStrategy(closeRangeStrategy);
             combat.SetDistanceStrategy(closeRangeStrategy);
         }

@@ -527,7 +527,6 @@ GameObject:
   - component: {fileID: 8068035916961802454}
   - component: {fileID: 2600384828310966373}
   - component: {fileID: 483787198613116604}
-  - component: {fileID: 2866191821839348236}
   m_Layer: 0
   m_Name: Wolf
   m_TagString: Untagged
@@ -587,6 +586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimalUnit
   meatPrefab: {fileID: 6080658909712879269, guid: 12df1c74081c63547991a6ad1da9c4b6, type: 3}
+  attackWindUpDuration: 0.25
 --- !u!114 &1320339836620684463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -603,6 +603,7 @@ MonoBehaviour:
   attackDamage: 10
   attackRange: 2
   attackCooldown: 1
+  attackWindup: 0.5
   chaseRange: 20
 --- !u!114 &3217726967067585866
 MonoBehaviour:
@@ -709,21 +710,6 @@ MonoBehaviour:
   idleTriggerParameter: Idle
   moveTriggerParameter: Move
   animator: {fileID: 1434501678263963221}
---- !u!114 &2866191821839348236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3732634752421585567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0535f231c8112645a1b399acb338671, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CameraFocusEntity
-  assignedKey: 117
-  targetGameObject: {fileID: 0}
-  focusController: {fileID: 0}
 --- !u!1 &3821227141332391591
 GameObject:
   m_ObjectHideFlags: 0

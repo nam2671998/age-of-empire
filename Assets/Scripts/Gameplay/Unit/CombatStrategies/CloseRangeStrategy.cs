@@ -2,17 +2,21 @@ using UnityEngine;
 
 public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTargetFinder
 {
+    private float attackWindUpDuration;
+    public CloseRangeStrategy(float attackWindUpDuration)
+    {
+        this.attackWindUpDuration = attackWindUpDuration;
+    }
+
     private static readonly Collider[] overlapResults = new Collider[64];
 
-    public void ExecuteAttack(IDamageable target, int damage, Transform attackerTransform)
+    public async void ExecuteAttack(IDamageable target, int damage)
     {
         if (target == null || target.IsDestroyed())
             return;
-        
-        if (attackerTransform.TryGetComponent(out Unit unit))
-        {
-            target.TakeDamage(damage, unit);
-        }
+
+        await System.Threading.Tasks.Task.Delay((int)(attackWindUpDuration * 1000));
+        target.TakeDamage(damage);
     }
 
     public bool TryFindNearbyTarget(Faction attackerFaction, Vector3 origin, float searchRadius, out IDamageable target)

@@ -13,15 +13,12 @@ public class FarRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTarge
         this.minDistance = minDistance;
     }
     
-    public void ExecuteAttack(IDamageable target, int damage, Transform attackerTransform)
+    public void ExecuteAttack(IDamageable target, int damage)
     {
         if (target == null || target.IsDestroyed())
             return;
         
-        if (attackerTransform.TryGetComponent(out Unit unit))
-        {
-            target.TakeDamage(damage, unit);
-        }
+        target.TakeDamage(damage);
     }
 
     public bool TryFindNearbyTarget(Faction attackerFaction, Vector3 origin, float searchRadius, out IDamageable target)

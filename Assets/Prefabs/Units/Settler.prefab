@@ -221,6 +221,7 @@ MonoBehaviour:
   attackDamage: 10
   attackRange: 2
   attackCooldown: 1
+  attackWindup: 0.5
   chaseRange: 20
 --- !u!114 &4793693934113337177
 MonoBehaviour:
@@ -284,6 +285,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44949f711e2272843bd535fe29683b9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettlerUnit
+  attackWindUpDuration: 0.5
 --- !u!136 &2424182555354814828
 CapsuleCollider:
   m_ObjectHideFlags: 0

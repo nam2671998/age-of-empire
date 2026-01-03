@@ -19,26 +19,19 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy, INea
         this.projectileSpawnDelay = projectileSpawnDelay;
     }
 
-    public async void ExecuteAttack(IDamageable target, int damage, Transform attackerTransform)
+    public async void ExecuteAttack(IDamageable target, int damage)
     {
         if (target == null || target.IsDestroyed())
-            return;
-
-        if (attackerTransform == null)
             return;
 
         await System.Threading.Tasks.Task.Delay(Mathf.RoundToInt(projectileSpawnDelay * 1000));
         
         if (target.IsDestroyed())
             return;
-
-        if (attackerTransform == null)
-            return;
         
-        Vector3 spawnPos = projectileSpawnPoint != null ? projectileSpawnPoint.position : attackerTransform.position;
+        Vector3 spawnPos = projectileSpawnPoint.position;
         Projectile projectile = ObjectPool.Spawn(projectilePrefab, spawnPos, Quaternion.identity);
-        Unit attackerUnit = attackerTransform.GetComponent<Unit>();
-        projectile.Initialize(target, damage, attackerUnit);
+        projectile.Initialize(target, damage);
     }
 
     public bool TryFindNearbyTarget(Faction attackerFaction, Vector3 origin, float searchRadius, out IDamageable target)
