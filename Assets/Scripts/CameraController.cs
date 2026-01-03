@@ -31,7 +31,9 @@ public class CameraController : MonoBehaviour
     private float zoomOffset = 0f;
     private bool isMiddleMouseDragging;
     private Vector3 lastMousePosition;
-    
+
+    public Camera TargetCamera => targetCamera;
+
     void Start()
     {
         // If no camera assigned, try to find one on this GameObject
@@ -58,6 +60,44 @@ public class CameraController : MonoBehaviour
         }
 
         ClampPanPositionToBounds();
+    }
+
+    public Vector3 GetPanPosition()
+    {
+        if (targetCamera == null)
+        {
+            return panPosition;
+        }
+
+        if (panPosition == Vector3.zero && targetCamera.transform.localPosition != Vector3.zero)
+        {
+            return targetCamera.transform.localPosition - GetZoomDirection() * zoomOffset;
+        }
+
+        return panPosition;
+    }
+
+    public void SetPanPosition(Vector3 newPanPosition, bool clampToBounds = true)
+    {
+        panPosition = newPanPosition;
+        if (clampToBounds)
+        {
+            ClampPanPositionToBounds();
+        }
+    }
+
+    public void SetPanPositionAndApply(Vector3 newPanPosition, bool clampToBounds = true)
+    {
+        panPosition = newPanPosition;
+        if (clampToBounds)
+        {
+            ClampPanPositionToBounds();
+        }
+
+        if (targetCamera != null)
+        {
+            targetCamera.transform.localPosition = panPosition + GetZoomDirection() * zoomOffset;
+        }
     }
 
     void Update()

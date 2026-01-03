@@ -266,8 +266,8 @@ Transform:
   m_GameObject: {fileID: 47606505}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 100, y: 1, z: 100}
+  m_LocalPosition: {x: 500, y: 0, z: 500}
+  m_LocalScale: {x: 110, y: 1, z: 110}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -603,7 +603,6 @@ MonoBehaviour:
   seed: 12345
   useRandomSeed: 1
   generatedRoot: {fileID: 193777932}
-  cameraRig: {fileID: 652129629}
   castlePrefab: {fileID: 5557218969983699086, guid: 1cc50aac83fe59d4d91d3fcf0be515a7, type: 3}
   foodTreePrefab: {fileID: 6939212888757053336, guid: c60f31ba167e01f41bc7f1927becf5ce, type: 3}
   treePrefab: {fileID: 6939212888757053336, guid: 6948053eb134fc445a20a733d0d23f33, type: 3}
@@ -3375,7 +3374,7 @@ Transform:
   m_GameObject: {fileID: 652129628}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 27.68, z: -15.83}
+  m_LocalPosition: {x: 0, y: 27.68, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4125,8 +4124,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 100, y: 50, z: 100}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1010, y: 50, z: 1010}
+  m_Center: {x: 505, y: 0, z: 505}
 --- !u!4 &759814920
 Transform:
   m_ObjectHideFlags: 0
@@ -4645,6 +4644,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4752,6 +4752,44 @@ MonoBehaviour:
   edgeThresholdPixels: 16
   allowMiddleMouseDrag: 1
   middleMouseDragSpeed: 0.02
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e42434154ee2694f90372f998fbf5c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFocusController
+  cameraController: {fileID: 963194229}
+  focusDurationSeconds: 0.5
+  focusEasing:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &970483507
 PrefabInstance:
   m_ObjectHideFlags: 0

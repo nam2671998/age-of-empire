@@ -24,7 +24,6 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private int seed;
     [SerializeField] private bool useRandomSeed = true;
     [SerializeField] private Transform generatedRoot;
-    [SerializeField] private Transform cameraRig;
 
     [Header("Prefabs")]
     [SerializeField] private GameObject castlePrefab;
@@ -161,15 +160,12 @@ public class MapGenerator : MonoBehaviour
         // Animals spawn anywhere
         SpawnRandomInBounds(rng, animalPrefab, animalCount, 0, 0, mapSize, mapSize, generatedRoot);
 
-        if (firstCastle == null)
+        if (!Application.isPlaying || firstCastle == null)
         {
             Debug.LogError("Something is wrong. No Castle placed");
             return;
         }
-        Vector3 camPosition = cameraRig.transform.position;
-        camPosition.x = firstCastle.position.x;
-        camPosition.z = firstCastle.position.z;
-        cameraRig.transform.position = camPosition;
+        FindAnyObjectByType<CameraFocusController>().Focus(firstCastle.gameObject, true);
     }
 
 
