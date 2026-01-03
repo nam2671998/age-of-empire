@@ -1,8 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Using Bresenham's algorithm to get all cells in a line between two points
 public static class GridLineCells
 {
+    /// <summary>
+    /// Adds all cells in a line between two points to the output list.
+    /// </summary>
+    /// <param name="start">The starting point of the line.</param>
+    /// <param name="end">The ending point of the line.</param>
+    /// <param name="unique">A HashSet to track unique cells to avoid duplicates.</param>
+    /// <param name="output">The list to store the resulting cells.</param>
+    /// <param name="excludeEnd">If true, the end point will not be included in the output.</param>
     public static void AddLineCells(Vector2Int start, Vector2Int end, HashSet<Vector2Int> unique, List<Vector2Int> output, bool excludeEnd)
     {
         int x0 = start.x;

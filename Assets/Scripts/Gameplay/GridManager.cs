@@ -49,10 +49,17 @@ public class GridManager : MonoBehaviour
     /// </summary>
     public bool IsCellFree(Vector2Int gridPos)
     {
-        if (reservedCells.ContainsKey(gridPos) && reservedCells[gridPos].GetTransform() == null)
+        if (reservedCells.TryGetValue(gridPos, out IGridEntity owner) && owner != null && owner.GetTransform() == null)
         {
             reservedCells.Remove(gridPos);
-            reserveCellsByEntity.Remove(reservedCells[gridPos]);
+            if (reserveCellsByEntity.TryGetValue(owner, out List<Vector2Int> cells))
+            {
+                cells.Remove(gridPos);
+                if (cells.Count == 0)
+                {
+                    reserveCellsByEntity.Remove(owner);
+                }
+            }
         }
         return !reservedCells.ContainsKey(gridPos);
     }
@@ -177,7 +184,14 @@ public class GridManager : MonoBehaviour
     public void FreeCell(IGridEntity movementOwner, Vector2Int gridPos)
     {
         reservedCells.Remove(gridPos);
-        reserveCellsByEntity.Remove(movementOwner);
+        if (movementOwner != null && reserveCellsByEntity.TryGetValue(movementOwner, out List<Vector2Int> cells))
+        {
+            cells.Remove(gridPos);
+            if (cells.Count == 0)
+            {
+                reserveCellsByEntity.Remove(movementOwner);
+            }
+        }
     }
 
     /// <summary>
@@ -195,6 +209,23 @@ public class GridManager : MonoBehaviour
             }
             reserveCellsByEntity.Remove(unit);
         }
+    }
+
+    public bool TryGetReservedCell(IGridEntity entity, out Vector2Int cell)
+    {
+        cell = default;
+        if (entity == null)
+        {
+            return false;
+        }
+
+        if (!reserveCellsByEntity.TryGetValue(entity, out List<Vector2Int> cells) || cells.Count == 0)
+        {
+            return false;
+        }
+
+        cell = cells[0];
+        return true;
     }
 
     /// <summary>

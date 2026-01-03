@@ -2,10 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
+/// <summary>
+/// Picks a nearby "standing cell" for a unit so multiple units can interact with the same target.
+/// </summary>
+/// <remarks>
+/// The candidate cells are precomputed (either an outline from transforms or a ring around a center).
+/// On request, we choose the closest candidate that is free in <see cref="GridManager"/>.
+/// </remarks>
 public class SlotReservationController
 {
-    private readonly Dictionary<IGridEntity, Vector2Int> reservedSlotByExecutor = new Dictionary<IGridEntity, Vector2Int>();
-    private readonly HashSet<Vector2Int> reservedSlots = new HashSet<Vector2Int>();
+    // Candidate slot cells. These are potential standing positions around the target.
     private readonly List<Vector2Int> slots = new List<Vector2Int>();
 
     public SlotReservationController(Transform[] verticesTransforms)
@@ -37,17 +43,15 @@ public class SlotReservationController
             return false;
         }
 
-        CleanupDestroyedReservations(movementOwner);
-
-        if (reservedSlotByExecutor.TryGetValue(movementOwner, out Vector2Int existingCell))
-        {
-            position = GridManager.Instance.GridToWorld(existingCell);
-            return true;
-        }
-
         if (slots.Count == 0)
         {
             return false;
+        }
+
+        if (GridManager.Instance.TryGetReservedCell(movementOwner, out Vector2Int existingCell) && slots.Contains(existingCell))
+        {
+            position = GridManager.Instance.GridToWorld(existingCell);
+            return true;
         }
 
         Vector2Int fromCell = GridManager.Instance.WorldToGrid(position);
@@ -55,16 +59,16 @@ public class SlotReservationController
         Vector2Int result = default;
         int shortestDistance = int.MaxValue;
 
+        // Choose the closest available candidate slot to the unit.
         foreach (var cell in slots)
         {
-            if (reservedSlots.Contains(cell))
-            {
-                continue;
-            }
-
             if (!GridManager.Instance.IsCellFree(cell))
             {
-                continue;
+                IGridEntity occupant = GridManager.Instance.GetCellReservation(cell);
+                if (occupant == null || occupant != movementOwner)
+                {
+                    continue;
+                }
             }
 
             Vector2Int delta = cell - fromCell;
@@ -82,9 +86,11 @@ public class SlotReservationController
             return false;
         }
 
-        GridManager.Instance.ReserveCell(result, movementOwner);
-        reservedSlots.Add(result);
-        reservedSlotByExecutor[movementOwner] = result;
+        // Reserve it in the grid so other systems (movement/pathing) also see it as occupied.
+        if (!GridManager.Instance.ReserveCell(result, movementOwner))
+        {
+            return false;
+        }
         position = GridManager.Instance.GridToWorld(result);
         return true;
     }
@@ -98,52 +104,14 @@ public class SlotReservationController
 
         if (GridManager.Instance == null)
         {
-            if (reservedSlotByExecutor.Remove(movementOwner, out Vector2Int cellToRemove))
-            {
-                reservedSlots.Remove(cellToRemove);
-            }
             return;
         }
 
-        if (reservedSlotByExecutor.Remove(movementOwner, out Vector2Int cell))
+        if (GridManager.Instance.TryGetReservedCell(movementOwner, out Vector2Int cell) && slots.Contains(cell))
         {
-            reservedSlots.Remove(cell);
-
+            // Only free the grid cell if we are still the owner (or it's already empty).
             IGridEntity occupant = GridManager.Instance.GetCellReservation(cell);
             if (occupant == null || occupant == movementOwner)
-            {
-                GridManager.Instance.FreeCell(movementOwner, cell);
-            }
-        }
-    }
-
-    private void CleanupDestroyedReservations(IGridEntity movementOwner)
-    {
-        if (reservedSlotByExecutor.Count == 0)
-        {
-            return;
-        }
-
-        var cellsToFree = new List<Vector2Int>();
-        var keysToRemove = new List<IGridEntity>();
-        foreach (var kvp in reservedSlotByExecutor)
-        {
-            if (kvp.Key == null)
-            {
-                keysToRemove.Add(kvp.Key);
-                cellsToFree.Add(kvp.Value);
-            }
-        }
-
-        foreach (var commandExecutor in keysToRemove)
-        {
-            reservedSlotByExecutor.Remove(commandExecutor);
-        }
-
-        foreach (var cell in cellsToFree)
-        {
-            reservedSlots.Remove(cell);
-            if (GridManager.Instance != null)
             {
                 GridManager.Instance.FreeCell(movementOwner, cell);
             }
@@ -159,6 +127,7 @@ public class SlotReservationController
             return;
         }
 
+        // Convert vertex transforms into grid cells and connect them as an outline.
         List<Vector2Int> vertices = ListPool<Vector2Int>.Get();
         foreach (var transform in verticesTransforms)
         {
@@ -179,6 +148,7 @@ public class SlotReservationController
         {
             Vector2Int a = vertices[i];
             Vector2Int b = vertices[(i + 1) % vertices.Count];
+            // Add the grid cells along each edge; exclude the end cell to avoid duplicates at corners.
             GridLineCells.AddLineCells(a, b, unique, slots, true);
         }
         ListPool<Vector2Int>.Release(vertices);
@@ -191,6 +161,9 @@ public class SlotReservationController
         if (radius <= excludeRadius)
             return;
 
+        // Produce a ring (or multiple rings) around a center point:
+        // - r is the ring distance from center.
+        // - excludeRadius leaves an empty area near the center so units don't overlap the target.
         for (int r = excludeRadius + 1; r <= radius; r++)
         {
             // Top & bottom edges

@@ -10,7 +10,6 @@ public class CameraController : MonoBehaviour
     [SerializeField] private float maxSpeed = 20f; // Maximum speed when holding keys
     [SerializeField] private float acceleration = 10f; // How fast speed increases per second
     [SerializeField] private bool allowArrowKeyMovement = true;
-    [SerializeField] private bool constrainToMovementBounds = true;
     [SerializeField] private BoxCollider movementBounds;
 
     [Header("Zoom Settings")]
@@ -251,7 +250,7 @@ public class CameraController : MonoBehaviour
 
     private void ClampPanPositionToBounds()
     {
-        if (!constrainToMovementBounds || movementBounds == null)
+        if (movementBounds == null)
         {
             return;
         }
