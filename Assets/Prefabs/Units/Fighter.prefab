@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 502909232037994913}
   - component: {fileID: 7102060955683836432}
   - component: {fileID: 6213994037910903643}
+  - component: {fileID: 51338453769178809}
   m_Layer: 7
   m_Name: Fighter
   m_TagString: Untagged
@@ -243,6 +244,21 @@ CapsuleCollider:
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0.75, z: 0}
+--- !u!114 &51338453769178809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2964311503174203041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0535f231c8112645a1b399acb338671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFocusEntity
+  assignedKey: 117
+  targetGameObject: {fileID: 0}
+  focusController: {fileID: 0}
 --- !u!1 &6427505942302577857
 GameObject:
   m_ObjectHideFlags: 0

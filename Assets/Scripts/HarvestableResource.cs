@@ -64,7 +64,7 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
         return transform.position;
     }
     
-    public bool TryGetHarvestPosition(out Vector3 harvestPosition)
+    public bool TryGetHarvestPosition(out Vector3 harvestPosition, IGridEntity harvester)
     {
         Vector2Int center = GridManager.Instance.WorldToGrid(transform.position);
         for (int r = 1; r <= harvestPositionRadius; r++)
@@ -73,13 +73,13 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
             for (int x = -r; x <= r; x++)
             {
                 var cell = new Vector2Int(center.x + x, center.y + r);
-                if (GridManager.Instance.IsCellFree(cell))
+                if (GridManager.Instance.IsCellFree(cell) || GridManager.Instance.GetCellReservation(cell) == harvester)
                 {
                     harvestPosition = GridManager.Instance.GridToWorld(cell);
                     return true;
                 }
                 cell = new Vector2Int(center.x + x, center.y - r);
-                if (GridManager.Instance.IsCellFree(cell))
+                if (GridManager.Instance.IsCellFree(cell) || GridManager.Instance.GetCellReservation(cell) == harvester)
                 {
                     harvestPosition = GridManager.Instance.GridToWorld(cell);
                     return true;
@@ -90,13 +90,13 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
             for (int y = -r + 1; y <= r - 1; y++)
             {
                 var cell = new Vector2Int(center.x + r, center.y + y);
-                if (GridManager.Instance.IsCellFree(cell))
+                if (GridManager.Instance.IsCellFree(cell) || GridManager.Instance.GetCellReservation(cell) == harvester)
                 {
                     harvestPosition = GridManager.Instance.GridToWorld(cell);
                     return true;
                 }
                 cell = new Vector2Int(center.x - r, center.y + y);
-                if (GridManager.Instance.IsCellFree(cell))
+                if (GridManager.Instance.IsCellFree(cell) || GridManager.Instance.GetCellReservation(cell) == harvester)
                 {
                     harvestPosition = GridManager.Instance.GridToWorld(cell);
                     return true;
@@ -136,6 +136,11 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
         {
             capacityStates[i].SetActive(i == state);
         }
+    }
+    
+    public bool CanHarvest()
+    {
+        return currentResources > 0;
     }
 }
 

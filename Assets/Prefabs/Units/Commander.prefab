@@ -111,6 +111,7 @@ GameObject:
   - component: {fileID: 4619650736641787533}
   - component: {fileID: 5376509245766083347}
   - component: {fileID: 8042676703812072201}
+  - component: {fileID: 3468912642753868591}
   m_Layer: 7
   m_Name: Commander
   m_TagString: Untagged
@@ -333,6 +334,21 @@ CapsuleCollider:
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0.75, z: 0}
+--- !u!114 &3468912642753868591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4328634571796624101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0535f231c8112645a1b399acb338671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFocusEntity
+  assignedKey: 117
+  targetGameObject: {fileID: 0}
+  focusController: {fileID: 0}
 --- !u!1001 &5055820495220818686
 PrefabInstance:
   m_ObjectHideFlags: 0

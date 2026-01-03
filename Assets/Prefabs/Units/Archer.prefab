@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 11985213104818790}
   - component: {fileID: 5868870535773273174}
   - component: {fileID: 709399328256235785}
+  - component: {fileID: -5875524206210760660}
   m_Layer: 7
   m_Name: Archer
   m_TagString: Untagged
@@ -246,6 +247,21 @@ MonoBehaviour:
   projectilePrefab: {fileID: 6864474616566019117, guid: a65765937d3087446981e39ee4b0b3d3, type: 3}
   projectileSpawnPoint: {fileID: 7390981874457854113}
   projectileSpawnDelay: 0.33
+--- !u!114 &-5875524206210760660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6295318253833260838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0535f231c8112645a1b399acb338671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFocusEntity
+  assignedKey: 117
+  targetGameObject: {fileID: 0}
+  focusController: {fileID: 0}
 --- !u!1 &8536592990224738189
 GameObject:
   m_ObjectHideFlags: 0

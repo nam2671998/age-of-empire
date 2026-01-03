@@ -36,7 +36,14 @@ public interface IHarvestable
     /// Gets the position where a unit should stand when harvesting this resource
     /// </summary>
     /// <param name="harvestPosition"></param>
-    bool TryGetHarvestPosition(out Vector3 harvestPosition);
+    /// <param name="harvester"></param>
+    bool TryGetHarvestPosition(out Vector3 harvestPosition, IGridEntity harvester);
+
+    /// <summary>
+    /// Checks if the resource can be harvested
+    /// </summary>
+    /// <returns></returns>
+    bool CanHarvest();
 }
 
 /// <summary>

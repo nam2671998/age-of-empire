@@ -14,7 +14,7 @@ public class HarvestCommandResolver : ICommandResolver
         if (!IsInLayer(hit.collider.gameObject.layer, resourceLayer))
             return false;
 
-        return hit.collider.TryGetComponent(out IHarvestable _);
+        return hit.collider.TryGetComponent(out IHarvestable harvestable) && harvestable.CanHarvest();
     }
 
     public ICommand CreateCommand(RaycastHit hit)

@@ -18,5 +18,12 @@ public class GridEntity : MonoBehaviour, IGridEntity
     {
         return transform;
     }
+
+    public void OverrideSize(Vector3 center, Vector2Int newSize)
+    {
+        GridManager.Instance.FreeUnitReservation(this);
+        gridSize = newSize;
+        GridManager.Instance.ReserveArea(center, gridSize, this);
+    }
 }
 

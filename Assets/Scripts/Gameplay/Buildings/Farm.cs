@@ -3,12 +3,15 @@ using UnityEngine;
 
 public class Farm : MonoBehaviour, IHarvestable
 {
+    [SerializeField] private Vector2Int size;
     [SerializeField] private ResourceType resourceType = ResourceType.Food;
     [SerializeField] private Transform harvestPositionTransform;
+    [SerializeField] private Transform builtCenter;
     [SerializeField] private int maxResources = 100;
     
     private int currentResources;
     private Health health;
+    private GridEntity gridEntity;
     
      void Start()
     {
@@ -19,6 +22,7 @@ public class Farm : MonoBehaviour, IHarvestable
             health.HealthChanged += OnBuild;
             gameObject.layer = LayerMask.NameToLayer("Building");
         }
+        gridEntity = GetComponent<GridEntity>();
     }
 
     private void OnDestroy()
@@ -31,8 +35,13 @@ public class Farm : MonoBehaviour, IHarvestable
     
     private void OnBuild(int currentHealth, int maxHealth)
     {
-        currentResources = maxResources;
-        gameObject.layer = LayerMask.NameToLayer("Resource");
+        if (currentHealth >= maxHealth)
+        {
+            health.HealthChanged -= OnBuild;
+            currentResources = maxResources;
+            gameObject.layer = LayerMask.NameToLayer("Resource");
+            gridEntity.OverrideSize(builtCenter.position, size);
+        }
     }
     
     public int Harvest(int amount)
@@ -80,15 +89,22 @@ public class Farm : MonoBehaviour, IHarvestable
         return transform.position;
     }
     
-    public bool TryGetHarvestPosition(out Vector3 harvestPosition)
+    public bool TryGetHarvestPosition(out Vector3 harvestPosition, IGridEntity harvester)
     {
         harvestPosition = harvestPositionTransform.position;
         Vector2Int harvestCell = GridManager.Instance.WorldToGrid(harvestPositionTransform.position);
-        return GridManager.Instance.IsCellFree(harvestCell);
+        IGridEntity occupant = GridManager.Instance.GetCellReservation(harvestCell);
+        bool isCellFree = GridManager.Instance.IsCellFree(harvestCell);
+        return isCellFree || occupant == harvester;
     }
 
     private void OnDepleted()
     {
         Destroy(gameObject);
+    }
+
+    public bool CanHarvest()
+    {
+        return currentResources > 0;
     }
 }

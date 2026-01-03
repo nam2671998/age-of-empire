@@ -40,7 +40,7 @@ public partial class UnitHarvesterController
                 return;
             }
 
-            if (controller.currentTarget.TryGetHarvestPosition(out Vector3 harvestPosition))
+            if (controller.currentTarget.TryGetHarvestPosition(out Vector3 harvestPosition, controller.movementOwner))
             {
                 controller.currentHarvestPosition = harvestPosition;
                 controller.movementOwner.MoveTo(harvestPosition, 0.1f);

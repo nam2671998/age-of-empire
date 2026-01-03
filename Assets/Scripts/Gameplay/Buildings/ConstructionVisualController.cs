@@ -30,7 +30,7 @@ public class ConstructionVisualController : MonoBehaviour
         }
     }
 
-    private void SetCapacityState(int state)
+    public void SetCapacityState(int state)
     {
         if (progressStates == null)
         {

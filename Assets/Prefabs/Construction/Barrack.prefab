@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: 4200843415937479032}
   - component: {fileID: 4866261017367065606}
   - component: {fileID: 4779142240282321494}
+  - component: {fileID: 334708998017647419}
   m_Layer: 9
   m_Name: Barrack
   m_TagString: Untagged
@@ -216,6 +217,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridEntity
   gridSize: {x: 7, y: 7}
+--- !u!114 &334708998017647419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2492220945594999143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0535f231c8112645a1b399acb338671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFocusEntity
+  assignedKey: 99
+  targetGameObject: {fileID: 0}
+  focusController: {fileID: 0}
 --- !u!1 &2982640879381324423
 GameObject:
   m_ObjectHideFlags: 0

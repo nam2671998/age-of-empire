@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 2195671808993276713}
   - component: {fileID: 6422384188527181911}
   - component: {fileID: 2435274063104184083}
+  - component: {fileID: 3138129798369749301}
   m_Layer: 9
   m_Name: Farm
   m_TagString: Untagged
@@ -138,6 +139,7 @@ Transform:
   - {fileID: 2294489598602428480}
   - {fileID: 7619108807904884612}
   - {fileID: 2972238285750228883}
+  - {fileID: 1973450602593857194}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3442154067805758788
@@ -193,6 +195,7 @@ MonoBehaviour:
   health: {fileID: 3442154067805758788}
   beingSabotageFx: {fileID: 7529793828241715969}
   gridEntity: {fileID: 2435274063104184083}
+  isBuilt: 0
 --- !u!208 &5251726632545688862
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -221,8 +224,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec6cb6c64e8f0b04e9f5f8e890d0906e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FarmConstruction
+  size: {x: 4, y: 7}
   resourceType: 3
   harvestPositionTransform: {fileID: 7619108807904884612}
+  builtCenter: {fileID: 1973450602593857194}
   maxResources: 100
 --- !u!65 &6422384188527181911
 BoxCollider:
@@ -258,6 +263,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridEntity
   gridSize: {x: 7, y: 7}
+--- !u!114 &3138129798369749301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6695361533374442539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0535f231c8112645a1b399acb338671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFocusEntity
+  assignedKey: 99
+  targetGameObject: {fileID: 0}
+  focusController: {fileID: 0}
 --- !u!1 &7529793828241715969
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,6 +339,37 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 4, y: 0, z: 4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6023989802795894776}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8366861487558756309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1973450602593857194}
+  m_Layer: 9
+  m_Name: BuiltCenter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1973450602593857194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8366861487558756309}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2, y: 0, z: 0.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

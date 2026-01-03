@@ -11,6 +11,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     [SerializeField] private Health health;
     [SerializeField] private GameObject beingSabotageFx;
     [SerializeField] private GridEntity gridEntity;
+    [SerializeField] private bool isBuilt;
     private SlotReservationController slotReservationController;
 
     private void Awake()
@@ -31,8 +32,15 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
             else
                 Place();
             health.HealthChanged += OnHealthChanged;
+            health.Damaged += OnDamaged;
         }
         beingSabotageFx.SetActive(false);
+    }
+
+    private void OnDamaged(int damage, GameObject attacker)
+    {
+        if (damage > 0)
+            beingSabotageFx.SetActive(true);
     }
 
     private void OnDestroy()
@@ -46,7 +54,8 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
     private void OnHealthChanged(int currentHealth, int maxHealth)
     {
-        beingSabotageFx.SetActive(currentHealth < maxHealth);
+        if (currentHealth >= maxHealth)
+            beingSabotageFx.SetActive(false);
         if (currentHealth <= 0)
             OnDepleted();
     }
@@ -57,6 +66,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         if (currentHealth >= maxHealth)
         {
             health.HealthChanged -= OnBuild;
+            isBuilt = true;
         }
     }
 
@@ -133,20 +143,26 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
     public bool IsComplete()
     {
-        if (health == null) return false;
-        return health.CurrentHealth >= health.MaxHealth;
+        return isBuilt;
     }
 
     public void Preview()
     {
         navMeshObstacle.enabled = false;
         gridEntity.enabled = false;
+        isBuilt = false;
     }
 
     public void Place()
     {
         navMeshObstacle.enabled = true;
         gridEntity.enabled = true;
+        if (!isBuilt)
+            visualController.SetCapacityState(0);
+        if (TryGetComponent(out CameraFocusEntity entity) && TryGetComponent(out IFactionOwner factionOwner) && factionOwner.Faction == Faction.Player1)
+        {
+            entity.SubscribeFocus();
+        }
     }
 
     private void OnComplete()

@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.AI;
 
 public class UnitProduceConstruction : MonoBehaviour
 {
@@ -87,7 +88,8 @@ public class UnitProduceConstruction : MonoBehaviour
                 spawnPos.z = Random.Range(bounds.min.z, bounds.max.z);
             }
         }
-        unit.transform.position = spawnPos;
+
+        unit.GetComponent<NavMeshAgent>().Warp(spawnPos);
     }
 
     private static bool TrySpendUnitCost(Faction faction, int unitId)

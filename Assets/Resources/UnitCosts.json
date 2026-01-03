@@ -3,7 +3,7 @@
     {
       "id": 200100000,
       "costs": [
-        { "type": 3, "amount": 50 }
+        { "type": 3, "amount": 20 }
       ]
     },
     {

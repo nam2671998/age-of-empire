@@ -14,7 +14,7 @@ public class BuildCommandResolver : ICommandResolver
         if (!IsInLayer(hit.collider.gameObject.layer, buildingLayer))
             return false;
 
-        return hit.collider.GetComponentInParent<IBuildable>() != null;
+        return hit.collider.TryGetComponent(out IBuildable buildable) && !buildable.IsComplete();
     }
 
     public ICommand CreateCommand(RaycastHit hit)

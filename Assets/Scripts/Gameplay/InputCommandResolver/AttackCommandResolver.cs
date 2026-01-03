@@ -14,7 +14,7 @@ public class AttackCommandResolver : ICommandResolver
         if (!IsInLayer(hit.collider.gameObject.layer, unitLayer))
             return false;
 
-        return hit.collider.TryGetComponent<IDamageable>(out _);
+        return hit.collider.TryGetComponent(out Damageable damageable) && damageable.Faction != Faction.Player1;
     }
 
     public ICommand CreateCommand(RaycastHit hit)
