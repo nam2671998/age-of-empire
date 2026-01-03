@@ -10,8 +10,8 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     [SerializeField] private NavMeshObstacle navMeshObstacle;
     [SerializeField] private Health health;
     [SerializeField] private GameObject beingSabotageFx;
+    [SerializeField] private GridEntity gridEntity;
     private SlotReservationController slotReservationController;
-    private GridEntity gridEntity;
 
     private void Awake()
     {
@@ -20,8 +20,6 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         {
             visualController = GetComponent<ConstructionVisualController>();
         }
-
-        TryGetComponent(out gridEntity);
     }
 
     private void Start()
@@ -142,19 +140,13 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     public void Preview()
     {
         navMeshObstacle.enabled = false;
-        if (gridEntity != null)
-        {
-            gridEntity.enabled = false;
-        }
+        gridEntity.enabled = false;
     }
 
     public void Place()
     {
         navMeshObstacle.enabled = true;
-        if (gridEntity != null)
-        {
-            gridEntity.enabled = true;
-        }
+        gridEntity.enabled = true;
     }
 
     private void OnComplete()
