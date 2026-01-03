@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 6470561381709063609}
   - component: {fileID: 4200843415937479032}
   - component: {fileID: 4866261017367065606}
+  - component: {fileID: 4779142240282321494}
   m_Layer: 9
   m_Name: Barrack
   m_TagString: Untagged
@@ -63,7 +64,7 @@ Transform:
   m_GameObject: {fileID: 2492220945594999143}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -153,6 +154,7 @@ MonoBehaviour:
   onProduceUnit: {fileID: 11400000, guid: 47619ac666262b14cafd8e5c3490a383, type: 2}
   constructionConfig: {fileID: 11400000, guid: 3f88e976f0f274641a5c2a27bee5194f, type: 2}
   ownCollider: {fileID: 6116625358889534189}
+  onResourceInventoryChanged: {fileID: 0}
 --- !u!208 &6470561381709063609
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -200,6 +202,19 @@ MonoBehaviour:
   - {fileID: 703200696725309588}
   - {fileID: 9136094656181628749}
   - {fileID: 6016454612700094914}
+--- !u!114 &4779142240282321494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2492220945594999143}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dfc6b071cb35149be8c83271e2283f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridEntity
+  gridSize: {x: 7, y: 7}
 --- !u!1 &2982640879381324423
 GameObject:
   m_ObjectHideFlags: 0

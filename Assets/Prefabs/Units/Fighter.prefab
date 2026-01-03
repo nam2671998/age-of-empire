@@ -58,7 +58,7 @@ NavMeshAgent:
   m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 360
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 0
   m_AutoBraking: 1
@@ -83,6 +83,7 @@ MonoBehaviour:
   rotationSpeed: 360
   agent: {fileID: 6309730103402504807}
   animatorController: {fileID: 7923532930476015866}
+  autoRotate: 0
 --- !u!114 &1320720366331157019
 MonoBehaviour:
   m_ObjectHideFlags: 0

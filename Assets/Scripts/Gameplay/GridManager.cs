@@ -11,7 +11,8 @@ public class GridManager : MonoBehaviour
     [Header("Grid Settings")]
     [SerializeField] private float cellSize = 1f;
 
-    private Dictionary<Vector2Int, IMovementCapability> reservedCells = new();
+    private readonly Dictionary<Vector2Int, IGridEntity> reservedCells = new();
+    private readonly Dictionary<IGridEntity, List<Vector2Int>> reserveCellsByEntity = new();
 
     private void Awake()
     {
@@ -48,9 +49,10 @@ public class GridManager : MonoBehaviour
     /// </summary>
     public bool IsCellFree(Vector2Int gridPos)
     {
-        if (reservedCells.ContainsKey(gridPos) && (reservedCells[gridPos] == null || reservedCells[gridPos].GetTransform() == null))
+        if (reservedCells.ContainsKey(gridPos) && reservedCells[gridPos].GetTransform() == null)
         {
             reservedCells.Remove(gridPos);
+            reserveCellsByEntity.Remove(reservedCells[gridPos]);
         }
         return !reservedCells.ContainsKey(gridPos);
     }
@@ -58,7 +60,7 @@ public class GridManager : MonoBehaviour
     /// <summary>
     /// Finds the nearest free cell to the target position
     /// </summary>
-    public Vector2Int FindNearestFreeCell(Vector3 targetWorldPosition, IMovementCapability requestingUnit = null)
+    public Vector2Int FindNearestFreeCell(Vector3 targetWorldPosition, IGridEntity requestingUnit = null)
     {
         Vector2Int targetCell = WorldToGrid(targetWorldPosition);
 
@@ -67,7 +69,7 @@ public class GridManager : MonoBehaviour
             return targetCell;
 
         // If the requesting unit already has this cell reserved, use it
-        if (requestingUnit != null && reservedCells.TryGetValue(targetCell, out IMovementCapability occupant))
+        if (requestingUnit != null && reservedCells.TryGetValue(targetCell, out IGridEntity occupant))
         {
             if (occupant == requestingUnit)
                 return targetCell;
@@ -91,7 +93,7 @@ public class GridManager : MonoBehaviour
                         return candidateCell;
 
                     // Check if this cell is reserved by the requesting unit
-                    if (requestingUnit != null && reservedCells.TryGetValue(candidateCell, out IMovementCapability owner))
+                    if (requestingUnit != null && reservedCells.TryGetValue(candidateCell, out IGridEntity owner))
                     {
                         if (owner == requestingUnit)
                             return candidateCell;
@@ -108,53 +110,97 @@ public class GridManager : MonoBehaviour
     /// <summary>
     /// Reserves a cell for a specific unit
     /// </summary>
-    public bool ReserveCell(Vector2Int gridPos, IMovementCapability unit)
+    public bool ReserveCell(Vector2Int gridPos, IGridEntity entity)
     {
-        if (unit == null)
+        if (entity == null)
             return false;
 
         // Free any previous reservation by this unit
-        FreeUnitReservation(unit);
+        FreeUnitReservation(entity);
 
         // Reserve the new cell
-        reservedCells[gridPos] = unit;
+        reservedCells[gridPos] = entity;
+        if (!reserveCellsByEntity.ContainsKey(entity))
+        {
+            reserveCellsByEntity.Add(entity, new List<Vector2Int>());
+        }
+        reserveCellsByEntity[entity].Add(gridPos);
         return true;
     }
+
+    public void ReserveArea(Vector3 worldPosition, Vector2Int size, IGridEntity entity)
+    {
+        if (entity == null)
+            return;
+
+        FreeUnitReservation(entity);
+        if (size.x == 0 || size.y == 0)
+            return;
+
+        int width = Mathf.Max(1, size.x);
+        int height = Mathf.Max(1, size.y);
+
+        Vector2Int origin = WorldToGrid(worldPosition);
+
+        // Ensure list exists
+        if (!reserveCellsByEntity.TryGetValue(entity, out var cellList))
+        {
+            cellList = new List<Vector2Int>(width * height);
+            reserveCellsByEntity.Add(entity, cellList);
+        }
+        else
+        {
+            cellList.Clear();
+        }
+        
+        // Prioritize Top and Right in case the Height/Width is even number
+        int left = (width  - 1) / 2;
+        int right = width  / 2;
+        int bottom = (height - 1) / 2;
+        int top = height / 2;
+
+        for (int x = origin.x - left; x <= origin.x + right; x++)
+        {
+            for (int z = origin.y - bottom; z <= origin.y + top; z++)
+            {
+                Vector2Int cell = new Vector2Int(x, z);
+                reservedCells[cell] = entity;
+                cellList.Add(cell);
+            }
+        }
+    }
+
 
     /// <summary>
     /// Frees a specific cell
     /// </summary>
-    public void FreeCell(Vector2Int gridPos)
+    public void FreeCell(IGridEntity movementOwner, Vector2Int gridPos)
     {
         reservedCells.Remove(gridPos);
+        reserveCellsByEntity.Remove(movementOwner);
     }
 
     /// <summary>
     /// Frees any cell reserved by a specific unit
     /// </summary>
-    public void FreeUnitReservation(IMovementCapability unit)
+    public void FreeUnitReservation(IGridEntity unit)
     {
         if (unit == null)
             return;
-
-        // Find and remove all cells reserved by this unit
-        List<Vector2Int> cellsToFree = new List<Vector2Int>();
-        foreach (var kvp in reservedCells)
+        if (reserveCellsByEntity.TryGetValue(unit, out List<Vector2Int> cells))
         {
-            if (kvp.Value == unit)
-                cellsToFree.Add(kvp.Key);
-        }
-
-        foreach (var cell in cellsToFree)
-        {
-            reservedCells.Remove(cell);
+            foreach (var cell in cells)
+            {
+                reservedCells.Remove(cell);
+            }
+            reserveCellsByEntity.Remove(unit);
         }
     }
 
     /// <summary>
     /// Gets the unit that has reserved a specific cell
     /// </summary>
-    public IMovementCapability GetCellReservation(Vector2Int gridPos)
+    public IGridEntity GetCellReservation(Vector2Int gridPos)
     {
         return reservedCells.GetValueOrDefault(gridPos);
     }

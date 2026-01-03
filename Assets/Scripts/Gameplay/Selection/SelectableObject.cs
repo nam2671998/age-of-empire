@@ -8,7 +8,11 @@ public class SelectableObject : MonoBehaviour, IGameSelectable, IFactionOwner
     public bool CanSelectFromClick => selectionMode != SelectableSelectionMode.DragOnly;
     public bool CanSelectFromDrag => selectionMode != SelectableSelectionMode.ClickOnly;
 
-    public Faction Faction => faction;
+    public Faction Faction
+    {
+        get => faction;
+        set => faction = value;
+    }
 
     public virtual void OnSelected()
     {

@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 1406181451342082161}
   - component: {fileID: 6985975706825838981}
   - component: {fileID: 6036564750684795609}
+  - component: {fileID: -6888905400025504150}
   m_Layer: 8
   m_Name: Rock
   m_TagString: Untagged
@@ -102,12 +103,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HarvestableResource
   resourceType: 2
   maxResources: 10
-  harvestPositionRadius: 5
+  harvestPositionRadius: 2
   occupiedRadius: 1
   capacityStates:
   - {fileID: 3190485271258928428}
   - {fileID: 7773995459301778005}
   - {fileID: 1623208452312922738}
+--- !u!114 &-6888905400025504150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6939212888757053336}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dfc6b071cb35149be8c83271e2283f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridEntity
+  gridSize: {x: 1, y: 1}
 --- !u!1001 &1623208452313009172
 PrefabInstance:
   m_ObjectHideFlags: 0

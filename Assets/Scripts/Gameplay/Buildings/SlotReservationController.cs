@@ -4,7 +4,7 @@ using UnityEngine.Pool;
 
 public sealed class SlotReservationController
 {
-    private readonly Dictionary<IMovementCapability, Vector2Int> reservedSlotByExecutor = new Dictionary<IMovementCapability, Vector2Int>();
+    private readonly Dictionary<IGridEntity, Vector2Int> reservedSlotByExecutor = new Dictionary<IGridEntity, Vector2Int>();
     private readonly HashSet<Vector2Int> reservedSlots = new HashSet<Vector2Int>();
     private readonly List<Vector2Int> slots = new List<Vector2Int>();
 
@@ -18,7 +18,7 @@ public sealed class SlotReservationController
         InitializeSlots(center, radius, excludeRadius);
     }
 
-    public bool TryReservePosition(IMovementCapability movementOwner, out Vector3 position)
+    public bool TryReservePosition(IGridEntity movementOwner, out Vector3 position)
     {
         position = Vector3.zero;
         if (ReferenceEquals(movementOwner, null))
@@ -37,7 +37,7 @@ public sealed class SlotReservationController
             return false;
         }
 
-        CleanupDestroyedReservations();
+        CleanupDestroyedReservations(movementOwner);
 
         if (reservedSlotByExecutor.TryGetValue(movementOwner, out Vector2Int existingCell))
         {
@@ -89,7 +89,7 @@ public sealed class SlotReservationController
         return true;
     }
 
-    public void ReleasePosition(IMovementCapability movementOwner)
+    public void ReleasePosition(IGridEntity movementOwner)
     {
         if (ReferenceEquals(movementOwner, null))
         {
@@ -109,15 +109,15 @@ public sealed class SlotReservationController
         {
             reservedSlots.Remove(cell);
 
-            IMovementCapability occupant = GridManager.Instance.GetCellReservation(cell);
+            IGridEntity occupant = GridManager.Instance.GetCellReservation(cell);
             if (occupant == null || occupant == movementOwner)
             {
-                GridManager.Instance.FreeCell(cell);
+                GridManager.Instance.FreeCell(movementOwner, cell);
             }
         }
     }
 
-    private void CleanupDestroyedReservations()
+    private void CleanupDestroyedReservations(IGridEntity movementOwner)
     {
         if (reservedSlotByExecutor.Count == 0)
         {
@@ -125,7 +125,7 @@ public sealed class SlotReservationController
         }
 
         var cellsToFree = new List<Vector2Int>();
-        var keysToRemove = new List<IMovementCapability>();
+        var keysToRemove = new List<IGridEntity>();
         foreach (var kvp in reservedSlotByExecutor)
         {
             if (kvp.Key == null)
@@ -145,7 +145,7 @@ public sealed class SlotReservationController
             reservedSlots.Remove(cell);
             if (GridManager.Instance != null)
             {
-                GridManager.Instance.FreeCell(cell);
+                GridManager.Instance.FreeCell(movementOwner, cell);
             }
         }
     }

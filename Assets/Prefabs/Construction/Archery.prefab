@@ -234,6 +234,7 @@ GameObject:
   - component: {fileID: 7896757919707121538}
   - component: {fileID: 7292856075640927944}
   - component: {fileID: 3694908028554164228}
+  - component: {fileID: 250966915483451207}
   m_Layer: 9
   m_Name: Archery
   m_TagString: Untagged
@@ -250,7 +251,7 @@ Transform:
   m_GameObject: {fileID: 5295839458366976727}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -340,6 +341,7 @@ MonoBehaviour:
   onProduceUnit: {fileID: 11400000, guid: 47619ac666262b14cafd8e5c3490a383, type: 2}
   constructionConfig: {fileID: 11400000, guid: bd90b83516542944a86c1a54b9645476, type: 2}
   ownCollider: {fileID: 6303283349121687938}
+  onResourceInventoryChanged: {fileID: 0}
 --- !u!208 &7896757919707121538
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -387,6 +389,19 @@ MonoBehaviour:
   - {fileID: 5645464838029577146}
   - {fileID: 6694954751292644039}
   - {fileID: 8182188537703621577}
+--- !u!114 &250966915483451207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5295839458366976727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5dfc6b071cb35149be8c83271e2283f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridEntity
+  gridSize: {x: 7, y: 7}
 --- !u!1 &5868457203298876992
 GameObject:
   m_ObjectHideFlags: 0

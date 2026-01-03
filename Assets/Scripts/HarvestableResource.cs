@@ -7,7 +7,7 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
 {
     [SerializeField] private ResourceType resourceType = ResourceType.None;
     [SerializeField] private int maxResources = 100;
-    
+    [SerializeField] private int harvestMultiplier = 1;
     [SerializeField] private int harvestPositionRadius = 1;
     [SerializeField] private int occupiedRadius = 1;
 
@@ -26,7 +26,7 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
         if (IsDepleted())
             return 0;
             
-        int harvested = Mathf.Min(amount, currentResources);
+        int harvested = Mathf.Min(amount * harvestMultiplier, currentResources);
         currentResources -= harvested;
         UpdateCapacityState();
         if (currentResources <= 0)
@@ -110,7 +110,7 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
 
     private void OnDepleted()
     {
-        // gameObject.SetActive(false);
+        this.Recycle();
     }
 
     private void UpdateCapacityState()

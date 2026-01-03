@@ -16,7 +16,11 @@ public class Damageable : MonoBehaviour, IDamageable
     private Health health;
 
     public bool IsDead => health != null && health.IsDepleted;
-    public Faction Faction => faction;
+    public Faction Faction
+    {
+        get => faction;
+        set => faction = value;
+    }
 
     private void Awake()
     {

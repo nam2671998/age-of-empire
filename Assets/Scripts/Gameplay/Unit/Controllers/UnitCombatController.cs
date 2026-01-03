@@ -23,7 +23,11 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     private UnitAnimatorController animator;
     
     public bool IsAttacking => isAttacking;
-    public Faction Faction => faction;
+    public Faction Faction
+    {
+        get => faction;
+        set => faction = value;
+    }
     public IDamageable CurrentTarget => attackTarget;
     
     private void Awake()

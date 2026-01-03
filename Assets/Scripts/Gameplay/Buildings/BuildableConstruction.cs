@@ -11,6 +11,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     [SerializeField] private Health health;
     [SerializeField] private GameObject beingSabotageFx;
     private SlotReservationController slotReservationController;
+    private GridEntity gridEntity;
 
     private void Awake()
     {
@@ -19,6 +20,8 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         {
             visualController = GetComponent<ConstructionVisualController>();
         }
+
+        TryGetComponent(out gridEntity);
     }
 
     private void Start()
@@ -27,6 +30,9 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         {
             if (health.CurrentHealth < health.MaxHealth)
                 health.HealthChanged += OnBuild;
+            else
+                Place();
+            health.HealthChanged += OnHealthChanged;
         }
         beingSabotageFx.SetActive(false);
     }
@@ -43,6 +49,8 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     private void OnHealthChanged(int currentHealth, int maxHealth)
     {
         beingSabotageFx.SetActive(currentHealth < maxHealth);
+        if (currentHealth <= 0)
+            OnDepleted();
     }
     
     private void OnBuild(int currentHealth, int maxHealth)
@@ -51,7 +59,6 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
         if (currentHealth >= maxHealth)
         {
             health.HealthChanged -= OnBuild;
-            health.HealthChanged += OnHealthChanged;
         }
     }
 
@@ -101,7 +108,7 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
             slotReservationController.InitializeSlots(buildPositionTransforms);
         }
 
-        bool reserved = slotReservationController.TryReservePosition(executor.GetComponent<IMovementCapability>(), out position);
+        bool reserved = slotReservationController.TryReservePosition(executor.GetComponent<IGridEntity>(), out position);
         if (!reserved && executor != null)
         {
             position = GetNearestBuildPosition(executor.transform.position);
@@ -135,15 +142,28 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
     public void Preview()
     {
         navMeshObstacle.enabled = false;
+        if (gridEntity != null)
+        {
+            gridEntity.enabled = false;
+        }
     }
 
     public void Place()
     {
         navMeshObstacle.enabled = true;
+        if (gridEntity != null)
+        {
+            gridEntity.enabled = true;
+        }
     }
 
     private void OnComplete()
     {
         
+    }
+
+    private void OnDepleted()
+    {
+        gameObject.SetActive(false);
     }
 }

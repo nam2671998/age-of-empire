@@ -1,20 +1,53 @@
 using UnityEngine;
 
-[RequireComponent(typeof(UnitCombatController))]
 [RequireComponent(typeof(Damageable))]
-public class AnimalUnit : Unit, IStopAction
+[RequireComponent(typeof(UnitCombatController))]
+[RequireComponent(typeof(UnitMovementController))]
+[RequireComponent(typeof(UnitActionStateController))]
+public class AnimalUnit : MonoBehaviour, IStopAction
 {
+    [SerializeField] private GameObject meatPrefab;
     private ICombatCapability combat;
     private Damageable damageable;
-
-    protected override void InitializeComponents()
+    private UnitMovementController movement;
+    private UnitActionStateController stateManager;
+    private UnitAnimatorController animator;
+    
+    void Awake()
     {
-        base.InitializeComponents();
+        InitializeComponents();
+        InitializeUnit();
+    }
+    
+    void Update()
+    {
+        if (movement != null && movement.IsMoving)
+        {
+            movement.UpdateMovement();
+        }
+        
+        if (stateManager != null)
+        {
+            stateManager.UpdateState();
+        }
+        
+        if (animator != null)
+        {
+            float speed = movement != null ? movement.GetCurrentSpeed() : 0f;
+            animator.UpdateState(stateManager.CurrentState, speed);
+        }
+    }
+
+    private void InitializeComponents()
+    {
+        TryGetComponent(out movement);
+        TryGetComponent(out stateManager);
+        TryGetComponent(out animator);
         TryGetComponent(out combat);
         TryGetComponent(out damageable);
     }
 
-    protected override void InitializeUnit()
+    private void InitializeUnit()
     {
         if (combat != null)
         {
@@ -26,7 +59,14 @@ public class AnimalUnit : Unit, IStopAction
         if (damageable != null)
         {
             damageable.OnDamageTakenHandler += OnDamageTaken;
+            damageable.OnDeath += OnDeath;
         }
+    }
+
+    private void OnDeath(Unit attacker)
+    {
+        ObjectPool.Spawn(meatPrefab, transform.position, Quaternion.identity);
+        gameObject.SetActive(false);
     }
 
     private void OnDamageTaken(Unit attacker)
@@ -41,10 +81,6 @@ public class AnimalUnit : Unit, IStopAction
                 combat.SetAttackTarget(target);
             }
         }
-    }
-
-    protected override void UpdateUnit()
-    {
     }
     
     private void OnDestroy()

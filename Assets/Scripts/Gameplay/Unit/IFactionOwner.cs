@@ -1,5 +1,5 @@
 public interface IFactionOwner
 {
-    Faction Faction { get; }
+    Faction Faction { get; set; }
 }
 

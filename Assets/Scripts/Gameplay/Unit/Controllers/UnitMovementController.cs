@@ -4,7 +4,7 @@ using UnityEngine.AI;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class UnitMovementController : MonoBehaviour, IMovementCapability
+public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridEntity
 {
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;

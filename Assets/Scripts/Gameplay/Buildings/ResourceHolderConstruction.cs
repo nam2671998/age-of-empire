@@ -12,7 +12,11 @@ public sealed class ResourceHolderConstruction : MonoBehaviour, IResourceHolderC
     private bool registered;
 
     public int Priority => priority;
-    public Faction Faction => faction;
+    public Faction Faction
+    {
+        get => faction;
+        set => faction = value;
+    }
 
     private void Awake()
     {
