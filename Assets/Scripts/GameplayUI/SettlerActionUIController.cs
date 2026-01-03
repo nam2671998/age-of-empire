@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class SettlerActionUIController : MonoBehaviour
+public class SettlerActionUIController : MonoBehaviour
 {
     [SerializeField] private GameObjectEventChannelSO onSelectedSettler;
     [SerializeField] private VoidEventChannelSO onDeselectedSettler;

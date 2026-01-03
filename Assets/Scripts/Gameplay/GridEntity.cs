@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public sealed class GridEntity : MonoBehaviour, IGridEntity
+public class GridEntity : MonoBehaviour, IGridEntity
 {
     [SerializeField] private Vector2Int gridSize = Vector2Int.one;
     private bool subscribed;

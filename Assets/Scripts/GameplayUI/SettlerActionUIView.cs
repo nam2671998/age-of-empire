@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public sealed class SettlerActionUIView : MonoBehaviour
+public class SettlerActionUIView : MonoBehaviour
 {
     [SerializeField] private GameObject uiPanel;
     [SerializeField] private SettlerActionUIController controller;

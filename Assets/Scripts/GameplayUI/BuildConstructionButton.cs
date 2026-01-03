@@ -5,7 +5,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public sealed class BuildConstructionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class BuildConstructionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Image icon;
     [SerializeField] private RequirementEventChannelSo onRequirementHovered;

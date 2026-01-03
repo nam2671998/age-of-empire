@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public sealed class ConstructionInteractionUIView : MonoBehaviour
+public class ConstructionInteractionUIView : MonoBehaviour
 {
     [SerializeField] private GameObject uiPanel;
     [SerializeField] private Transform produceOptionsContainer;

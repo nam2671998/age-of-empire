@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [AddComponentMenu("Object Pool/Object Pool")]
-public sealed class ObjectPool : MonoBehaviour
+public class ObjectPool : MonoBehaviour
 {
     public enum StartupPoolMode { Awake, Start, CallManually };
 

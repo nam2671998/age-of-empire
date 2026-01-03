@@ -1,4 +1,4 @@
-public sealed class MainUIModel
+public class MainUIModel
 {
     private readonly Faction faction;
 

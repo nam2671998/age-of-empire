@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public sealed class SlotReservationController
+public class SlotReservationController
 {
     private readonly Dictionary<IGridEntity, Vector2Int> reservedSlotByExecutor = new Dictionary<IGridEntity, Vector2Int>();
     private readonly HashSet<Vector2Int> reservedSlots = new HashSet<Vector2Int>();

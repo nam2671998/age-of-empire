@@ -1,4 +1,4 @@
-public sealed class RequirementUIModel
+public class RequirementUIModel
 {
     public ResourceCost[] Current { get; private set; }
 

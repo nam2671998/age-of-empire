@@ -1,6 +1,6 @@
 public partial class UnitHarvesterController
 {
-    private sealed class UnitHarvesterHarvestingState : IUnitHarvesterControllerState
+    private class UnitHarvesterHarvestingState : IUnitHarvesterControllerState
     {
         string IUnitHarvesterControllerState.Name  => "Harvest";
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public sealed class MainUIController : MonoBehaviour
+public class MainUIController : MonoBehaviour
 {
     [SerializeField] private Faction faction = Faction.Player1;
     [SerializeField] private VoidEventChannelSO onResourceInventoryChanged;

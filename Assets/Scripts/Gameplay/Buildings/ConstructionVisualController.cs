@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public sealed class ConstructionVisualController : MonoBehaviour
+public class ConstructionVisualController : MonoBehaviour
 {
     [SerializeField] private GameObject[] progressStates;
 

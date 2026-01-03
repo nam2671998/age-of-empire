@@ -89,26 +89,26 @@ public static class ConfigManager
     }
 
     [Serializable]
-    private sealed class ConstructionCostsConfig
+    private class ConstructionCostsConfig
     {
         public ConstructionCostsEntry[] constructions;
     }
 
     [Serializable]
-    private sealed class ConstructionCostsEntry
+    private class ConstructionCostsEntry
     {
         public int id;
         public ResourceCost[] costs;
     }
 
     [Serializable]
-    private sealed class UnitCostsConfig
+    private class UnitCostsConfig
     {
         public UnitCostsEntry[] units;
     }
 
     [Serializable]
-    private sealed class UnitCostsEntry
+    private class UnitCostsEntry
     {
         public int id;
         public ResourceCost[] costs;

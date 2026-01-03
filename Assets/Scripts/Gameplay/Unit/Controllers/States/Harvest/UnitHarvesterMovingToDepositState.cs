@@ -2,7 +2,7 @@ using UnityEngine;
 
 public partial class UnitHarvesterController
 {
-    private sealed class UnitHarvesterMovingToDepositState : IUnitHarvesterControllerState
+    private class UnitHarvesterMovingToDepositState : IUnitHarvesterControllerState
     {
         string IUnitHarvesterControllerState.Name  => "Move To Deposit";
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)

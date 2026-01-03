@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public sealed class ConstructionInteractionUIController : MonoBehaviour
+public class ConstructionInteractionUIController : MonoBehaviour
 {
     [SerializeField] private IntEventChannelSO onDeselectedConstruction;
     [SerializeField] private UnitProduceConstructionConfigEventChannelSO onSelectedUnitProduceConstruction;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public sealed class RequirementUIView : MonoBehaviour
+public class RequirementUIView : MonoBehaviour
 {
     [SerializeField] private GameObject uiPanel;
     [SerializeField] private Transform requirementsContainer;

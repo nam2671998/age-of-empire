@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public sealed class ResourceHolderConstruction : MonoBehaviour, IResourceHolderConstruction
+public class ResourceHolderConstruction : MonoBehaviour, IResourceHolderConstruction
 {
     [SerializeField] private int priority = 0;
     [SerializeField] private Faction faction = Faction.Player1;

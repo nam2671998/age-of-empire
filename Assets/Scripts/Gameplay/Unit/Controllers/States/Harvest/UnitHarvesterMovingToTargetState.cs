@@ -2,7 +2,7 @@ using UnityEngine;
 
 public partial class UnitHarvesterController
 {
-    private sealed class UnitHarvesterMovingToTargetState : IUnitHarvesterControllerState
+    private class UnitHarvesterMovingToTargetState : IUnitHarvesterControllerState
     {
         string IUnitHarvesterControllerState.Name  => "Move To Target";
         void IUnitHarvesterControllerState.Enter(UnitHarvesterController controller)

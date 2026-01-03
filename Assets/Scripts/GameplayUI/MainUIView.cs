@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public sealed class MainUIView : MonoBehaviour
+public class MainUIView : MonoBehaviour
 {
     [SerializeField] private TMP_Text woodText;
     [SerializeField] private TMP_Text stoneText;

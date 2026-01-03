@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class BuildConstructionUIController : MonoBehaviour
+public class BuildConstructionUIController : MonoBehaviour
 {
     [SerializeField] private GameObjectEventChannelSO onSelectedBuildCapableUnit;
     [SerializeField] private VoidEventChannelSO onDeselectedBuildCapableUnit;

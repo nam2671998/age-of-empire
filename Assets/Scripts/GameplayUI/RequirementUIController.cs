@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public sealed class RequirementUIController : MonoBehaviour
+public class RequirementUIController : MonoBehaviour
 {
     [SerializeField] private RequirementEventChannelSo onRequirementChanged;
 

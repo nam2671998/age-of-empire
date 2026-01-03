@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 
-public sealed class RequirementCostView : MonoBehaviour
+public class RequirementCostView : MonoBehaviour
 {
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text quantityText;

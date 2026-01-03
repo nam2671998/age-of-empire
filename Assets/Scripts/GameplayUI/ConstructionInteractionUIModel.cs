@@ -1,4 +1,4 @@
-public sealed class ConstructionInteractionUIModel
+public class ConstructionInteractionUIModel
 {
     public int SelectedConstructionId { get; set; }
     public int[] ProducibleUnitIds { get; set; }
