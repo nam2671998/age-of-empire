@@ -169,8 +169,9 @@ GameObject:
   - component: {fileID: 2498082936638197748}
   - component: {fileID: 3389207120629154330}
   - component: {fileID: 3045915126411402872}
+  - component: {fileID: 6119440613639495879}
   m_Layer: 9
-  m_Name: Stable
+  m_Name: Stables
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,6 +338,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridEntity
   gridSize: {x: 7, y: 7}
+--- !u!114 &6119440613639495879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8277783942695134550}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0535f231c8112645a1b399acb338671, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraFocusEntity
+  assignedKey: 99
+  targetGameObject: {fileID: 0}
+  focusController: {fileID: 0}
 --- !u!1 &8569656403322182166
 GameObject:
   m_ObjectHideFlags: 0
