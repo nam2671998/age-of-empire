@@ -26,7 +26,11 @@ public class SelectableObject : MonoBehaviour, IGameSelectable, IFactionOwner
     
     public GameObject GetGameObject()
     {
-        return gameObject;
+        if (this != null)
+        {
+            return gameObject;
+        }
+        return null;
     }
     
     public Vector3 GetPosition()

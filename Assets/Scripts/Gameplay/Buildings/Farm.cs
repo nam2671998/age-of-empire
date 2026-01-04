@@ -74,14 +74,11 @@ public class Farm : MonoBehaviour, IHarvestable
     
     public GameObject GetGameObject()
     {
-        try
+        if (this != null)
         {
             return gameObject;
         }
-        catch
-        {
-            return null;
-        }
+        return null;
     }
     
     public Vector3 GetPosition()

@@ -3,7 +3,10 @@ using UnityEngine;
 public class GridEntity : MonoBehaviour, IGridEntity
 {
     [SerializeField] private Vector2Int gridSize = Vector2Int.one;
-    public Vector2Int GridSize => gridSize;
+    public Vector2Int GetSize()
+    {
+        return gridSize;
+    }
 
     private void OnEnable()
     {
@@ -12,7 +15,7 @@ public class GridEntity : MonoBehaviour, IGridEntity
 
     private void OnDisable()
     {
-        GridManager.Instance.FreeUnitReservation(this);
+        GridManager.Instance.FreeFullyUnitReservation(this);
     }
 
     public Transform GetTransform()

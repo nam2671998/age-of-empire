@@ -18,17 +18,20 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
     
     public bool IsMoving => isMoving;
     public float MoveSpeed => moveSpeed;
+    private NavMeshPath path;
+    
+    public Vector2Int GetSize()
+    {
+        return Vector2Int.one;
+    }
 
     public Transform GetTransform()
     {
-        try
+        if (this != null)
         {
             return transform;
         }
-        catch
-        {
-            return null;
-        }
+        return null;
     }
 
     private void Awake()
@@ -53,7 +56,7 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
         // Free grid reservations when unit is destroyed
         if (GridManager.Instance != null)
         {
-            GridManager.Instance.FreeUnitReservation(this);
+            GridManager.Instance.FreeFullyUnitReservation(this);
         }
     }
 
@@ -66,6 +69,7 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
         agent.angularSpeed = rotationSpeed;
         agent.stoppingDistance = 0;
         agent.updateRotation = true;
+        path = new NavMeshPath();
     }
     
     public void MoveTo(Vector3 targetPosition, float stoppingDistance = 0)
@@ -168,7 +172,6 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
         if (agent == null)
             return false;
 
-        NavMeshPath path = new NavMeshPath();
         bool hasPath = agent.CalculatePath(destination, path);
 
         if (!hasPath || path.status == NavMeshPathStatus.PathInvalid)

@@ -50,7 +50,11 @@ public class ResourceHolderConstruction : MonoBehaviour, IResourceHolderConstruc
 
     public GameObject GetGameObject()
     {
-        return gameObject;
+        if (this != null)
+        {
+            return gameObject;
+        }
+        return null;
     }
 
     public Vector3 GetNearestDepositPosition(Vector3 from)

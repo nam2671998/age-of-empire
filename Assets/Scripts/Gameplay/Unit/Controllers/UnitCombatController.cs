@@ -218,6 +218,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     {
         isAttacking = false;
         attackTarget = null;
+        animator.TriggerIdle();
         Debug.Log("Stop Attack");
     }
 

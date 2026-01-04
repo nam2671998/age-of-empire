@@ -71,26 +71,20 @@ public class Damageable : MonoBehaviour, IDamageable
 
     public bool IsDestroyed()
     {
-        try
+        if (this != null)
         {
             return health != null && health.IsDepleted;
         }
-        catch
-        {
-            return true;
-        }
+        return true;
     }
 
     public GameObject GetGameObject()
     {
-        try
+        if (this != null)
         {
             return gameObject;
         }
-        catch
-        {
-            return null;
-        }
+        return null;
     }
 
     public Vector3 GetPosition() => transform.position;

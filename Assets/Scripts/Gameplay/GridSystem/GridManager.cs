@@ -55,10 +55,6 @@ public class GridManager : MonoBehaviour
             if (reserveCellsByEntity.TryGetValue(owner, out List<Vector2Int> cells))
             {
                 cells.Remove(gridPos);
-                if (cells.Count == 0)
-                {
-                    reserveCellsByEntity.Remove(owner);
-                }
             }
         }
         return !reservedCells.ContainsKey(gridPos);
@@ -129,7 +125,8 @@ public class GridManager : MonoBehaviour
         reservedCells[gridPos] = entity;
         if (!reserveCellsByEntity.ContainsKey(entity))
         {
-            reserveCellsByEntity.Add(entity, new List<Vector2Int>());
+            Vector2Int size = entity.GetSize();
+            reserveCellsByEntity.Add(entity, new List<Vector2Int>(size.x * size.y));
         }
         reserveCellsByEntity[entity].Add(gridPos);
         return true;
@@ -187,10 +184,6 @@ public class GridManager : MonoBehaviour
         if (movementOwner != null && reserveCellsByEntity.TryGetValue(movementOwner, out List<Vector2Int> cells))
         {
             cells.Remove(gridPos);
-            if (cells.Count == 0)
-            {
-                reserveCellsByEntity.Remove(movementOwner);
-            }
         }
     }
 
@@ -198,6 +191,19 @@ public class GridManager : MonoBehaviour
     /// Frees any cell reserved by a specific unit
     /// </summary>
     public void FreeUnitReservation(IGridEntity unit)
+    {
+        if (unit == null)
+            return;
+        if (reserveCellsByEntity.TryGetValue(unit, out List<Vector2Int> cells))
+        {
+            foreach (var cell in cells)
+            {
+                reservedCells.Remove(cell);
+            }
+        }
+    }
+    
+    public void FreeFullyUnitReservation(IGridEntity unit)
     {
         if (unit == null)
             return;

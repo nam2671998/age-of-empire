@@ -208,7 +208,8 @@ public class BuildModeController : MonoBehaviour
 
         if (!CanPlace(previewInstance))
         {
-            ShowInvalidPlacementFx(previewInstance);
+            Debug.LogError("Cannot place here");
+            // ShowInvalidPlacementFx(previewInstance);
             return;
         }
 
@@ -257,8 +258,8 @@ public class BuildModeController : MonoBehaviour
             return true;
         }
 
-        GridEntity gridEntity = construction.GetComponent<GridEntity>();
-        Vector2Int size = gridEntity != null ? gridEntity.GridSize : Vector2Int.one;
+        IGridEntity gridEntity = construction.GetComponent<IGridEntity>();
+        Vector2Int size = gridEntity != null ? gridEntity.GetSize() : Vector2Int.one;
         Vector3 worldPosition = construction.transform.position;
 
         int width = Mathf.Max(1, size.x);

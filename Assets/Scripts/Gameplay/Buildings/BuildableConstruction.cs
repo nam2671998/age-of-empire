@@ -145,14 +145,11 @@ public class BuildableConstruction : MonoBehaviour, IBuildable
 
     public GameObject GetGameObject()
     {
-        try
+        if (this != null)
         {
             return gameObject;
         }
-        catch
-        {
-            return null;
-        }
+        return null;
     }
 
     public bool IsComplete()

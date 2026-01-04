@@ -27,7 +27,7 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     private IMovementCapability movementOwner;
     private IFactionOwner factionOwner;
 
-    private readonly Dictionary<ResourceType, int> inventory = new Dictionary<ResourceType, int>();
+    private readonly Dictionary<ResourceType, int> inventory = new Dictionary<ResourceType, int>(4);
     private int inventoryCount;
     private IResourceHolderConstruction depositTarget;
 
