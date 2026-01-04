@@ -26,7 +26,7 @@ public class UnitProduceConstructionSelectable : SelectableObject
             selectionIndicator.SetActive(true);
         }
 
-        if (onSelectedUnitProduceConstruction != null)
+        if (onSelectedUnitProduceConstruction != null && TryGetComponent(out IBuildable buildable) && buildable.IsComplete())
         {
             onSelectedUnitProduceConstruction.Raise(constructionConfig);
         }

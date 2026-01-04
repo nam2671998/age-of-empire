@@ -19,9 +19,9 @@ public static class PlayerResourceInventory
         inventoryByFaction.Clear();
         inventoryByFaction.TryAdd(Faction.Player1, new Dictionary<ResourceType, int>()
         {
-            { ResourceType.Food, 100 },
-            { ResourceType.Wood, 100 },
-            { ResourceType.Stone, 100 }
+            { ResourceType.Food, 1000 },
+            { ResourceType.Wood, 1000 },
+            { ResourceType.Stone, 1000 }
         });
     }
 

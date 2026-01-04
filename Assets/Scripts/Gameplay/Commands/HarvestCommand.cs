@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class HarvestCommand : BaseCommand
 {
-    private readonly IHarvestable target;
+    private IHarvestable target;
     
     public HarvestCommand(IHarvestable target)
     {
@@ -36,7 +36,7 @@ public class HarvestCommand : BaseCommand
         }
         else
         {
-            Debug.LogError($"HarvestCommand: IHarvestUnit capability not found");
+            Debug.LogWarning($"HarvestCommand: IHarvestUnit capability not found");
             Complete();
         }
     }

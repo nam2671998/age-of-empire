@@ -527,6 +527,7 @@ GameObject:
   - component: {fileID: 8068035916961802454}
   - component: {fileID: 2600384828310966373}
   - component: {fileID: 483787198613116604}
+  - component: {fileID: 6705010780781487321}
   m_Layer: 0
   m_Name: Wolf
   m_TagString: Untagged
@@ -646,7 +647,7 @@ NavMeshAgent:
   m_Radius: 0.5
   m_Speed: 5
   m_Acceleration: 10
-  avoidancePriority: 50
+  avoidancePriority: 0
   m_AngularSpeed: 360
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
@@ -668,11 +669,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d7ce6c4228a3194ca034f221dcd06b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UnitMovementController
-  moveSpeed: 5
+  moveSpeed: 7
   rotationSpeed: 360
   agent: {fileID: 6403464392272044764}
   animatorController: {fileID: 483787198613116604}
-  autoRotate: 0
 --- !u!114 &2600384828310966373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -710,6 +710,27 @@ MonoBehaviour:
   idleTriggerParameter: Idle
   moveTriggerParameter: Move
   animator: {fileID: 1434501678263963221}
+--- !u!65 &6705010780781487321
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3732634752421585567}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.2783878, y: 0.9317162, z: 0.49049783}
+  m_Center: {x: 0.055152297, y: 0.45434982, z: -0.086667895}
 --- !u!1 &3821227141332391591
 GameObject:
   m_ObjectHideFlags: 0

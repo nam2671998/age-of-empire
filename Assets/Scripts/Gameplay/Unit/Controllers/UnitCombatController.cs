@@ -28,6 +28,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     private float lastAttackTime;
     private bool isAttacking;
     private Vector3 lastTargetPosition;
+    private Damageable selfDamageable;
     
     private IAttackStrategy attackStrategy;
     private IDistanceStrategy distanceStrategy;
@@ -45,6 +46,20 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     {
         TryGetComponent(out animator);
         TryGetComponent(out movementOwner);
+        if (TryGetComponent(out selfDamageable))
+        {
+            selfDamageable.OnDamageTakenHandler += CheckFindEnemy;
+            selfDamageable.OnDeath += OnDeath;
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        if (selfDamageable != null)
+        {
+            selfDamageable.OnDamageTakenHandler -= CheckFindEnemy;
+            selfDamageable.OnDeath -= OnDeath;
+        }
     }
 
     public void SetAttackStrategy(IAttackStrategy strategy)
@@ -310,6 +325,30 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
         }
+    }
+
+    private void CheckFindEnemy()
+    {
+        // If this unit is getting hit without active enemy, find one
+        if (CurrentTarget == null)
+        {
+            int hitCount = Physics.OverlapSphereNonAlloc(transform.position, 20, overlapResults, LayerMask.GetMask("Unit"));
+            for (int i = 0; i < hitCount; i++)
+            {
+                Collider col = overlapResults[i];
+                if (col.gameObject.TryGetComponent(out IDamageable target) && col.gameObject.TryGetComponent(out IFactionOwner factionOwner) && factionOwner.Faction != faction)
+                {
+                    SetAttackTarget(target);
+                }
+            }
+        }
+    }
+
+    private async void OnDeath()
+    {
+        animator.TriggerDeath();
+        await System.Threading.Tasks.Task.Delay(1000);
+        gameObject.SetActive(false);
     }
 }
 

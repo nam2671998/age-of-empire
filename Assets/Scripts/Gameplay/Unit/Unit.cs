@@ -1,7 +1,5 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CommandExecutor))]
-[RequireComponent(typeof(UnitSelectable))]
 [RequireComponent(typeof(UnitMovementController))]
 [RequireComponent(typeof(UnitActionStateController))]
 public abstract class Unit : MonoBehaviour

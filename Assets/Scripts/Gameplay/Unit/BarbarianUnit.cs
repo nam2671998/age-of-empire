@@ -2,17 +2,15 @@ using UnityEngine;
 
 [RequireComponent(typeof(Damageable))]
 [RequireComponent(typeof(UnitCombatController))]
-public class AnimalUnit : Unit, IStopAction
+public class BarbarianUnit : Unit, IStopAction
 {
-    [SerializeField] private GameObject meatPrefab;
     [SerializeField] private float attackWindUpDuration = 0;
     private ICombatCapability combat;
-    private Damageable damageable;
 
     protected override void InitializeComponents()
     {
+        base.InitializeComponents();
         TryGetComponent(out combat);
-        TryGetComponent(out damageable);
     }
 
     protected override void InitializeUnit()
@@ -23,16 +21,6 @@ public class AnimalUnit : Unit, IStopAction
             combat.SetAttackStrategy(strategy);
             combat.SetDistanceStrategy(strategy);
         }
-
-        if (damageable != null)
-        {
-            damageable.OnDeath += OnDeath;
-        }
-    }
-
-    private void OnDeath()
-    {
-        ObjectPool.Spawn(meatPrefab, transform.position, Quaternion.identity);
     }
 
     public void StopOtherActions()

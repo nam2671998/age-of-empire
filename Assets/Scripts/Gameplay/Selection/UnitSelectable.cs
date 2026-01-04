@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(CommandExecutor))]
 public class UnitSelectable : SelectableObject
 {
     [SerializeField] private GameObject selectionIndicator;

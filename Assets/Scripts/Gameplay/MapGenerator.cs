@@ -31,6 +31,7 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private GameObject treePrefab;
     [SerializeField] private GameObject rockPrefab;
     [SerializeField] private GameObject animalPrefab;
+    [SerializeField] private GameObject barbarianPrefab;
 
     private void Start()
     {
@@ -89,7 +90,14 @@ public class MapGenerator : MonoBehaviour
                     );
                     GameObject castle = SpawnPrefab(castlePrefab, castlePos, "Castle", generatedRoot);
                     if (firstCastle == null)
+                    {
                         firstCastle = castle.transform;
+                        
+                        GetSectionBounds(regionOriginX, regionOriginZ, k, sectionBaseSize,
+                            new[] {1, 3, 5, 7}[rng.Next(4)], out int minX, out int minZ, out int maxX, out int maxZ);
+                        SpawnRandomInBounds(rng, animalPrefab, 5, minX, minZ, maxX, maxZ, generatedRoot);
+                        SpawnRandomInBounds(rng, barbarianPrefab, 5, minX, minZ, maxX, maxZ, generatedRoot);
+                    }
                     foreach (var factionOwner in castle.GetComponents<IFactionOwner>())
                     {
                         factionOwner.Faction = (Faction)row;

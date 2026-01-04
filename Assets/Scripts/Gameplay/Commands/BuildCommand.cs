@@ -29,7 +29,7 @@ public class BuildCommand : BaseCommand
         }
         else
         {
-            Debug.LogError($"BuildCommand: IBuildUnit capability not found");
+            Debug.LogWarning($"BuildCommand: IBuildUnit capability not found");
             Complete();
         }
     }

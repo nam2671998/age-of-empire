@@ -11,7 +11,6 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
     [SerializeField] private float rotationSpeed = 360f;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private UnitAnimatorController animatorController;
-    [SerializeField] private bool autoRotate;
     
     private Vector3 moveTarget;
     private bool isMoving = false;
@@ -46,11 +45,6 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
         }
 
         ApplyAgentSettings();
-    }
-
-    private void Update()
-    {
-        autoRotate = agent.updateRotation;
     }
 
     private void OnDisable()

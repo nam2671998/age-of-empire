@@ -422,6 +422,7 @@ MonoBehaviour:
   treePrefab: {fileID: 6939212888757053336, guid: 6948053eb134fc445a20a733d0d23f33, type: 3}
   rockPrefab: {fileID: 6939212888757053336, guid: 5f6b9f6e683da90458f6a0b8f293d94d, type: 3}
   animalPrefab: {fileID: 3732634752421585567, guid: 25519e142be2d794388e43f8101bf857, type: 3}
+  barbarianPrefab: {fileID: 510877587899221435, guid: 6b3dbd431e4b32443ae3ffcbc756165c, type: 3}
 --- !u!4 &136349490
 Transform:
   m_ObjectHideFlags: 0
@@ -3172,7 +3173,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 21300000, guid: c1089a59adeb55b41a322ed405183ba7, type: 3}
-  m_Type: 1
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -3382,7 +3383,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 06fe3f9a119c728408b6aab796195892, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c06282df1b5506a4a866f22b6592ef9f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4148,7 +4149,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 06fe3f9a119c728408b6aab796195892, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c06282df1b5506a4a866f22b6592ef9f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

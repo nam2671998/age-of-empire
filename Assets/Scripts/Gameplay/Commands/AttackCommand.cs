@@ -3,7 +3,6 @@ using UnityEngine;
 public class AttackCommand : BaseCommand
 {
     private readonly IDamageable target;
-    private ICombatCapability combatant;
     
     public AttackCommand(IDamageable target)
     {
@@ -25,7 +24,7 @@ public class AttackCommand : BaseCommand
             return;
         }
         
-        if (!executor.TryGetCapability(out combatant))
+        if (!executor.TryGetCapability(out ICombatCapability combatant))
         {
             Complete();
             return;
@@ -42,7 +41,7 @@ public class AttackCommand : BaseCommand
             return;
         }
 
-        if (combatant == null && !executor.TryGetCapability(out combatant))
+        if (!executor.TryGetCapability(out ICombatCapability combatant))
         {
             Complete();
             return;
