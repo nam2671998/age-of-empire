@@ -115,6 +115,10 @@ public class HarvestableResource : MonoBehaviour, IHarvestable
 
     private void UpdateCapacityState()
     {
+        if (capacityStates == null || capacityStates.Length == 0)
+        {
+            return;
+        }
         if (currentResources == 0)
         {
             SetCapacityState(0);
