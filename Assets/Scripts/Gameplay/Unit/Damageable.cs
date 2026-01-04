@@ -6,6 +6,7 @@ public class Damageable : MonoBehaviour, IDamageable
 {
     [SerializeField] private Faction faction = Faction.Neutral;
     [SerializeField] private Collider hitCollider;
+    [SerializeField] private GameObject hitFx;
 
     public event Action OnDeath;
     public event Action OnDamageTakenHandler;
@@ -64,6 +65,7 @@ public class Damageable : MonoBehaviour, IDamageable
         if (damage > 0f)
         {
             OnDamageTakenHandler?.Invoke();
+            ObjectPool.Spawn(hitFx, hitCollider.bounds.center);
         }
     }
 

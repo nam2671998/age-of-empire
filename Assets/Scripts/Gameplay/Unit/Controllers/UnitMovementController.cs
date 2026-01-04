@@ -11,6 +11,7 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
     [SerializeField] private float rotationSpeed = 360f;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private UnitAnimatorController animatorController;
+    [SerializeField] private Transform moveTargetTransform;
     
     private Vector3 moveTarget;
     private bool isMoving = false;

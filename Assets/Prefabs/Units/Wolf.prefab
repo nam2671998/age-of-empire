@@ -528,6 +528,7 @@ GameObject:
   - component: {fileID: 2600384828310966373}
   - component: {fileID: 483787198613116604}
   - component: {fileID: 6705010780781487321}
+  - component: {fileID: 8877741483568158801}
   m_Layer: 7
   m_Name: Wolf
   m_TagString: Untagged
@@ -606,6 +607,9 @@ MonoBehaviour:
   attackWindup: 0.5
   autoFindRadius: 20
   deathAnimationDuration: 0
+  audioPlayer: {fileID: 0}
+  attackClip: {fileID: 0}
+  deathClip: {fileID: 0}
 --- !u!114 &3217726967067585866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -635,6 +639,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
   faction: 8
   hitCollider: {fileID: 6705010780781487321}
+  hitFx: {fileID: 193062, guid: 01949c12a89de284792dc4b7b7128404, type: 3}
 --- !u!195 &6403464392272044764
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -731,6 +736,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.2783878, y: 0.9317162, z: 0.49049783}
   m_Center: {x: 0.055152297, y: 0.45434982, z: -0.086667895}
+--- !u!114 &8877741483568158801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3732634752421585567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca7c8fa19f36b144f94cfc8ec9591d3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CommandExecutor
 --- !u!1 &3821227141332391591
 GameObject:
   m_ObjectHideFlags: 0

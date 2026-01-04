@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: 4199239459071794579}
   - component: {fileID: 5641562708381556917}
   - component: {fileID: 3175666775989594496}
+  - component: {fileID: 1895233927739457111}
+  - component: {fileID: -2065144312102067753}
   m_Layer: 7
   m_Name: Barbarian
   m_TagString: Untagged
@@ -111,6 +113,9 @@ MonoBehaviour:
   attackWindup: 0.5
   autoFindRadius: 20
   deathAnimationDuration: 1.33
+  audioPlayer: {fileID: 0}
+  attackClip: {fileID: 0}
+  deathClip: {fileID: 0}
 --- !u!114 &5581757828801523315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,6 +145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
   faction: 8
   hitCollider: {fileID: 4199239459071794579}
+  hitFx: {fileID: 193062, guid: 01949c12a89de284792dc4b7b7128404, type: 3}
 --- !u!114 &3984755986098014489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,6 +219,116 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca7c8fa19f36b144f94cfc8ec9591d3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CommandExecutor
+--- !u!114 &1895233927739457111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510877587899221435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7eb852ff7a8af240aac5c702be9bd57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioPlayer
+  audioSource: {fileID: 0}
+--- !u!82 &-2065144312102067753
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510877587899221435}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0.95
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &8488598126048189995
 PrefabInstance:
   m_ObjectHideFlags: 0

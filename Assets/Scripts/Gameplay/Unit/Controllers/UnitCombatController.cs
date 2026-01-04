@@ -23,17 +23,24 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     [SerializeField] private float attackWindup = 0.5f;
     [SerializeField] private float autoFindRadius = 20f;
     [SerializeField] private float deathAnimationDuration = 1.33f;
+    [SerializeField] private float chaseRetargetInterval = 0.2f;
+
+    [Header("Audio")]
+    [SerializeField] private AudioPlayer audioPlayer;
+    [SerializeField] private AudioClip attackClip;
+    [SerializeField] private AudioClip deathClip;
 
     private IMovementCapability movementOwner;
     private IDamageable attackTarget;
     private float lastAttackTime;
     private bool isAttacking;
-    private Vector3 lastTargetPosition;
+    private Vector3 lastTargetPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
     private Damageable selfDamageable;
     
     private IAttackStrategy attackStrategy;
     private IDistanceStrategy distanceStrategy;
     private UnitAnimatorController animator;
+    private float nextChaseRetargetTime = float.NegativeInfinity;
     
     public bool IsAttacking => isAttacking;
     public Faction Faction
@@ -47,18 +54,20 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     {
         TryGetComponent(out animator);
         TryGetComponent(out movementOwner);
+        TryGetComponent(out audioPlayer);
         if (TryGetComponent(out selfDamageable))
         {
-            selfDamageable.OnDamageTakenHandler += CheckFindEnemy;
+            selfDamageable.OnDamageTakenHandler += Revenge;
             selfDamageable.OnDeath += OnDeath;
         }
+
     }
     
     private void OnDestroy()
     {
         if (selfDamageable != null)
         {
-            selfDamageable.OnDamageTakenHandler -= CheckFindEnemy;
+            selfDamageable.OnDamageTakenHandler -= Revenge;
             selfDamageable.OnDeath -= OnDeath;
         }
     }
@@ -98,6 +107,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         {
             float stoppingDistance = distanceStrategy.GetStoppingDistance(target, attackRange);
             movementOwner.MoveTo(target.GetPosition(), stoppingDistance);
+            nextChaseRetargetTime = Time.time + Mathf.Max(0f, chaseRetargetInterval);
             isAttacking = true;
         }
     }
@@ -120,6 +130,11 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         if (!CanAttack())
         {
             return;
+        }
+
+        if (audioPlayer != null)
+        {
+            audioPlayer.PlayOneShot(attackClip);
         }
 
         attackStrategy.ExecuteAttack(target, attackDamage);
@@ -186,10 +201,11 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         }
 
         // Out of range: chase the target until we reach the desired spacing.
-        if (movementOwner != null && !movementOwner.IsMoving)
+        if (movementOwner != null && (!movementOwner.IsMoving || Time.time >= nextChaseRetargetTime))
         {
             float stoppingDistance = distanceStrategy.GetStoppingDistance(attackTarget, attackRange);
             movementOwner.MoveTo(targetPosition, stoppingDistance);
+            nextChaseRetargetTime = Time.time + Mathf.Max(0f, chaseRetargetInterval);
         }
     }
 
@@ -228,51 +244,8 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             return false;
         }
 
-        // If the attack strategy knows a better way to find targets, prefer it (e.g., team systems, caches).
-        if (attackStrategy.TryFindNearbyTarget(faction, lastTargetPosition, searchRadius, out target))
-        {
-            return true;
-        }
-
-        // Fallback: physics overlap search, then pick the closest valid enemy.
-        Vector3 origin = transform.position;
-        int count = Physics.OverlapSphereNonAlloc(origin, searchRadius, overlapResults);
-
-        float shortestDistance = float.PositiveInfinity;
-        for (int i = 0; i < count; i++)
-        {
-            Collider col = overlapResults[i];
-            if (col == null)
-            {
-                continue;
-            }
-
-            IDamageable candidate = col.GetComponentInParent<IDamageable>();
-            if (candidate == null || candidate.IsDestroyed() || candidate.GetGameObject() == null)
-            {
-                continue;
-            }
-
-            if (candidate.GetGameObject() == gameObject)
-            {
-                continue;
-            }
-
-            if (candidate.Faction == faction)
-            {
-                continue;
-            }
-
-            Vector3 delta = candidate.GetPosition() - origin;
-            float distSqr = delta.sqrMagnitude;
-            if (distSqr < shortestDistance)
-            {
-                shortestDistance = distSqr;
-                target = candidate;
-            }
-        }
-
-        return target != null;
+        return attackStrategy.TryFindNearbyTarget(faction, transform.position, searchRadius, out target) ||
+               attackStrategy.TryFindNearbyTarget(faction, lastTargetPosition, searchRadius, out target);
     }
     
     private void FaceTarget(IDamageable target)
@@ -289,16 +262,21 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         }
     }
 
-    private void CheckFindEnemy()
+    private void Revenge()
     {
-        if (TryFindNearbyTarget(autoFindRadius, out IDamageable nearby))
+        if (TryGetComponent(out CommandExecutor commandExecutor))
         {
-            SetAttackTarget(nearby);
+            commandExecutor.SetCommand(new AttackCommand(null));
         }
     }
 
     private async void OnDeath()
     {
+        if (audioPlayer != null)
+        {
+            audioPlayer.PlayOneShot(deathClip);
+        }
+
         animator.TriggerDeath();
         await System.Threading.Tasks.Task.Delay((int)(deathAnimationDuration * 1000));
         gameObject.SetActive(false);

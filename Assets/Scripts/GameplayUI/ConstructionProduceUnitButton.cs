@@ -10,6 +10,7 @@ public class ConstructionProduceUnitButton : MonoBehaviour, IPointerEnterHandler
     [SerializeField] private RequirementEventChannelSo onRequirementHovered;
     private ConstructionInteractionUIController controller;
     private int unitId;
+    private Sprite originSprite = null; // transparent sprite to handle loading time
 
     public void Initialize(ConstructionInteractionUIController controller, int unitId)
     {
@@ -21,6 +22,9 @@ public class ConstructionProduceUnitButton : MonoBehaviour, IPointerEnterHandler
         }
 
         this.unitId = unitId;
+        if (originSprite == null)
+            originSprite = icon.sprite;
+        icon.sprite = originSprite;
         Addressables.LoadAssetAsync<Sprite>($"Icons/{unitId}.png").Completed += handle => icon.sprite = handle.Result;
     }
 

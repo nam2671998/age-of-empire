@@ -3,6 +3,7 @@ using UnityEngine;
 public class GridEntity : MonoBehaviour, IGridEntity
 {
     [SerializeField] private Vector2Int gridSize = Vector2Int.one;
+    public Vector2Int GridSize => gridSize;
 
     private void OnEnable()
     {
@@ -26,4 +27,3 @@ public class GridEntity : MonoBehaviour, IGridEntity
         GridManager.Instance.ReserveArea(center, gridSize, this);
     }
 }
-

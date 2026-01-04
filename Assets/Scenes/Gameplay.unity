@@ -4036,10 +4036,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ObjectPool
   startupPoolMode: 0
   startupPools:
-  - size: 100
+  - size: 50
     prefab: {fileID: 5003069825133942822, guid: a65765937d3087446981e39ee4b0b3d3, type: 3}
-  - size: 100
+  - size: 50
     prefab: {fileID: 6080658909712879269, guid: 12df1c74081c63547991a6ad1da9c4b6, type: 3}
+  - size: 50
+    prefab: {fileID: 193062, guid: 01949c12a89de284792dc4b7b7128404, type: 3}
+  - size: 10
+    prefab: {fileID: 2610426023568254214, guid: 7e2792af761eb0b47a3e3f454a41478d, type: 3}
+  - size: 10
+    prefab: {fileID: 1459778219308548, guid: d18c10e4eb933284494581606f6022b9, type: 3}
 --- !u!4 &1580835579
 Transform:
   m_ObjectHideFlags: 0

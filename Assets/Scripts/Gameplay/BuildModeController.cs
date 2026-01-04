@@ -18,6 +18,10 @@ public class BuildModeController : MonoBehaviour
     private GameObject previewInstance;
     private readonly List<CommandExecutor> buildExecutors = new List<CommandExecutor>();
     private readonly HashSet<CommandExecutor> buildExecutorSet = new HashSet<CommandExecutor>();
+    private Coroutine invalidPlacementFlashRoutine;
+
+    private static readonly int baseColorId = Shader.PropertyToID("_BaseColor");
+    private static readonly int colorId = Shader.PropertyToID("_Color");
 
     private void Awake()
     {
@@ -202,6 +206,12 @@ public class BuildModeController : MonoBehaviour
             return;
         }
 
+        if (!CanPlace(previewInstance))
+        {
+            ShowInvalidPlacementFx(previewInstance);
+            return;
+        }
+
         GameObject placed = previewInstance;
         previewInstance = null;
         isBuildMode = false;
@@ -233,6 +243,97 @@ public class BuildModeController : MonoBehaviour
 
             executor.SetCommand(new BuildCommand(construction));
         }
+    }
+
+    private static bool CanPlace(GameObject construction)
+    {
+        if (construction == null)
+        {
+            return false;
+        }
+
+        if (GridManager.Instance == null)
+        {
+            return true;
+        }
+
+        GridEntity gridEntity = construction.GetComponent<GridEntity>();
+        Vector2Int size = gridEntity != null ? gridEntity.GridSize : Vector2Int.one;
+        Vector3 worldPosition = construction.transform.position;
+
+        int width = Mathf.Max(1, size.x);
+        int height = Mathf.Max(1, size.y);
+
+        Vector2Int origin = GridManager.Instance.WorldToGrid(worldPosition);
+        int left = (width - 1) / 2;
+        int right = width / 2;
+        int bottom = (height - 1) / 2;
+        int top = height / 2;
+
+        for (int x = origin.x - left; x <= origin.x + right; x++)
+        {
+            for (int z = origin.y - bottom; z <= origin.y + top; z++)
+            {
+                Vector2Int cell = new Vector2Int(x, z);
+                if (!GridManager.Instance.IsCellFree(cell))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private void ShowInvalidPlacementFx(GameObject previewRoot)
+    {
+        if (invalidPlacementFlashRoutine != null)
+        {
+            StopCoroutine(invalidPlacementFlashRoutine);
+            invalidPlacementFlashRoutine = null;
+        }
+
+        invalidPlacementFlashRoutine = StartCoroutine(IEShowInvalidPlacementFxRoutine(previewRoot));
+    }
+
+    private System.Collections.IEnumerator IEShowInvalidPlacementFxRoutine(GameObject previewRoot)
+    {
+        if (previewRoot == null)
+        {
+            yield break;
+        }
+
+        Renderer[] renderers = previewRoot.GetComponentsInChildren<Renderer>(true);
+        MaterialPropertyBlock block = new MaterialPropertyBlock();
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer r = renderers[i];
+            if (r == null)
+            {
+                continue;
+            }
+
+            r.GetPropertyBlock(block);
+            block.SetColor(baseColorId, Color.red);
+            block.SetColor(colorId, Color.red);
+            r.SetPropertyBlock(block);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer r = renderers[i];
+            if (r == null)
+            {
+                continue;
+            }
+
+            r.SetPropertyBlock(null);
+        }
+
+        invalidPlacementFlashRoutine = null;
     }
 
     private static bool IsPointerOverUI()
