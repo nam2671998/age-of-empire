@@ -4,6 +4,10 @@ public class AttackCommand : BaseCommand
 {
     private readonly IDamageable target;
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="target"> Original Target to attack. Pass null to fight random target in find range </param>
     public AttackCommand(IDamageable target)
     {
         this.target = target;
@@ -14,13 +18,6 @@ public class AttackCommand : BaseCommand
         if (executor == null)
         {
             Debug.LogError("AttackCommand: Executor is null");
-            return;
-        }
-        
-        if (target == null || target.GetGameObject() == null)
-        {
-            Debug.LogError("AttackCommand: Target is null or destroyed");
-            Complete();
             return;
         }
         

@@ -174,7 +174,6 @@ MonoBehaviour:
   rotationSpeed: 360
   agent: {fileID: 2812581706618711223}
   animatorController: {fileID: 4701538718866243865}
-  autoRotate: 0
 --- !u!114 &3626137504120279728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,9 +201,10 @@ MonoBehaviour:
   faction: 0
   attackDamage: 30
   attackRange: 2
-  attackCooldown: 0.75
+  attackCooldown: 1.5
   attackWindup: 0.5
-  chaseRange: 20
+  autoFindRadius: 20
+  deathAnimationDuration: 1.33
 --- !u!114 &8694938644135536406
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
   faction: 0
-  destroyOnDeath: 1
+  hitCollider: {fileID: 0}
 --- !u!114 &4461480895983232704
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -11,15 +11,7 @@ public interface IDamageable : IFactionOwner
     /// <param name="damage">The amount of damage dealt</param>
     void TakeDamage(int damage);
     
-    /// <summary>
-    /// Gets the current health of the object
-    /// </summary>
-    float GetHealth();
-    
-    /// <summary>
-    /// Gets the maximum health of the object
-    /// </summary>
-    float GetMaxHealth();
+    Collider HitCollider { get; }
     
     /// <summary>
     /// Checks if the object is destroyed

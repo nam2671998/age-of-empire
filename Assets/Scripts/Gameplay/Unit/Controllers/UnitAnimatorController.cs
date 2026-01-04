@@ -12,7 +12,7 @@ public class UnitAnimatorController : MonoBehaviour
     [SerializeField] private string attackTriggerParameter = "Attack";
     [SerializeField] private string harvestTriggerParameter = "Harvest";
     [SerializeField] private string buildTriggerParameter = "Build";
-    [SerializeField] private string deathTriggerParameter = "Death";
+    [SerializeField] private string deathTriggerParameter = "Die";
     [SerializeField] private string idleTriggerParameter = "Idle";
     [SerializeField] private string moveTriggerParameter = "Move";
     

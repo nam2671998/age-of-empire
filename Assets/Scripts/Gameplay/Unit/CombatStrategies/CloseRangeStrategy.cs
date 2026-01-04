@@ -1,11 +1,14 @@
 using UnityEngine;
 
-public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTargetFinder
+public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy
 {
     private float attackWindUpDuration;
+    private readonly float surfacePadding;
+
     public CloseRangeStrategy(float attackWindUpDuration)
     {
         this.attackWindUpDuration = attackWindUpDuration;
+        surfacePadding = 0.1f;
     }
 
     private static readonly Collider[] overlapResults = new Collider[64];
@@ -66,9 +69,50 @@ public class CloseRangeStrategy : IAttackStrategy, IDistanceStrategy, INearbyTar
         return baseRange * 0.8f;
     }
     
-    public bool ShouldMaintainDistance(Vector3 targetPosition, Vector3 currentPosition, float optimalDistance)
+    public float GetStoppingDistance(IDamageable target, float baseRange)
     {
-        float distance = Vector3.Distance(currentPosition, targetPosition);
+        if (target == null)
+        {
+            return baseRange;
+        }
+
+        float desiredSurfaceDistance = GetOptimalDistance(baseRange);
+
+        Collider col = target.HitCollider;
+        if (col == null)
+        {
+            return desiredSurfaceDistance;
+        }
+
+        Vector3 extents = col.bounds.extents;
+        float radius = Mathf.Max(extents.x, extents.z);
+        return Mathf.Max(0f, desiredSurfaceDistance + radius + surfacePadding);
+    }
+    
+    public bool ShouldMaintainDistance(IDamageable target, Vector3 currentPosition, float optimalDistance)
+    {
+        if (target == null)
+        {
+            return false;
+        }
+
+        Collider col = target.HitCollider;
+        Vector3 origin = currentPosition;
+        origin.y = 0f;
+
+        Vector3 targetPoint;
+        if (col != null)
+        {
+            Vector3 closest = col.ClosestPoint(origin);
+            targetPoint = new Vector3(closest.x, 0f, closest.z);
+        }
+        else
+        {
+            Vector3 p = target.GetPosition();
+            targetPoint = new Vector3(p.x, 0f, p.z);
+        }
+
+        float distance = Vector3.Distance(origin, targetPoint);
         return distance > optimalDistance * 1.2f;
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Damageable : MonoBehaviour, IDamageable
 {
     [SerializeField] private Faction faction = Faction.Neutral;
-    [SerializeField] private bool destroyOnDeath = true;
+    [SerializeField] private Collider hitCollider;
 
     public event Action OnDeath;
     public event Action OnDamageTakenHandler;
@@ -21,9 +21,15 @@ public class Damageable : MonoBehaviour, IDamageable
         get => faction;
         set => faction = value;
     }
+    public Collider HitCollider => hitCollider;
 
     private void Awake()
     {
+        if (hitCollider == null)
+        {
+            TryGetComponent(out hitCollider);
+        }
+
         health = GetComponent<Health>();
         if (health != null)
         {
@@ -61,11 +67,17 @@ public class Damageable : MonoBehaviour, IDamageable
         }
     }
 
-    public float GetHealth() => health != null ? health.CurrentHealth : 0f;
-
-    public float GetMaxHealth() => health != null ? health.MaxHealth : 0f;
-
-    public bool IsDestroyed() => health != null && health.IsDepleted;
+    public bool IsDestroyed()
+    {
+        try
+        {
+            return health != null && health.IsDepleted;
+        }
+        catch
+        {
+            return true;
+        }
+    }
 
     public GameObject GetGameObject()
     {
@@ -104,10 +116,5 @@ public class Damageable : MonoBehaviour, IDamageable
     private void OnDepleted()
     {
         OnDeath?.Invoke();
-
-        if (destroyOnDeath)
-        {
-            Destroy(gameObject);
-        }
     }
 }

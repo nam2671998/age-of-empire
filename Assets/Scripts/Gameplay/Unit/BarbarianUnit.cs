@@ -2,6 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Damageable))]
 [RequireComponent(typeof(UnitCombatController))]
+[RequireComponent(typeof(CommandExecutor))]
 public class BarbarianUnit : Unit, IStopAction
 {
     [SerializeField] private float attackWindUpDuration = 0;
@@ -11,6 +12,18 @@ public class BarbarianUnit : Unit, IStopAction
     {
         base.InitializeComponents();
         TryGetComponent(out combat);
+        if (TryGetComponent(out Damageable damageable))
+        {
+            damageable.OnDamageTakenHandler += Revenge;
+        }
+    }
+
+    private void Revenge()
+    {
+        if (TryGetComponent(out CommandExecutor commandExecutor))
+        {
+            commandExecutor.SetCommand(new AttackCommand(null));
+        }
     }
 
     protected override void InitializeUnit()

@@ -4,7 +4,7 @@ using UnityEngine;
 /// Control an unit's combat loop: keep a target, chase into range, and fire attacks on cooldown.
 /// </summary>
 /// <remarks>
-/// <see cref="StartAttack"/> sets a target and marks combat as active
+/// <see cref="SetAttackTarget"/> sets a target and marks combat as active
 /// <see cref="TickAttack"/> is basically Update()
 /// <see cref="Attack"/> performs the actual damage via the configured strategy.
 /// Actual damage is delegated to <see cref="IAttackStrategy"/>.
@@ -21,7 +21,8 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float attackWindup = 0.5f;
-    [SerializeField] private float chaseRange = 20f;
+    [SerializeField] private float autoFindRadius = 20f;
+    [SerializeField] private float deathAnimationDuration = 1.33f;
 
     private IMovementCapability movementOwner;
     private IDamageable attackTarget;
@@ -77,8 +78,11 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         // Prevent friendly fire at the moment a target is assigned.
         if (target != null && !CanAttackTarget(target))
         {
-            Debug.Log($"{gameObject.name} cannot attack {target.GetGameObject().name} - same faction ({faction})");
-            return;
+            if (!TryFindNearbyTarget(autoFindRadius, out target))
+            {
+                Debug.Log($"{gameObject.name} cannot attack {target.GetGameObject().name} - same faction ({faction})");
+                return;
+            }
         }
         
         // If we are switching to combat, stop other ongoing actions (e.g., harvesting/building).
@@ -90,12 +94,10 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         attackTarget = target;
         
         // Assigning a target also triggers chasing so the unit starts moving into range.
-        if (target != null && target.GetGameObject() != null && !target.IsDestroyed() && TryGetComponent(out IMovementCapability movementOwner))
+        if (target != null && target.GetGameObject() != null && !target.IsDestroyed() && movementOwner != null)
         {
-            float optimalDistance = distanceStrategy != null
-                ? distanceStrategy.GetOptimalDistance(attackRange)
-                : attackRange * 0.8f;
-            movementOwner.MoveTo(target.GetPosition(), optimalDistance);
+            float stoppingDistance = distanceStrategy.GetStoppingDistance(target, attackRange);
+            movementOwner.MoveTo(target.GetPosition(), stoppingDistance);
             isAttacking = true;
         }
     }
@@ -110,23 +112,17 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             return;
         }
         
-        if (!CanAttack())
-        {
-            return;
-        }
-        
         if (!CanAttackTarget(target))
         {
             return;
         }
         
-        if (attackStrategy == null)
+        if (!CanAttack())
         {
             return;
         }
-        
+
         attackStrategy.ExecuteAttack(target, attackDamage);
-        FaceTarget(target);
         lastAttackTime = Time.time;
         // Used as a hint for reacquiring nearby targets after losing the current one.
         lastTargetPosition = target.GetPosition();
@@ -143,39 +139,13 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         if (target == null)
             return false;
         
-        float distance = Vector3.Distance(transform.position, target.GetPosition());
-        
-        if (distanceStrategy != null)
-        {
-            float optimalDistance = distanceStrategy.GetOptimalDistance(attackRange);
-            return !distanceStrategy.ShouldMaintainDistance(target.GetPosition(), transform.position, optimalDistance);
-        }
-        
-        return distance <= attackRange;
+        float optimalDistance = distanceStrategy.GetOptimalDistance(attackRange);
+        return !distanceStrategy.ShouldMaintainDistance(target, transform.position, optimalDistance);
     }
 
     public bool CanAttack()
     {
-        if (attackStrategy != null)
-        {
-            return attackStrategy.CanAttack(lastAttackTime, attackCooldown);
-        }
-
-        return Time.time >= lastAttackTime + attackCooldown;
-    }
-
-    // Entry point: set a target and arm the combat loop.
-    public void StartAttack(IDamageable target)
-    {
-        SetAttackTarget(target);
-        if (target == null || target.GetGameObject() == null || target.IsDestroyed())
-        {
-            StopAttacking();
-        }
-        else
-        {
-            isAttacking = true;
-        }
+        return attackStrategy.CanAttack(lastAttackTime, attackCooldown);
     }
 
     // Called repeatedly while attacking to handle reacquire/chase/attack execution.
@@ -184,7 +154,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         if (attackTarget == null || attackTarget.GetGameObject() == null || attackTarget.IsDestroyed())
         {
             // If we lost the target, try to pick a new one nearby before giving up.
-            if (TryFindNearbyTarget(chaseRange, out IDamageable nearby))
+            if (TryFindNearbyTarget(autoFindRadius, out IDamageable nearby))
             {
                 SetAttackTarget(nearby);
             }
@@ -202,13 +172,6 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         }
 
         Vector3 targetPosition = attackTarget.GetPosition();
-        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
-        if (distanceToTarget > chaseRange)
-        {
-            // Too far from the target; stop rather than chasing across the whole map.
-            StopAttacking();
-            return;
-        }
 
         if (IsInRange(attackTarget))
         {
@@ -217,23 +180,16 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
             {
                 Attack(attackTarget);
             }
+        
+            FaceTarget(attackTarget);
             return;
         }
-
-        if (!TryGetComponent(out IMovementCapability movementOwner))
-        {
-            StopAttacking();
-            return;
-        }
-
-        float optimalDistance = distanceStrategy != null
-            ? distanceStrategy.GetOptimalDistance(attackRange)
-            : attackRange * 0.8f;
 
         // Out of range: chase the target until we reach the desired spacing.
-        if (!movementOwner.IsMoving)
+        if (movementOwner != null && !movementOwner.IsMoving)
         {
-            movementOwner.MoveTo(targetPosition, optimalDistance);
+            float stoppingDistance = distanceStrategy.GetStoppingDistance(attackTarget, attackRange);
+            movementOwner.MoveTo(targetPosition, stoppingDistance);
         }
     }
 
@@ -246,6 +202,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     {
         isAttacking = false;
         attackTarget = null;
+        Debug.Log("Stop Attack");
     }
 
     private bool CanAttackTarget(IDamageable target)
@@ -261,13 +218,18 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     private bool TryFindNearbyTarget(float searchRadius, out IDamageable target)
     {
         target = null;
+        if (CurrentTarget != null && !CurrentTarget.IsDestroyed())
+        {
+            return false;
+        }
+        
         if (searchRadius <= 0f)
         {
             return false;
         }
 
         // If the attack strategy knows a better way to find targets, prefer it (e.g., team systems, caches).
-        if (attackStrategy is INearbyTargetFinder finder && finder.TryFindNearbyTarget(faction, lastTargetPosition, searchRadius, out target))
+        if (attackStrategy.TryFindNearbyTarget(faction, lastTargetPosition, searchRadius, out target))
         {
             return true;
         }
@@ -315,7 +277,7 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
     
     private void FaceTarget(IDamageable target)
     {
-        // Manual facing makes attacks feel responsive, especially when movement auto-rotation is disabled.
+        // Manual facing makes attacks feel responsive, especially when movement autorotation is disabled.
         movementOwner.SetAutoRotate(false);
         Vector3 direction = (target.GetPosition() - transform.position);
         direction.y = 0f;
@@ -329,25 +291,16 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
 
     private void CheckFindEnemy()
     {
-        // If this unit is getting hit without active enemy, find one
-        if (CurrentTarget == null)
+        if (TryFindNearbyTarget(autoFindRadius, out IDamageable nearby))
         {
-            int hitCount = Physics.OverlapSphereNonAlloc(transform.position, 20, overlapResults, LayerMask.GetMask("Unit"));
-            for (int i = 0; i < hitCount; i++)
-            {
-                Collider col = overlapResults[i];
-                if (col.gameObject.TryGetComponent(out IDamageable target) && col.gameObject.TryGetComponent(out IFactionOwner factionOwner) && factionOwner.Faction != faction)
-                {
-                    SetAttackTarget(target);
-                }
-            }
+            SetAttackTarget(nearby);
         }
     }
 
     private async void OnDeath()
     {
         animator.TriggerDeath();
-        await System.Threading.Tasks.Task.Delay(1000);
+        await System.Threading.Tasks.Task.Delay((int)(deathAnimationDuration * 1000));
         gameObject.SetActive(false);
     }
 }

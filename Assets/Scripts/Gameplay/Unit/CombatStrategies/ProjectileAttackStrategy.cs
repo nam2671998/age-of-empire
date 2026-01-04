@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy, INearbyTargetFinder
+public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy
 {
     private static readonly Collider[] overlapResults = new Collider[64];
 
@@ -81,9 +81,50 @@ public class ProjectileAttackStrategy : IAttackStrategy, IDistanceStrategy, INea
         return baseRange * rangeMultiplier;
     }
 
-    public bool ShouldMaintainDistance(Vector3 targetPosition, Vector3 currentPosition, float optimalDistance)
+    public float GetStoppingDistance(IDamageable target, float baseRange)
     {
-        float distance = Vector3.Distance(currentPosition, targetPosition);
+        if (target == null)
+        {
+            return baseRange;
+        }
+
+        float desiredSurfaceDistance = Mathf.Max(minDistance, GetOptimalDistance(baseRange));
+
+        Collider col = target.HitCollider;
+        if (col == null)
+        {
+            return desiredSurfaceDistance;
+        }
+
+        Vector3 extents = col.bounds.extents;
+        float radius = Mathf.Max(extents.x, extents.z);
+        return Mathf.Max(0f, desiredSurfaceDistance + radius);
+    }
+
+    public bool ShouldMaintainDistance(IDamageable target, Vector3 currentPosition, float optimalDistance)
+    {
+        if (target == null)
+        {
+            return false;
+        }
+
+        Vector3 origin = currentPosition;
+        origin.y = 0f;
+
+        Collider col = target.HitCollider;
+        Vector3 targetPoint;
+        if (col != null)
+        {
+            Vector3 closest = col.ClosestPoint(origin);
+            targetPoint = new Vector3(closest.x, 0f, closest.z);
+        }
+        else
+        {
+            Vector3 p = target.GetPosition();
+            targetPoint = new Vector3(p.x, 0f, p.z);
+        }
+
+        float distance = Vector3.Distance(origin, targetPoint);
         return distance < minDistance || distance > optimalDistance * 1.2f;
     }
 }

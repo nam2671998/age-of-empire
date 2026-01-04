@@ -84,7 +84,6 @@ MonoBehaviour:
   rotationSpeed: 360
   agent: {fileID: 7025712847718797621}
   animatorController: {fileID: 1381998933503842262}
-  autoRotate: 0
 --- !u!114 &917397519976307828
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,9 +110,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UnitCombatController
   faction: 0
   attackDamage: 30
-  attackRange: 2
-  attackCooldown: 0.75
-  chaseRange: 20
+  attackRange: 10
+  attackCooldown: 1.5
+  attackWindup: 0.5
+  autoFindRadius: 20
+  deathAnimationDuration: 1.33
 --- !u!114 &3768178030470699957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,7 +143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Damageable
   faction: 0
-  destroyOnDeath: 1
+  hitCollider: {fileID: 0}
 --- !u!114 &1381998933503842262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,15 +415,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3478431685719019078, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 9.522292
+      value: -0.008584853
       objectReference: {fileID: 0}
     - target: {fileID: 3478431685719019078, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -6.414947
+      value: 3.2947247
       objectReference: {fileID: 0}
     - target: {fileID: 3478431685719019078, guid: 04c79b5f6e9ebab48af48fdcf7b6d570, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 158.29364
+      value: 172.72923
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

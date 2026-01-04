@@ -54,7 +54,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.7, y: 0.7, z: 0.7}
+  m_Size: {x: 1, y: 0.7, z: 1}
   m_Center: {x: 0, y: 0.35, z: 0}
 --- !u!114 &3375769432200268858
 MonoBehaviour:
@@ -73,8 +73,7 @@ MonoBehaviour:
   harvestMultiplier: 10
   harvestPositionRadius: 1
   occupiedRadius: 1
-  capacityStates:
-  - {fileID: 6095610174371865854}
+  capacityStates: []
 --- !u!114 &3441922828562967549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,6 +98,18 @@ PrefabInstance:
     - target: {fileID: 138022, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
       propertyPath: m_Name
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 475308, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 475308, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 475308, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 475308, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
       propertyPath: m_LocalPosition.x
@@ -140,6 +151,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 475308, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2361424, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
       propertyPath: m_CastShadows
       value: 0
@@ -154,11 +169,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
---- !u!1 &6095610174371865854 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 138022, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}
-  m_PrefabInstance: {fileID: 6095610174372003800}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6095610174372085620 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 475308, guid: 5531f4125b2228c46bdce8ab64c9f714, type: 3}

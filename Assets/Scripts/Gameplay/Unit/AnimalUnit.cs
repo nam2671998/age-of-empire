@@ -2,17 +2,16 @@ using UnityEngine;
 
 [RequireComponent(typeof(Damageable))]
 [RequireComponent(typeof(UnitCombatController))]
+[RequireComponent(typeof(CommandExecutor))]
 public class AnimalUnit : Unit, IStopAction
 {
     [SerializeField] private GameObject meatPrefab;
     [SerializeField] private float attackWindUpDuration = 0;
     private ICombatCapability combat;
-    private Damageable damageable;
 
     protected override void InitializeComponents()
     {
         TryGetComponent(out combat);
-        TryGetComponent(out damageable);
     }
 
     protected override void InitializeUnit()
@@ -24,9 +23,18 @@ public class AnimalUnit : Unit, IStopAction
             combat.SetDistanceStrategy(strategy);
         }
 
-        if (damageable != null)
+        if (TryGetComponent(out Damageable damageable))
         {
             damageable.OnDeath += OnDeath;
+            damageable.OnDamageTakenHandler += Revenge;
+        }
+    }
+
+    private void Revenge()
+    {
+        if (TryGetComponent(out CommandExecutor commandExecutor))
+        {
+            commandExecutor.SetCommand(new AttackCommand(null));
         }
     }
 
