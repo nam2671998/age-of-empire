@@ -89,7 +89,6 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         {
             if (!TryFindNearbyTarget(autoFindRadius, out target))
             {
-                Debug.Log($"{gameObject.name} cannot attack {target.GetGameObject().name} - same faction ({faction})");
                 return;
             }
         }
@@ -219,7 +218,6 @@ public class UnitCombatController : MonoBehaviour, ICombatCapability, IFactionOw
         isAttacking = false;
         attackTarget = null;
         animator.TriggerIdle();
-        Debug.Log("Stop Attack");
     }
 
     private bool CanAttackTarget(IDamageable target)

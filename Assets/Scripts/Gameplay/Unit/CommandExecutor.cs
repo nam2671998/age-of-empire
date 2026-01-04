@@ -42,7 +42,6 @@ public class CommandExecutor : MonoBehaviour
     {
         if (command == null)
         {
-            Debug.LogError("CommandExecutor: Attempted to enqueue null command");
             return;
         }
 

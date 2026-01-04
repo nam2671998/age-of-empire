@@ -106,7 +106,6 @@ public class GridManager : MonoBehaviour
         }
 
         // Fallback: return target cell anyway
-        Debug.LogWarning($"GridManager: Could not find free cell within {maxSearchRadius} radius. Using target cell.");
         return targetCell;
     }
 

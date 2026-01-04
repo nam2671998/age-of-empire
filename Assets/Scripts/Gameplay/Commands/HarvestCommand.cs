@@ -13,13 +13,11 @@ public class HarvestCommand : BaseCommand
     {
         if (executor == null)
         {
-            Debug.LogError("HarvestCommand: Executor is null");
             return;
         }
         
         if (target == null || target.GetGameObject() == null)
         {
-            Debug.LogError("HarvestCommand: Target is null or destroyed");
             Complete();
             return;
         }
@@ -36,7 +34,6 @@ public class HarvestCommand : BaseCommand
         }
         else
         {
-            Debug.LogWarning($"HarvestCommand: IHarvestUnit capability not found");
             Complete();
         }
     }

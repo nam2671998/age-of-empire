@@ -233,17 +233,6 @@ public partial class UnitHarvesterController : MonoBehaviour, IHarvestCapability
     {
         if (nextState == null || nextState == currentState)
             return;
-        if (nextState.Name == "Idle")
-        {
-            if (currentState == null)
-            {
-                Debug.Log("Change to Idle from null");
-            }
-            else
-            {
-                Debug.Log("Change to Idle from " + currentState.Name);
-            }
-        }
         currentState?.Exit(this);
         currentState = nextState;
         currentState.Enter(this);

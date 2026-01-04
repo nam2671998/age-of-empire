@@ -43,7 +43,6 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
 
         if (agent == null)
         {
-            Debug.LogError($"{nameof(UnitMovementController)} requires a {nameof(NavMeshAgent)} component.", this);
             enabled = false;
             return;
         }
@@ -147,7 +146,6 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
 
         if (agent.pathStatus == NavMeshPathStatus.PathPartial)
         {
-            Debug.LogError("Could not reach destination (partial path).", this);
             Stop();
             return;
         }
@@ -176,14 +174,12 @@ public class UnitMovementController : MonoBehaviour, IMovementCapability, IGridE
 
         if (!hasPath || path.status == NavMeshPathStatus.PathInvalid)
         {
-            Debug.LogError("Could not calculate a path to destination.", this);
             agent.ResetPath();
             return false;
         }
 
         if (path.status == NavMeshPathStatus.PathPartial)
         {
-            Debug.LogError("Destination is unreachable (partial path).", this);
             agent.ResetPath();
             return false;
         }

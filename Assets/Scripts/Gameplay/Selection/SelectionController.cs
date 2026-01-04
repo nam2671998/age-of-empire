@@ -281,7 +281,6 @@ public class SelectionController : MonoBehaviour
         selectedObjects.Clear();
         selectedObjects.Add(closest);
         closest.OnSelected();
-        Debug.Log($"Selected: {closest.GetGameObject().name}", closest.GetGameObject());
     }
     
     private bool IsObjectInSelectionBox(IGameSelectable selectable, float minX, float maxX, float minZ, float maxZ)

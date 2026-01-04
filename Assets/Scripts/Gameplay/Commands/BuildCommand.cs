@@ -13,7 +13,6 @@ public class BuildCommand : BaseCommand
     {
         if (executor == null)
         {
-            Debug.LogError("BuildCommand: Executor is null");
             return;
         }
 
@@ -29,7 +28,6 @@ public class BuildCommand : BaseCommand
         }
         else
         {
-            Debug.LogWarning($"BuildCommand: IBuildUnit capability not found");
             Complete();
         }
     }

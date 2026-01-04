@@ -17,7 +17,6 @@ public class AttackCommand : BaseCommand
     {
         if (executor == null)
         {
-            Debug.LogError("AttackCommand: Executor is null");
             return;
         }
         

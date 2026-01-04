@@ -17,7 +17,6 @@ public class MoveCommand : BaseCommand
     {
         if (executor == null || !executor.TryGetCapability(out IMovementCapability movementOwner))
         {
-            Debug.LogError("MoveCommand: IMovementCapability not found");
             return;
         }
 
