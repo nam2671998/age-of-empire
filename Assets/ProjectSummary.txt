@@ -1,0 +1,109 @@
+PROJECT SUMMARY — AgeOfEmpire (Unity)
+
+Game Type
+- Real-time strategy (RTS) prototype inspired by Age of Empires.
+- Core loop: select units → issue commands (move/harvest/build/attack) → gather resources → place & construct buildings → produce units → fight.
+
+Implemented Gameplay Systems
+
+1) Unit Selection & Command Issuing
+- Single/multi-selection via click and drag-box selection.
+- Selection objects implement IGameSelectable and typically use SelectableObject/UnitSelectable wrappers.
+- Right-click contextual command resolution:
+  - Move on ground
+  - Attack enemy units
+  - Harvest resources
+  - Build incomplete constructions
+- Command execution model:
+  - CommandExecutor runs one active command at a time (with support for queued commands via an internal queue).
+  - Commands tick until completion/cancel, and delegate to unit “capabilities” (movement/combat/harvest/build).
+  - InputCommandResolverController uses a SphereCast + resolver list to create the appropriate ICommand.
+
+2) Unit Movement
+- NavMeshAgent-based movement with stopping distance support.
+- Grid-based cell reservation to reduce unit overlap:
+  - MoveCommand reserves a nearest free grid cell and moves to its center.
+  - Reservations are freed on cancel/disable.
+ - The same grid occupancy idea is reused by building placement validation.
+
+3) Combat
+- UnitCombatController handles target selection, chasing into range, and attacking on cooldown.
+- Auto target acquisition within a radius (basic autonomous combat behavior).
+- Strategy-based attacks:
+  - Close-range melee
+  - Ranged/projectile attacks with projectile spawning
+ - Combat “health/death” is handled through Health + Damageable; death events are used to trigger cleanup/FX.
+
+4) Harvesting & Economy
+- Harvestable resources (wood/stone/food) with depletion.
+- Harvester state machine:
+  - Move to resource → harvest → search next → move to drop-off → deposit.
+- Faction inventory (static) tracking amounts per resource type.
+- Resource drop-off selection using a registry of deposit buildings (priority + distance).
+ - Inventory capacity is per unit; depositing transfers all carried resources into the faction inventory and raises a UI event.
+
+5) Building Placement & Construction
+- Build mode with Addressables-powered construction preview spawning.
+- Grid-based placement validation (checks occupancy of all covered cells).
+- Placement feedback (temporary red flash when invalid).
+- Buildings are “built” via Health healing:
+  - Construction visuals update by build progress.
+  - NavMeshObstacle and grid occupation enabled on placement.
+- Multiple builders supported via build-position slot reservation around constructions.
+ - Placement and building flow are split:
+   - BuildModeController handles preview/placement + issuing BuildCommand.
+   - BuildableConstruction handles build progress and visuals on the placed instance.
+
+6) Unit Production
+- Certain buildings can produce units.
+- Unit spawning uses Addressables instantiation and NavMeshAgent.Warp to a spawn point near the building.
+- Unit and building costs are read from JSON configs in Resources and validated/spent from the inventory.
+ - UI “requirements hover” uses Addressables-loaded icons and cost data for tooltips.
+
+7) Map Generation
+- Procedural “starter layout” generator:
+  - Supports up to 8 factions.
+  - Uses an N-Queens style region placement to keep starting areas separated.
+  - Spawns starter castles and nearby resources/animals.
+ - Intended to produce predictable, separated starting areas for quick gameplay iteration.
+
+8) UI & UX
+- Main HUD for faction resource totals.
+- Build construction UI for selecting buildings to place.
+- Construction interaction UI (e.g., unit production) and requirement/cost hover display.
+- ScriptableObject event channels used to decouple gameplay events from UI updates.
+ - UI controllers typically subscribe/unsubscribe in OnEnable/OnDisable to avoid dangling listeners.
+
+9) Camera
+- RTS camera controls:
+  - Arrow-key pan (accelerating)
+  - Edge scroll
+  - Mouse wheel zoom
+  - Middle-mouse drag
+- Camera focus system:
+  - Entities can register to a key to focus/center camera smoothly.
+ - Focus logic computes a pan offset that centers a target under the camera’s screen center.
+
+10) VFX / Pooling
+- ObjectPool with Spawn/Recycle helpers for reusing FX and other pooled objects.
+- AutoRecycleFx returns particle FX to the pool when finished.
+ - Damageable uses pooled hit FX; projectiles are also spawned via pooling in ranged attacks.
+
+Asset Loading & Data
+- Addressables used for runtime loading of:
+  - Constructions (Constructions/{id}.prefab)
+  - Units (Units/{id}.prefab)
+  - UI icons (Icons/{id}.png, Icons/{ResourceType}.png)
+- Resources JSON used for unit/building costs (via ConfigManager).
+
+What’s Not Implemented (as of current code)
+- No fog of war, tech tree, research, population caps, saving/loading, multiplayer networking, or dedicated AI “manager” system.
+- Combat/harvest/build behaviors are implemented at the unit-controller level with limited autonomous behavior (e.g., target auto-find).
+
+Key Code Entry Points (for review)
+- Input + commands: Assets/Scripts/Gameplay/InputCommandResolver/InputCommandResolverController.cs, Assets/Scripts/Gameplay/Unit/CommandExecutor.cs, Assets/Scripts/Gameplay/Commands/*
+- Selection: Assets/Scripts/Gameplay/Selection/SelectionController.cs
+- Placement + construction: Assets/Scripts/Gameplay/Buildings/BuildModeController.cs, Assets/Scripts/Gameplay/Buildings/BuildableConstruction.cs
+- Grid system: Assets/Scripts/Gameplay/GridSystem/GridManager.cs, Assets/Scripts/Gameplay/GridEntity.cs
+- Units: Assets/Scripts/Gameplay/Unit/Controllers/*Controller.cs, Assets/Scripts/Gameplay/Unit/CombatStrategies/*
+- UI: Assets/Scripts/GameplayUI/*UIController.cs, Assets/Scripts/Gameplay/Events/*EventChannelSO*.cs

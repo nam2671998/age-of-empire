@@ -6,7 +6,7 @@ using UnityEngine.Pool;
 /// <summary>
 /// Handles bound selection (horizontal rectangle) by dragging the mouse to select multiple GameObjects
 /// </summary>
-public class BoxSelection : MonoBehaviour
+public class SelectionController : MonoBehaviour
 {
     [SerializeField] private Faction selectableFaction = Faction.Player1;
     

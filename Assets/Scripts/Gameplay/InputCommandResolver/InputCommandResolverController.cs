@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Helper component to handle command input for selected units
@@ -16,16 +17,17 @@ public class InputCommandResolverController : MonoBehaviour
     [SerializeField] private LayerMask buildingLayer;
     
     [Header("References")]
-    [SerializeField] private BoxSelection boxSelection;
+    [FormerlySerializedAs("boxSelection")]
+    [SerializeField] private SelectionController selectionController;
     [SerializeField] private Camera mainCamera;
 
     private List<ICommandResolver> resolvers;
     
     void Awake()
     {
-        if (boxSelection == null)
+        if (selectionController == null)
         {
-            boxSelection = FindObjectOfType<BoxSelection>();
+            selectionController = FindObjectOfType<SelectionController>();
         }
         
         if (mainCamera == null)
@@ -52,7 +54,7 @@ public class InputCommandResolverController : MonoBehaviour
     
     private void HandleInput()
     {
-        if (mainCamera == null || boxSelection == null || resolvers == null || resolvers.Count == 0)
+        if (mainCamera == null || selectionController == null || resolvers == null || resolvers.Count == 0)
             return;
 
         if (!Physics.SphereCast(mainCamera.ScreenPointToRay(Input.mousePosition), 0.5f, out var hit, Mathf.Infinity))
@@ -71,7 +73,7 @@ public class InputCommandResolverController : MonoBehaviour
     private void IssueCommand(ICommandResolver resolver, RaycastHit hit)
     {
         var selected = ListPool<IGameSelectable>.Get();
-        boxSelection.GetSelectedObjects(selected);
+        selectionController.GetSelectedObjects(selected);
 
         foreach (var selectable in selected)
         {
